@@ -1,5 +1,13 @@
 # FLUKE · 万象来信
 
+<p align="center">
+  <img src="assets/fluke-logo.png" alt="FLUKE 标志" width="520">
+</p>
+
+<p align="center">
+  <img src="assets/github-social-preview.jpg" alt="FLUKE 项目宣传图" width="100%">
+</p>
+
 万象来信是一个本机优先的 Windows 生活工作台，由原有的 `life-workspace.html` 页面封装为 Electron 桌面软件。日常记录保存在本机，天气查询和 Spotify 播放需要联网。
 
 ## 下载与更新
