@@ -35,7 +35,7 @@ let mainWindow = null;
 let updateBusy = false;
 let manualUpdateCheck = false;
 let updateDownloading = false;
-const RELEASES_URL = 'https://github.com/linjiuyao2025/wanxiang-life-workspace/releases';
+const RELEASES_URL = 'https://github.com/linjiuyao2025/FLUKE/releases';
 
 function showUpdateMessage(options) {
   return mainWindow ? dialog.showMessageBox(mainWindow, options) : dialog.showMessageBox(options);

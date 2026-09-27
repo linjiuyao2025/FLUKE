@@ -5,7 +5,7 @@
   "description": "万象来信：本机生活工作台 Windows 桌面版",
   "repository": {
     "type": "git",
-    "url": "https://github.com/linjiuyao2025/wanxiang-life-workspace.git"
+    "url": "https://github.com/linjiuyao2025/FLUKE.git"
   },
   "main": "desktop/main.cjs",
   "scripts": {
@@ -26,7 +26,7 @@
     "publish": {
       "provider": "github",
       "owner": "linjiuyao2025",
-      "repo": "wanxiang-life-workspace"
+      "repo": "FLUKE"
     },
     "directories": {
       "output": "release"

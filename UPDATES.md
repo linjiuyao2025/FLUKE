@@ -1,8 +1,8 @@
-# 万象来信更新方式
+# FLUKE · 万象来信更新方式
 
 ## GitHub Releases
 
-从 [GitHub 发布页](https://github.com/linjiuyao2025/wanxiang-life-workspace/releases) 安装 1.0.3 或更新版本。软件会在启动后和每隔 6 小时检查新版本；下载完成后选择立即重启安装，或退出软件时安装。按 Alt 打开菜单，可选择“帮助 → 检查更新”或“打开 GitHub 发布页”。
+从 [GitHub 发布页](https://github.com/linjiuyao2025/FLUKE/releases) 安装 1.0.3 或更新版本。软件会在启动后和每隔 6 小时检查新版本；下载完成后选择立即重启安装，或退出软件时安装。按 Alt 打开菜单，可选择“帮助 → 检查更新”或“打开 GitHub 发布页”。
 
 发布新版本时，先更新 `package.json` 版本并推送源码，再在 Windows 上运行 `npm.cmd run dist:win`。把 `release` 内对应版本的 Setup.exe、`.exe.blockmap` 和 `latest.yml` 一起上传到同一个公开 GitHub Release，标签格式为 `v版本号`。`latest.yml` 是应用检查更新所需的元数据，不要单独修改。
 
