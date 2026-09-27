@@ -1,0 +1,68 @@
+{
+  "name": "wanxiang-life-workspace",
+  "version": "1.0.3",
+  "private": true,
+  "description": "万象来信：本机生活工作台 Windows 桌面版",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linjiuyao2025/wanxiang-life-workspace.git"
+  },
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis --publish never",
+    "release:win": "electron-builder --win nsis --publish always",
+    "dist:portable": "electron-builder --win portable",
+    "update:local": "node scripts/sync-local-update.cjs",
+    "update:rollback": "node scripts/sync-local-update.cjs --rollback"
+  },
+  "devDependencies": {
+    "electron": "44.4.5",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.wanxiang.life-workspace",
+    "productName": "万象来信",
+    "publish": {
+      "provider": "github",
+      "owner": "linjiuyao2025",
+      "repo": "wanxiang-life-workspace"
+    },
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "desktop/main.cjs",
+      "life-workspace.html",
+      "assets/fonts/**/*",
+      "assets/wanxiang.ico",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/wanxiang.ico",
+      "artifactName": "wanxiang-life-workspace-setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": false,
+      "include": "build/installer.nsh",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "万象来信"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-Portable.${ext}"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
+  }
+}

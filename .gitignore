@@ -1,0 +1,20 @@
+# This working folder also contains personal notes, drafts, backups and builds.
+# Only the application source listed below belongs in the public repository.
+/*
+!/.gitignore
+!/README.md
+!/README-软件版.md
+!/UPDATES.md
+!/package.json
+!/package-lock.json
+!/life-workspace.html
+!/desktop/
+!/desktop/main.cjs
+!/assets/
+!/assets/wanxiang.ico
+!/assets/fonts/
+!/assets/fonts/*
+!/build/
+!/build/installer.nsh
+!/scripts/
+!/scripts/sync-local-update.cjs
