@@ -15,8 +15,8 @@
 - GitHub tag：`native-v0.1.2-preview.2`
 - 安装包：`FLUKE-0.1.2-Setup.exe`
 - 本地候选包路径：`native/release/FLUKE-0.1.2-Setup.exe`
-- 候选包大小：`962,032,940` bytes
-- 候选包 SHA-256：`7fa320cd1f27130e7ec457a7694219d10f5573fa2739e051fcbfd7a89617496f`
+- 候选包大小：`962,034,879` bytes
+- 候选包 SHA-256：`ec4425be909ff59150a02b2503fea6b04169560898f497c208ff7c36579bc902`
 - sidecar 已由 `scripts/verify-release-artifacts.ps1` 重新校验，并确认 3 个引擎包清单。
 - PyInstaller 和 Inno Setup 编译成功；隔离生产包安装日志以 `Installation process succeeded` 结束；`versions\0.1.2\.install-complete.json`、根 launcher 和 `active.json` 均存在。
 - 隔离生产安装版的 `FLUKE.exe` 与当前 `dist\FLUKE\FLUKE.exe` SHA-256 一致；安装版健康检查生成独立 SQLite，完整性检查为 `ok`。
