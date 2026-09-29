@@ -12,11 +12,11 @@ FLUKE 是本机优先的 Windows 生活工作台。本仓库正在把桌面核�
 
 ## 当前版本状态（preview.3；下方旧段落保留历史说明）
 
-> **preview.3 更新（2026-09-30）**：当前公开候选为 [FLUKE Native v0.1.2 迁移预览 3](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.3)。更新器新增官方 Atom/expanded-assets 页面回退，已在 GitHub API `403` 限流环境下读取并选出 preview.3；公开资产名称、大小、SHA-256 和 sidecar 已一致。隔离 QA 已完成真实生产布局安装、失败候选保留旧版本，以及应用内更新桥接把 `0.1.1` 切换到 `0.1.2` 的自动安装演练，外置 SQLite 仍可读。阶段 6/7 仍未宣称通过：公开资产的完整应用内下载转安装、重启和失败恢复闭环、默认 Windows GUI 逐控件验收、真实个人数据与阶段 7 并行观察仍待完成。
+> **preview.3 更新（2026-09-30）**：当前公开候选为 [FLUKE Native v0.1.2 迁移预览 3](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.3)。更新器新增官方 Atom/expanded-assets 页面回退，已在 GitHub API `403` 限流环境下读取并选出 preview.3；公开资产名称、大小、SHA-256 和 sidecar 已一致。隔离 QA 已完成公开包完整下载、真实生产布局安装、失败候选保留旧版本，以及应用内更新桥接把 `0.1.1` 切换到 `0.1.2` 的自动安装演练；强制终止安装进程后活动版本仍保持旧版，外置 SQLite 仍可读。阶段 6 的更新/恢复证据已具备；阶段 7 仍未宣称通过，默认 Windows GUI 逐控件验收、真实个人数据和长期新旧版并行观察仍待完成。
 
 > **preview.2 历史记录（2026-09-30）**：preview.2 候选安装包已完成 PyInstaller/Inno Setup 编译、SHA-256 sidecar 校验和隔离生产布局安装；受控全量回归为 648 项通过、1 项跳过。自动安装/重启/失败恢复闭环、默认 Windows GUI 逐控件验收、真实个人数据与阶段 7 并行观察当时仍未完成，旧版及旧版数据必须保留。
 
-GitHub `main` 现包含 FLUKE Native 迁移源码。当前公开预览是 [FLUKE Native v0.1.2 迁移预览 3](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.3)。候选实现包含新的 FLUKE 安装向导、side-by-side 版本目录、根目录 launcher，以及只在可回滚布局中出现的自动安装入口：更新器会先检查官方 Release、下载并校验 SHA-256 sidecar，再用隔离临时 SQLite 做启动健康检查；失败时保留旧版本并支持回退。隔离 QA 已实际调用应用内更新桥接完成 `0.1.1 -> 0.1.2` 自动安装切换，外置 SQLite 仍可读；这不等于公开资产完整下载、重启和失败恢复闭环已通过。受控全量回归已在规定 Qt 环境下通过，但真实旧版运行、个人数据、云服务、默认 Windows GUI 逐控件验收和阶段 7 长期并行观察仍待完成，所以这只是预览发布，不代表阶段 6/7 完成。旧版 v0.1.1 的 `D:\FLUKE` 安装仍只允许手动下载/安装，不会被新方案覆盖。Native 正逐阶段对照旧版验收，**整体迁移尚未完成，Native 还不是完整的旧版替代品**。历史 [Electron v1.0.3](https://github.com/linjiyao2025/FLUKE/releases/tag/v1.0.3) 和 Native v0.1.0 仍保留，可作回退版本；在迁移验收完成前，请保留旧版及备份。
+GitHub `main` 现包含 FLUKE Native 迁移源码。当前公开预览是 [FLUKE Native v0.1.2 迁移预览 3](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.3)。候选实现包含新的 FLUKE 安装向导、side-by-side 版本目录、根目录 launcher，以及只在可回滚布局中出现的自动安装入口：更新器会先检查官方 Release、下载并校验 SHA-256 sidecar，再用隔离临时 SQLite 做启动健康检查；失败时保留旧版本并支持回退。公开 preview.3 安装包已完成应用内完整下载、校验和桥接自动安装演练，强制终止 QA 安装时活动版本仍保持旧版，外置 SQLite 仍可读；这证明阶段 6 的更新/恢复证据，但不代表阶段 7 已完成。真实旧版运行、个人数据、云服务、默认 Windows GUI 逐控件验收和阶段 7 长期并行观察仍待完成，所以这只是预览发布，Native 还不是完整的旧版替代品。旧版 v0.1.1 的 `D:\FLUKE` 安装仍只允许手动下载/安装，不会被新方案覆盖。历史 [Electron v1.0.3](https://github.com/linjiyao2025/FLUKE/releases/tag/v1.0.3) 和 Native v0.1.0 仍保留，可作回退版本；在迁移验收完成前，请保留旧版及备份。
 
 当前迁移状态和验证边界见 [FLUKE Native 说明](native/README.md)。真实个人数据、迁移包、SQLite 数据库、凭据和本机测试产物不属于公开仓库。
 
