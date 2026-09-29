@@ -3495,6 +3495,9 @@ ApplicationWindow {
                                                         return root.weatherController.conditionEnglish
                                                     return condition
                                                 }
+                                                const error = weatherCard.errorMessage()
+                                                if (error)
+                                                    return error
                                                 return root.weatherController.locationBusy
                                                         ? qsTr("正在获取系统位置…")
                                                         : (root.weatherController.busy

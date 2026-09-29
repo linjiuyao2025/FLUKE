@@ -299,6 +299,24 @@ class Stage1MainWindowCloseAndThemeTests(unittest.TestCase):
             "returning to the first section by scrolling should also update the step highlight",
         )
 
+    def test_sidebar_navigation_supports_tab_focus_and_keyboard_activation(self) -> None:
+        first = self._visual_item("personalNav_0")
+        second = self._visual_item("personalNav_1")
+        self.assertIsNotNone(first)
+        self.assertIsNotNone(second)
+
+        first.forceActiveFocus()
+        QTest.qWait(30)
+        self.assertTrue(bool(first.property("activeFocus")))
+
+        QTest.keyClick(self.window, Qt.Key.Key_Tab)
+        QTest.qWait(30)
+        self.assertTrue(bool(second.property("activeFocus")))
+
+        QTest.keyClick(self.window, Qt.Key.Key_Return)
+        QTest.qWait(80)
+        self.assertEqual(int(self.window.property("currentSectionIndex")), 1)
+
     def test_manual_weather_city_can_replace_a_pending_system_location_request(self) -> None:
         self.weather.requestLocation()
         self.assertTrue(self.weather.locationBusy)
@@ -332,6 +350,37 @@ class Stage1MainWindowCloseAndThemeTests(unittest.TestCase):
             "合成市",
             "a late location result must not overwrite the city chosen by the user",
         )
+
+    def test_weather_query_failure_clears_old_data_and_shows_reason(self) -> None:
+        self.weather._publish(
+            condition="晴",
+            temperature=25.0,
+            apparentTemperature=26.0,
+            highTemperature=28.0,
+            lowTemperature=19.0,
+        )
+        QTest.qWait(40)
+
+        city_input = self._visual_item("weatherCityInput")
+        query_button = self._visual_item("queryWeatherButton")
+        condition = self._visual_item("weatherConditionText")
+        temperature = self._visual_item("weatherTemperatureText")
+        status = self._visual_item("weatherStatusLabel")
+        self.assertIsNotNone(city_input)
+        self.assertIsNotNone(query_button)
+        self.assertIsNotNone(condition)
+        self.assertIsNotNone(temperature)
+        self.assertIsNotNone(status)
+
+        self.weather._request_geocoding = lambda query_id: self.weather._fail(
+            "没有找到“无结果城”，请检查城市名称或尝试输入拼音。", query_id
+        )
+        city_input.setProperty("text", "无结果城")
+        self._invoke(query_button, "click")
+
+        self.assertFalse(bool(temperature.isVisible()))
+        self.assertEqual(str(status.property("text")), "查询失败")
+        self.assertIn("没有找到", str(condition.property("text")))
 
     def test_finance_page_identifies_the_legacy_default_budget_until_user_sets_one(self) -> None:
         self.window.setProperty("currentSectionIndex", 1)

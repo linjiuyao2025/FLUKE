@@ -12,6 +12,10 @@ The launcher ignores directories without the completion marker, health-checks th
 
 ## Evidence gate before claiming release readiness
 
+### Preview.2 evidence boundary
+
+The preview.2 candidate has a successful isolated production-layout install, completion marker, root launcher, `active.json`, matching installed executable hash, and an installed health-check SQLite database with `PRAGMA integrity_check=ok`. Source-focused tests cover cancellation, disk-full, forced termination, failed first launch, restart selection, rollback, and external SQLite preservation. This is not yet evidence of a complete public-asset automatic install/restart/failure-recovery run; keep the automatic-install UI gated until that isolated sequence is independently recorded.
+
 The implementation uses the side-by-side design above. Before enabling the button for a build, verify success, cancellation, disk-full, forced termination during installation, failed first launch, restart, and rollback in an isolated Windows environment. Keep user data outside the versioned program payload and confirm it remains readable after both update and rollback. Do not treat the source tests as proof of installed-app acceptance.
 
 The SHA-256 sidecar detects a damaged or mismatched download; because the installer is not Authenticode-signed, it does not independently prove who published the sidecar.

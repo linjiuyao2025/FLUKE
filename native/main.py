@@ -3966,6 +3966,21 @@ class WeatherBridge(QObject):
         self._weather.update(changes)
         self.weatherChanged.emit()
 
+    def _clear_forecast(self) -> None:
+        self._weather.update({
+            "condition": "",
+            "conditionEnglish": "",
+            "glyph": "",
+            "temperature": None,
+            "apparentTemperature": None,
+            "highTemperature": None,
+            "lowTemperature": None,
+            "humidity": None,
+            "windSpeed": None,
+            "rainChance": None,
+            "lastUpdated": "",
+        })
+
     def _start_request(self, url: str, step: str, query_id: int) -> None:
         request = QNetworkRequest(QUrl(url))
         reply = self._manager.get(request)
@@ -4032,6 +4047,7 @@ class WeatherBridge(QObject):
         self._candidates = candidates
         self._candidate_index = 0
         self._place = None
+        self._clear_forecast()
         self._publish(city=requested, busy=True, status="正在查询城市天气……")
         self._request_geocoding(query_id)
 
@@ -4123,6 +4139,7 @@ class WeatherBridge(QObject):
         self._candidates = []
         self._candidate_index = 0
         self._place = {"name": "当前位置", **location}
+        self._clear_forecast()
         self._publish(city="当前位置", busy=True, status="正在查询当前位置天气……")
         self._request_forecast(query_id)
 

@@ -316,6 +316,32 @@ class WeatherBridgeStorageTests(unittest.TestCase):
             self.assertTrue(bridge.busy)
             self.assertEqual(bridge.city, "合成市")
 
+    def test_failed_new_query_does_not_leave_stale_forecast_visible(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            database_path = Path(directory) / "weather.sqlite3"
+            bridge = WeatherBridge(database_path, {})
+            bridge._publish(
+                condition="晴",
+                conditionEnglish="Clear sky",
+                temperature=25.0,
+                apparentTemperature=26.0,
+                highTemperature=28.0,
+                lowTemperature=19.0,
+                humidity=60.0,
+                windSpeed=8.0,
+                rainChance=10.0,
+                lastUpdated="刚刚更新",
+            )
+            bridge._request_geocoding = lambda query_id: bridge._fail("模拟城市查询失败。", query_id)
+
+            bridge.queryCity("无结果城")
+
+            self.assertFalse(bridge.busy)
+            self.assertEqual(bridge.status, "模拟城市查询失败。")
+            self.assertIsNone(bridge.temperature)
+            self.assertEqual(bridge.condition, "")
+            self.assertEqual(bridge.weather["lastUpdated"], "")
+
     def test_manual_city_is_reused_after_bridge_restart_without_network(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             database_path = Path(directory) / "weather.sqlite3"
