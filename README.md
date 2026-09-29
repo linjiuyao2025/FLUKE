@@ -10,7 +10,7 @@
 
 FLUKE 是本机优先的 Windows 生活工作台。本仓库正在把桌面核心从 Electron/HTML 迁移到 **Python + PySide6 + Qt Quick**：Python 负责业务、SQLite、本机数据迁移和网络服务；Qt Quick（QML）负责原生桌面界面，不在浏览器中运行。
 
-## 当前版本状态
+## 当前版本状态（preview.2；下方旧段落保留 preview.1 历史说明）
 
 > **preview.2 更新（2026-09-30）**：当前公开候选为 [FLUKE Native v0.1.2 迁移预览 2](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.2)。候选安装包已完成 PyInstaller/Inno Setup 编译、SHA-256 sidecar 校验和隔离生产布局安装；受控全量回归为 648 项通过、1 项跳过。自动安装/重启/失败恢复闭环、默认 Windows GUI 逐控件验收、真实个人数据与阶段 7 并行观察仍未完成，旧版及旧版数据必须保留。
 
