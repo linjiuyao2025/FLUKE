@@ -196,6 +196,16 @@ def _make_summary(
 ) -> dict[str, int]:
     state = parsed_values.get("richangji-state-v1") or {}
     issue_store = parsed_values.get("wanxiang-daily-issues-v1") or {}
+    layout = parsed_values.get("wanxiang-paper-layout-v2") or {}
+    active_issue = issue_store.get("active") or {}
+    archived = issue_store.get("archive") or []
+
+    def count(value: Any) -> int:
+        return len(value) if isinstance(value, (dict, list)) else 0
+
+    def issue_count(issue: dict[str, Any]) -> int:
+        return sum(count(issue.get(field)) for field in ("focus", "highlights", "articles"))
+
     summary_keys = tuple(raw_values) if keys is None else keys
     return {
         "keys_total": len(summary_keys),
@@ -203,8 +213,22 @@ def _make_summary(
         "records": len(state.get("records") or []),
         "habits": len(state.get("habits") or []),
         "media_items": len(state.get("mediaItems") or []),
+        "settings_fields": count(state.get("settings")),
+        "draft_entries": count(state.get("drafts")),
+        "calendar_sources": count(state.get("calendarSources")),
+        "layout_order": count(layout.get("order")),
+        "layout_slots": count(layout.get("slots")),
+        "layout_hidden": count(layout.get("hidden")),
+        "samples_cleared": int(raw_values.get("richangji-samples-cleared") == "1"),
+        "saved_knowledge": int(raw_values.get("wanxiang-saved-knowledge") == "1"),
+        "planner_sync_device_id_present": int(
+            bool(raw_values.get("wanxiang-planner-sync-device-v1"))
+        ),
         "active_issue": int(bool(issue_store.get("active"))),
-        "archived_issues": len(issue_store.get("archive") or []),
+        "archived_issues": len(archived),
+        "issue_articles": issue_count(active_issue) + sum(
+            issue_count(entry["issue"]) for entry in archived
+        ),
         "questions": len(parsed_values.get("wanxiang-issue-questions-v1") or []),
         "topics": len(parsed_values.get("wanxiang-issue-topics-v1") or []),
         "clippings": len(parsed_values.get("wanxiang-issue-clippings-v1") or []),

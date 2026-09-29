@@ -1578,13 +1578,28 @@ ApplicationWindow {
                 Layout.fillWidth: true
             }
             RootText {
+                objectName: "migrationStructureSummary"
                 text: {
                     const s = root.migrationReport ? root.migrationReport.summary : {}
-                    return qsTr("新闻刊期 %1 · 问题簿 %2 · 关注主题 %3 · 剪报 %4")
+                    return qsTr("新闻刊期 %1 · 新闻文章 %2 · 问题簿 %3 · 关注主题 %4 · 剪报 %5")
                             .arg((s.active_issue || 0) + (s.archived_issues || 0))
+                            .arg(s.issue_articles || 0)
                             .arg(s.questions || 0)
                             .arg(s.topics || 0)
                             .arg(s.clippings || 0)
+                            + "\n"
+                            + qsTr("设置字段 %1 · 日历来源 %2 · 草稿项 %3 · 首页布局顺序/槽位/隐藏 %4/%5/%6")
+                                    .arg(s.settings_fields || 0)
+                                    .arg(s.calendar_sources || 0)
+                                    .arg(s.draft_entries || 0)
+                                    .arg(s.layout_order || 0)
+                                    .arg(s.layout_slots || 0)
+                                    .arg(s.layout_hidden || 0)
+                            + "\n"
+                            + qsTr("样例清理 %1 · 稍后读开关 %2 · 日程同步标识 %3")
+                                    .arg(s.samples_cleared || 0)
+                                    .arg(s.saved_knowledge || 0)
+                                    .arg(s.planner_sync_device_id_present || 0)
                 }
                 color: root.muted
                 wrapMode: Text.WordWrap

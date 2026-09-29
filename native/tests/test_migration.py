@@ -154,6 +154,12 @@ class MigrationPackageTests(unittest.TestCase):
         self.assertEqual(package.summary["media_items"], 1)
         self.assertEqual(package.summary["active_issue"], 1)
         self.assertEqual(package.summary["questions"], 1)
+        self.assertEqual(package.summary["settings_fields"], 1)
+        self.assertEqual(package.summary["layout_order"], 2)
+        self.assertEqual(package.summary["samples_cleared"], 1)
+        self.assertEqual(package.summary["saved_knowledge"], 1)
+        self.assertEqual(package.summary["planner_sync_device_id_present"], 1)
+        self.assertEqual(package.summary["issue_articles"], 4)
 
     def test_schema_v1_nine_key_package_stays_readable(self) -> None:
         payload = synthetic_payload()

@@ -409,6 +409,10 @@ class MigrationQmlConfirmationTests(unittest.TestCase):
         self.assertEqual(report["summary"]["habits"], 1)
         self.assertEqual(report["summary"]["media_items"], 1)
         self.assertEqual(report["checksum"], expected_checksum)
+        structure_summary = self.window.findChild(QObject, "migrationStructureSummary")
+        self.assertIsNotNone(structure_summary)
+        self.assertIn("设置字段 1", str(structure_summary.property("text")))
+        self.assertIn("顺序/槽位/隐藏 2/0/0", str(structure_summary.property("text")))
         self.assertEqual(load_imported_data(self.database_path), baseline)
 
         assert self.confirm_button is not None
