@@ -109,7 +109,7 @@
 - 阶段 5 2026-09-30 非 fail-fast 重跑：`qa-artifacts/stage5/native-unittest-main-rerun-2026-09-30.log`；在新闻预览 QML 用例处中止，无测试汇总。
 - 阶段 5 2026-09-30 受控 Qt 环境普通全量结果：`qa-artifacts/stage5/native-unittest-main-offscreen-2026-09-30.log`；`644` 项通过、`1` 项跳过，退出码 0。
 - 阶段 5 当前 main（健康报告兼容 GUI 打包环境后）普通全量结果：`qa-artifacts/stage5/native-unittest-main-offscreen-2026-09-30-after-health-report-fix.log`；`647` 项通过、`1` 项跳过，退出码 0，`343.359s`。
-- 阶段 1 启动异常最新针对性结果：`qa-artifacts/stage5/startup-error-stage1-focused-2026-09-30.log` 与本轮 19 项重跑；损坏数据库不覆盖原文件检查通过。
+- 阶段 1 启动异常最新针对性结果：`qa-artifacts/stage5/startup-error-health-report-focused-2026-09-30.log`；`19` 项通过，包含损坏数据库不覆盖原文件检查。
 - 阶段 1/3/4 针对性结果：`qa-artifacts/stage5/focused-stage1-3-4-2026-09-30.log`；`127` 项通过，退出码 0。
 - 阶段 1 启动异常针对性结果：`qa-artifacts/stage5/startup-error-stage1-focused-2026-09-30.log`；`19` 项通过，包含损坏数据库不覆盖原文件检查。
 - 更新器与 side-by-side launcher 针对性结果：`qa-artifacts/stage5/updater-launcher-focused-2026-09-30.log`；`19` 项通过，退出码 0。
