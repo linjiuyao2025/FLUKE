@@ -1,0 +1,33 @@
+.venv/
+__pycache__/
+*.py[cod]
+build/
+dist/
+release/
+third-party/converter-engines/
+engine/ofd/build/
+engine/ofd/target/
+CONVERTER_PARITY_PLAN.md
+SUPER_PRODUCTIVITY_PARITY_PLAN.md
+layout-fixture.pdf
+windows-platform.pdf
+# Local QA installers, synthetic profiles, logs, and screenshots are not source.
+qa-release/
+qa-sandbox/
+*.egg-info/
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.db
+*.db-*
+*-迁移*.json
+*-migration*.json
+*-backup*.json
+*-备份*.json
+*.bak
+*.backup
+.env
+.env.*
+secrets.*
+# Local converter engine payloads are fetched during packaging and are not source.

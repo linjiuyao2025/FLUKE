@@ -8,33 +8,34 @@
   <img src="assets/github-social-preview.jpg" alt="FLUKE 项目宣传图" width="100%">
 </p>
 
-万象来信是一个本机优先的 Windows 生活工作台，由原有的 `life-workspace.html` 页面封装为 Electron 桌面软件。日常记录保存在本机，天气查询和 Spotify 播放需要联网。
+FLUKE 是本机优先的 Windows 生活工作台。本仓库正在把桌面核心从 Electron/HTML 迁移到 **Python + PySide6 + Qt Quick**：Python 负责业务、SQLite、本机数据迁移和网络服务；Qt Quick（QML）负责原生桌面界面，不在浏览器中运行。
 
-## 下载与更新
+## 当前版本状态
 
-前往 [GitHub Releases](https://github.com/linjiuyao2025/FLUKE/releases) 下载最新的 Windows x64 安装包。1.0.3 及后续版本会检查 GitHub 更新，下载完成后提示重启安装；按 Alt 可打开菜单，手动选择“帮助 → 检查更新”。新安装默认放在 `%LOCALAPPDATA%\Programs\万象来信`，选择其他父目录时会自动创建应用文件夹。旧版本升级时保留原安装路径。
+GitHub `main` 现包含原生版迁移源码。它仍在逐阶段对照旧版验收，**不是已完成的旧版替代品**；当前公开稳定安装包仍是 [v1.0.3](https://github.com/linjiuyao2025/FLUKE/releases/tag/v1.0.3) Electron 版。旧版源码和数据路径保留为回退参考。当前尚未发布 Native 安装包，也没有 Native 整应用自动更新器；请不要把本机测试安装包当作正式发行版。
 
-本机 AI 修改页面后，也可运行 `npm.cmd run update:local`，关闭并重开软件即可应用页面改动；详见 [更新说明](UPDATES.md)。
+当前迁移状态和验证边界见 [原生版说明](native/README.md)。真实个人数据、迁移包、SQLite 数据库、凭据和本机测试产物不属于公开仓库。
 
-## 从源码运行
+## 运行原生版源码
 
-需要 Node.js。克隆仓库后运行：
+需要 Python 3.10 或更新版本。Windows PowerShell：
+
+```powershell
+cd native
+py -m venv .venv
+.\.venv\Scripts\python -m pip install -e .
+.\.venv\Scripts\python main.py
+```
+
+原生版的 Windows 安装包构建说明见 [native/README.md](native/README.md)。安装包构建会准备外部转换引擎；其依赖授权审查和公开发行验收尚未完成，因此本仓库目前只发布迁移源码，不提供新的安装包下载。
+
+## 旧版回退
+
+当前公开稳定版的 Electron 源码仍保留在仓库根目录，可按原流程运行：
 
 ```powershell
 npm ci
 npm start
 ```
 
-在 Windows 上构建安装包：
-
-```powershell
-npm run dist:win
-```
-
-生成的安装包、blockmap 和 `latest.yml` 位于 `release/`。公开发布流程见 [更新说明](UPDATES.md)。
-
-## 数据
-
-软件数据保存在 `%APPDATA%\Wanxiang Life Workspace`，不随源码或安装包上传。若此前使用浏览器版，请在浏览器版“备份与数据”导出完整备份，再在桌面版导入。
-
-仓库只包含软件源码与打包所需资源。项目工作目录中的个人笔记、试跑内容包、历史备份和构建产物不在仓库内。
+本机数据不会随源码上传。只有在原生版完成数据、功能、安装、更新和回退验收后，才会决定停止提供旧版。

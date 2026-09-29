@@ -1,0 +1,11 @@
+Calendar interoperability uses these unmodified open-source JavaScript libraries:
+
+ical.js 2.2.1
+Purpose: iCalendar parsing, time-zone components, event and recurrence exceptions.
+Project: https://github.com/kewisch/ical.js
+License: Mozilla Public License 2.0; full text: ical.js-MPL-2.0.txt
+
+rrule 2.8.1
+Purpose: bounded, date-range recurrence expansion for imported calendar events.
+Project: https://github.com/jakubroztocil/rrule
+License: BSD 3-Clause; full text: rrule-BSD-3-Clause.txt

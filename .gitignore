@@ -18,3 +18,4 @@
 !/build/installer.nsh
 !/scripts/
 !/scripts/sync-local-update.cjs
+!/native/

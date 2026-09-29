@@ -13,6 +13,12 @@
     "dist:win": "electron-builder --win nsis --publish never",
     "release:win": "electron-builder --win nsis --publish always",
     "dist:portable": "electron-builder --win portable",
+    "test:planner": "node --test desktop/planner-renderer.test.cjs",
+    "test:calendar": "node --test desktop/calendar-exchange.test.cjs",
+    "test:calendar-subscriptions": "node --test desktop/calendar-subscription-service.test.cjs",
+    "test:caldav": "node --test desktop/caldav-protocol.test.cjs desktop/caldav-service.test.cjs",
+    "test:focus": "node --test desktop/focus-timer.test.cjs",
+    "test:worklog": "node --test desktop/worklog-renderer.test.cjs",
     "update:local": "node scripts/sync-local-update.cjs",
     "update:rollback": "node scripts/sync-local-update.cjs --rollback"
   },
@@ -33,9 +39,25 @@
     },
     "files": [
       "desktop/main.cjs",
+      "desktop/preload.cjs",
+      "desktop/reminder-service.cjs",
+      "desktop/calendar-subscription-service.cjs",
+      "desktop/caldav-service.cjs",
+      "desktop/webdav-backup-service.cjs",
+      "desktop/caldav-protocol.cjs",
+      "desktop/calendar-exchange.js",
+      "desktop/planner-sync.js",
       "life-workspace.html",
       "assets/fonts/**/*",
+      "assets/third-party/**/*",
       "assets/wanxiang.ico",
+      "node_modules/ical.js/dist/ical.es5.min.cjs",
+      "node_modules/ical.js/LICENSE",
+      "node_modules/@xmldom/xmldom/lib/**/*",
+      "node_modules/@xmldom/xmldom/package.json",
+      "node_modules/@xmldom/xmldom/LICENSE",
+      "node_modules/rrule/dist/es5/rrule.min.js",
+      "node_modules/rrule/LICENCE",
       "package.json"
     ],
     "win": {
@@ -63,6 +85,9 @@
     }
   },
   "dependencies": {
-    "electron-updater": "6.8.9"
+    "@xmldom/xmldom": "0.9.12",
+    "electron-updater": "6.8.9",
+    "ical.js": "^2.2.1",
+    "rrule": "^2.8.1"
   }
 }
