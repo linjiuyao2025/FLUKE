@@ -5,8 +5,8 @@
 
 ## 结论与边界
 
-- schema 1 固定包含九个键；schema 2 在这九个键上增加设备同步标识，共十个键。权威清单为 native/wanxiang/migration.py:13-30；旧版导出列表和读取位置为 life-workspace.html:2976-3003。
-- 旧版导出读取 localStorage 的原始字符串或 null，不改动旧值；导出包元信息把 sourceVersion 标为 unknown。因此 Electron v1.0.3 发布包、已安装旧版与当前 life-workspace.html 的同源关系仍待核。
+- Electron v1.0.3 标签源码可核对九个 localStorage 键，对应 schema 1。仓库当前 main 的迁移格式在这九个键上增加设备同步标识，形成 schema 2 十键；权威清单为 native/wanxiang/migration.py:13-30，当前 main 导出列表和读取位置为 life-workspace.html:2976-3003。
+- 当前 main 的导出器读取 localStorage 原始字符串或 null，不改动旧值，并将包元信息的 sourceVersion 标为 unknown。v1.0.3 标签、实际日常使用的安装包/profile 与当前 main 源码之间的对应关系仍待核。
 - Native 的迁移模型先将每个键的原始值写入 SQLite legacy_storage.raw_value；可解析 JSON 同时保存在 json_documents.document_json。records、habits、media_items 等是供本机模块查询的投影，不替代原始快照。
 - 下表的 SQLite “目标”表示源码可追索到的设计/消费位置。最新本机候选包已通过 Native 校验器并与当前默认 SQLite 只读对照为同一快照；候选包记录的来源版本是 1.0.2，尚不能证明与旧版 v1.0.3 当前数据同步。不得把源码映射或快照相等误作 v1.0.3 运行验收。
 - 导出器只覆盖本地 localStorage 快照。它不能证明云端 SmartPage 表、WebDAV 服务器快照、远程日历订阅或任何服务端账号记录已导入。即使本地对象里有远程 ID、同步队列或缓存，也只能说明本地保存过这些字段。
@@ -43,7 +43,7 @@
 | 事务、重复导入和回滚 | native/wanxiang/database.py:991-1096 | BEGIN IMMEDIATE 包围批次、原文、文档和实体投影写入；可按来源身份+checksum 识别重复批次，异常时回滚 | 源码/合成测试设计不等于真实数据实测成功 |
 | 迁移包数量摘要 | native/wanxiang/migration.py:192-213 | 源码统计 keys_total/keys_present、记录/习惯/媒体、新闻发布/归档、问题、主题及剪报等可识别数量 | 不统计所有嵌套 settings 字段、布局槽、全局稍后读开关、样例标记或设备 ID；也不是用户真实数量报告 |
 
-本轮已在本机只读解析候选包并对照活动 SQLite；不把原文、具体个人字段或完整校验和写入仓库。只读预览证明现存 Native 数据库与最新合法候选一致；候选来源版本为 1.0.2，且本机登记的 1.0.3 安装项是 QA 路径，故“与当前旧版实际使用 profile 同步”仍为待验证。全量 Native 源码/QML 合成回归为 620 项通过、1 项跳过，不替代旧版运行或正式安装版的逐功能验收。
+本轮已在本机只读解析候选包并对照活动 SQLite；不把原文、具体个人字段或完整校验和写入仓库。只读预览证明现存 Native 数据库与最新合法候选一致；候选来源版本为 1.0.2。本机可见多个 1.0.3 安装登记项，其中两个明确指向 QA 安装目录，另一个指向临时目录；目前无法锁定日常使用的稳定安装目录及其 profile，因此“与当前旧版实际使用 profile 同步”仍为待验证。全量 Native 源码/QML 合成回归为 620 项通过、1 项跳过，不替代旧版运行或正式安装版的逐功能验收。
 
 ## 本地与云端数据的明确分界
 

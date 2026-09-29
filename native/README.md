@@ -4,9 +4,9 @@
 
 ## 状态
 
-原生版源码和功能仍按旧版基线分阶段核对，尚未达到替代旧版的验收门槛。Electron v1.0.3 仍是公开稳定版；Native v0.1.0 Preview 1 安装包供安装和功能验收使用，不代表全部旧版功能、数据和更新流程已迁完。旧版源码、安装包和数据路径继续保留作回退。此目录不包含个人迁移包、用户数据库、个人记录或本机 QA 产物。
+原生版源码和功能仍按旧版基线分阶段核对，尚未达到替代旧版的验收门槛。Electron v1.0.3 仍是公开稳定版；Native v0.1.0 Preview 1 安装包供安装和功能验收使用，不代表全部旧版功能、数据和更新流程已迁完。旧版源码、安装包和数据路径继续保留作回退。个人迁移包、用户数据库、个人记录和本机 QA 产物不会纳入 Git 跟踪或发布。
 
-目前已建立 [旧版功能对照基线](LEGACY_FUNCTION_BASELINE.md)、[旧版存储键映射](LEGACY_STORAGE_MAP.md) 和 [247 项静态控件清单](LEGACY_CONTROL_INVENTORY.md)。控件表只覆盖静态 HTML 候选；旧版运行时及动态控件验收仍待完成。本轮全量 Native 自动化回归为 620 项通过、1 项跳过；这不能替代正式安装版全功能回归。其他缺口包括：旧版 v1.0.3 发布包静态审计没有发现 SmartPage provider 创建/注入代码，页面中的六类云表操作仍是条件式；外部注入、云账号数据范围和历史同步结果没有验证；Spotify 目前保存链接并外部打开，未保留页内播放器；尚无 Native 整应用更新与失败恢复流程。旧版 `.wxbackup` 密码保护备份读取和 Native `.wxbak2` 密码保护导出/恢复现已接入并有合成流程测试，尚待正式 Windows 安装版验收。旧版自有 WebDAV 日程同步现已接入界面和本地模拟服务测试，真实 WebDAV 账户/Windows 安装环境尚未验收。七张首页卡的顺序、分区和显隐设置现已驱动主窗口布局并通过 SQLite/QML 合成流程检查。外部拖放、定位、通知和缩放还需在正式 Windows 安装版现场验收。
+目前已建立 [旧版功能对照基线](LEGACY_FUNCTION_BASELINE.md)、[旧版存储键映射](LEGACY_STORAGE_MAP.md) 和 [247 项静态控件清单](LEGACY_CONTROL_INVENTORY.md)。基线以仓库当前 main 为对象，并单独标识 v1.0.3 标签未发现的后续控件；旧版运行时及动态控件验收仍待完成。本轮全量 Native 自动化回归为 620 项通过、1 项跳过，运行于源码提交 `d342d0a1eccda64cea58c3cec5dd929a837f7eea`；这不能替代正式安装版全功能回归。其他缺口包括：旧版 v1.0.3 发布包静态审计没有发现 SmartPage provider 创建/注入代码，页面中的六类云表操作仍是条件式；外部注入、云账号数据范围和历史同步结果没有验证；Spotify 目前保存链接并外部打开，未保留页内播放器；尚无 Native 整应用更新与失败恢复流程。旧版 `.wxbackup` 密码保护备份读取和 Native `.wxbak2` 密码保护导出/恢复现已接入并有合成流程测试，尚待正式 Windows 安装版验收。旧版自有 WebDAV 日程同步现已接入界面和本地模拟服务测试，真实 WebDAV 账户/Windows 安装环境尚未验收。七张首页卡的顺序、分区和显隐设置现已驱动主窗口布局并通过 SQLite/QML 合成流程检查。外部拖放、定位、通知和缩放还需在正式 Windows 安装版现场验收。
 
 ## 源码运行
 
@@ -35,6 +35,8 @@ py -m venv .venv
 .\.venv\Scripts\python -m pip install -e ".[build]"
 .\build-installer.ps1
 ```
+
+FLUKE 自定义安装向导画面使用 [`fluke-wizard.png`](installer/fluke-wizard.png) 和 [`fluke-small.png`](installer/fluke-small.png)，Inno Setup 会将两者嵌入 Windows 安装包。
 
 此流程会下载并组装 OFD、音视频、OCR 与电子书转换引擎。Native 预览安装包仅用于迁移验收；完整功能回归、干净 Windows 用户环境验收及整应用更新和失败恢复流程仍待完成。已准备的本地引擎、安装包、发布清单和 QA 产物均被 Git 忽略，不属于源码提交。
 

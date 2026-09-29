@@ -1,12 +1,13 @@
 # FLUKE 旧版控件静态清单（Stage 0）
 
 审计日期：2026-09-29<br>
-旧版源码：仓库根目录的 life-workspace.html<br>
+旧版源码：仓库当前 main 分支根目录的 life-workspace.html；不表示全部控件都存在于 Electron v1.0.3 发布标签<br>
 来源 SHA-256：CADAD4662DFA835A6DC49E20FDDAED67830B46AC2BB79982CD5D1DEDB27141ED
 
 ## 范围与证据口径
 
 - 候选清单记录 247 个静态 HTML 交互元素；源文件 SHA-256 与本次计算结果完全匹配，按要求复用该清单并保留其行号、元素类型、ID/name、标签或提示、容器线索、源码事件/属性。
+- 版本边界见 [旧版功能基线](LEGACY_FUNCTION_BASELINE.md#版本范围)：当前 main 的静态 HTML 可能包含 v1.0.3 发布标签之后增加的操作；需按具体版本核对，不能将本表直接解释为 v1.0.3 控件表。
 - 下表每一行的证据状态均为“静态源码（L0）；旧版运行：待验证”。这不是旧版安装包的按钮验收，也不证明控件可见、可点击、事件成功或数据已保存。
 - 当前源码中有 18 个 localStorage 显式方法调用点：getItem 8、setItem 8、removeItem 2、clear 0。调用点数不等于存储键数；固定迁移包键数另见 LEGACY_STORAGE_MAP.md（schema 1 九键、schema 2 十键）。
 - 本表没有从用户数据库、浏览器存储、运行时表单、账号、凭据或个人记录取值。标签/提示均来自经哈希核对的静态源码候选。

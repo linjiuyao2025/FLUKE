@@ -2,7 +2,7 @@
 
 审计日期：2026-09-29<br>
 旧版源码入口：仓库根目录的 life-workspace.html<br>
-适用目的：为 FLUKE Native 的逐功能迁移和回归提供可追踪清单；本文件是源码基线，不是旧版或新版运行验收报告。
+适用目的：为 FLUKE Native 的逐功能迁移和回归提供可追踪清单；本文件是仓库当前 main 分支旧版源码基线，不是旧版或新版运行验收报告。
 
 ## 基线身份与证据规则
 
@@ -14,7 +14,11 @@
 | Native 对照证据 | N1：Native QML/Python 对应源码存在；只表示可以找到实现位置，不表示与旧版逐操作一致或运行通过 | 各行 Native 对照列；native/README.md:43-49 |
 | 自动化与安装证据 | 本轮运行 Native 全量 unittest：620 项通过、1 项跳过；这是源码/QML 合成回归（N2），不等于逐控件的 Native 安装版验收（N3）或旧版运行验收（L3） | `native/.venv\Scripts\python.exe -m unittest discover -s tests -v`；安装版逐功能和旧版现场证据仍待补 |
 
-每项状态都按“旧版运行：待验证”处理。旧版源码锚点用于安排后续现场检查；确认旧版安装版本、执行每个流程并留截图/记录后，才可更新为运行验收。Native 源码和合成数据结果不能替代旧版运行证据。
+## 版本范围
+
+下表以仓库当前 main 分支的 `life-workspace.html` 为静态核对对象，不能整体视为 Electron v1.0.3 发布包的功能清单。GitHub `v1.0.3` 标签指向源码提交 `2025032e1140eb01e0900cd2254354a422ef472d`；该标签源码中未发现 WebDAV 备份界面、加密备份密码弹层、Native 专用迁移导出、`.wxbackup` 导入、ICS/在线日历界面或专注会话 CSV 导出。这些项目是仓库当前 main 的后续源码，逐项列出是为了避免迁移时遗漏后续版本行为，不代表它们属于 v1.0.3 稳定版。v1.0.3 标签源码枚举的九个 localStorage 键与存储映射中的 schema 1 相符；当前 main 的迁移格式另有 schema 2 设备标识键。发布标签与日常使用的安装包/profile 仍未建立对应关系。
+
+每项状态都按“旧版运行：待验证”处理。旧版源码锚点用于安排后续现场检查；确认具体旧版安装版本、执行每个流程并留截图/记录后，才可更新为运行验收。Native 源码和合成数据结果不能替代旧版运行证据。
 
 ## 八个主导航页
 
@@ -24,7 +28,7 @@
 | 记账理财 | life-workspace.html:807,953-977。收入/支出、金额、类别、日期、备注；月预算、月份/类别筛选、趋势统计、表格导出和记录删除 | FinancePage.qml、finance.py 有对应源码。旧版 L0；Native N1 | 分类、预算、筛选统计、删除、导出与旧版逐项一致性；重启后的记录和设置 |
 | 习惯健康 | life-workspace.html:808,979-989。每日打卡、计数/数值目标、连续天数、热图；新增/删除自定义习惯和管理设置 | HabitPage.qml、habits.py 有对应源码。旧版 L0；Native N1 | 三类习惯输入、日期边界、连续天数/热图、隐藏/删除行为和重启持久化 |
 | 减脂健身 | life-workspace.html:809,990-1012。体重及身体记录、运动/时长、饮食/热量、睡眠和备注；目标档案、进度趋势、每周运动/饮食计划、表格导出 | FitnessPage.qml、fitness.py 有对应源码。旧版 L0；Native N1 | 记录字段、目标计算、档案及周计划弹层、导出和跨日展示；Native 安装版行为 |
-| 日程统筹 | life-workspace.html:810,1013-1037。添加/编辑/删除任务；日期时间、预计时长、重复、项目/标签、优先级、备注、提醒、完成状态；周视图、时间线/看板/矩阵、自定义看板、子任务、计时与工作记录、ICS 导入导出、远程日历来源与冲突处理 | PlannerPage.qml、planner.py、calendar/提醒相关源码有对应实现。旧版 L0；Native N1；native/README.md:45 记载远程 WebDAV 目前只用 localhost 合成服务验证 | 所有视图及任务字段；ICS 往返；订阅/CalDAV/WebDAV 真实账户、重复/冲突、系统提醒和通知；安装版与离线恢复 |
+| 日程统筹 | life-workspace.html:810,1013-1037。添加/编辑/删除任务；日期时间、预计时长、重复、项目/标签、优先级、备注、提醒、完成状态；周视图、时间线/看板/矩阵、自定义看板、子任务、计时与工作记录；仓库当前 main 另有 ICS、在线日历来源/冲突和专注会话 CSV 导出（v1.0.3 标签未发现这些界面） | PlannerPage.qml、planner.py、calendar/提醒相关源码有对应实现。旧版 L0；Native N1；native/README.md:9 记载远程 WebDAV 目前只用 localhost 合成服务验证 | 所有视图及任务字段；工作记录 CSV；ICS 往返；订阅/CalDAV/WebDAV 真实账户、重复/冲突、系统提醒和通知；安装版与离线恢复 |
 | 待买清单 | life-workspace.html:811,1038-1054。新增物品、数量、类别、价格、优先级、备注；按状态过滤、标记已买、删除和汇总 | ShoppingPage.qml、shopping.py 有对应源码。旧版 L0；Native N1 | 新增/编辑状态、分类、金额汇总、过滤、已买日期和删除确认 |
 | 书影音 | life-workspace.html:812,1055-1073。记录名称、类型、状态、评分、日期、短评和封面；墙面/列表、状态与评分过滤、年度统计、删除 | MediaPage.qml、media.py 有对应源码。旧版 L0；Native N1 | 封面选择与持久化、筛选/统计、删除和数据关联；真实安装版体验 |
 | 时光档案 | life-workspace.html:814,1074-1080。按全部/记账/健康/日程/待买筛选历史记录；按日期或月份折叠查看并呈现月度洞察 | ArchivePage.qml、archive.py 有对应源码。旧版 L0；Native N1 | 所有记录类型的归档关系、日期分组、筛选以及统计边界 |
@@ -35,8 +39,8 @@
 
 | 步骤 | 旧版来源锚点与可见操作 | Native 对照状态 / 证据等级 | 待验证项 |
 |---|---|---|---|
-| 01 今日速览 | life-workspace.html:875-918。天气城市设置/定位；关注主题；新闻链接拖入素材箱、刊期 JSON 文件拖入或粘贴/编辑；预览、保存草稿、发布、历史、模块排序/显隐；打开文章、保存剪报/知识 | DailyFlowPage.qml、ArticleDialog.qml；daily.py、issues.py、news_import.py、home_layout.py、reading.py。旧版 L0；Native N1。README:43 称新闻流程已接入源码 | 链接拖入和 JSON 文件拖入必须分别现场验证；预览、校验错误、保存/发布/历史、城市/定位失败和重启持久化 |
-| 02 昨日复盘 | life-workspace.html:923-929。查看近期/更早记录和周摘要；添加、查看、移除问题簿条目；跳转时光档案 | DailyFlowPage.qml、ArchivePage.qml；daily.py、archive.py。旧版 L0；Native N1 | 笔记日期归属、问题簿字符串/对象格式、删除/归档与历史跳转 |
+| 01 今日速览 | life-workspace.html:875-918。天气城市设置/定位；关注主题；新闻链接拖入素材箱、刊期 JSON 文件拖入或粘贴/编辑；仓库当前 main 另有复制生成提示和导出本期 JSON；预览、保存草稿、发布、历史、模块排序/显隐；打开文章、保存剪报/知识 | DailyFlowPage.qml、ArticleDialog.qml；daily.py、issues.py、news_import.py、home_layout.py、reading.py。旧版 L0；Native N1。README:43 称新闻流程已接入源码 | 链接拖入和 JSON 文件拖入必须分别现场验证；提示复制和 JSON 导出；预览、校验错误、保存/发布/历史、城市/定位失败和重启持久化 |
+| 02 昨日复盘 | life-workspace.html:923-929。查看近期/更早记录和周摘要；仓库当前 main 另有“给明天的自己留一句跟进线索”及保存操作；添加、查看、移除问题簿条目；跳转时光档案 | DailyFlowPage.qml、ArchivePage.qml；daily.py、archive.py。旧版 L0；Native N1 | 次日线索保存、跨日回看；笔记日期归属、问题簿字符串/对象格式、删除/归档与历史跳转 |
 | 03 今日工作 | life-workspace.html:932-940。查看今日任务、习惯；完成状态；打开完整日程/习惯管理；快捷记账、记体重、加入待买项；页面同时出现待办/邮件语义区域 | DailyFlowPage.qml 与 PlannerPage.qml、HabitPage.qml、FinancePage.qml、FitnessPage.qml、ShoppingPage.qml。旧版 L0；Native N1 | 快捷操作是否进入正确表单并保存；邮件/连接器区域实际可用性与旧版条件状态 |
 | 04 开始专注 | life-workspace.html:941-951；播放器相关实现 life-workspace.html:3423-3506。选择当前任务，开始/暂停/继续/重置或结束计时，选择专注模式；Spotify 链接和页内播放器 | DailyFlowPage.qml、daily.py。旧版 L0；Native N1，但有已知差异：native/README.md:9 记载 Native 保存 Spotify 链接并外部打开，不保留旧版页内播放器 | 旧版计时状态、累计与工作日志；音频播放/控制。需记录播放器差异的产品验收决定，当前不能标为功能等价 |
 
@@ -50,10 +54,10 @@
 | 每周计划面板 | life-workspace.html:1099-1110。新增/调整运动或饮食计划及完成状态 | FitnessPage.qml 有源码。旧版 L0；Native N1 | 增删改、完成标记、保存和计划排序 |
 | 健身档案面板 | life-workspace.html:1111-1120。个人起点、目标和档案设置 | FitnessPage.qml 有源码。旧版 L0；Native N1 | 字段范围、估算规则、已有记录变化后的进度结果 |
 | 文章阅读弹层 | life-workspace.html:1137-1139,2178。新闻正文、摘要、出处/原文链接、保存入口、关闭 | ArticleDialog.qml、reading.py 有源码。旧版 L0；Native N1 | 链接安全、正文/图片显示、键盘关闭、保存与重启 |
-| 加密备份密码弹层 | life-workspace.html:839-847,2884-2893。导出时设置并确认密码；恢复时输入密码；密码不留存 | Main.qml 与 backup.py 有源码；全量 Native 合成回归通过。旧版 L0；Native N1+N2 | 正式安装版导出/恢复、错误密码和损坏包恢复；不要据源码或合成测试宣称已验收 |
-| WebDAV 备份和同步冲突弹层 | life-workspace.html:848-868,2973-2977,3309-3313。配置地址/账号/密码、上传/恢复加密快照、移除本机凭据；查看/解决日程同步冲突 | Native 有 WebDAV 账户/冲突源码；README:45 仅记载 localhost 合成服务测试。旧版 L0；Native N1 | 旧版真实 WebDAV 账号、服务器端文件、恢复/移除/冲突语义和 Native 真实账户行为 |
+| 加密备份密码弹层（仓库当前 main 后续源码） | life-workspace.html:839-847,2884-2893。导出时设置并确认密码；恢复时输入密码；密码不留存；v1.0.3 标签未发现对应控件 | Main.qml 与 backup.py 有源码；全量 Native 合成回归通过。旧版 main L0；Native N1+N2 | 正式安装版导出/恢复、错误密码和损坏包恢复；不要据源码或合成测试宣称已验收 |
+| WebDAV 备份和同步冲突弹层（备份界面为仓库当前 main 后续源码） | life-workspace.html:848-868,2973-2977,3309-3313。配置地址/账号/密码、上传/恢复加密快照、移除本机凭据；查看/解决日程同步冲突；v1.0.3 标签未发现 WebDAV 备份控件，冲突界面的标签内存在性待逐项核对 | Native 有 WebDAV 账户/冲突源码；README:9 仅记载 localhost 合成服务测试。旧版 main L0；Native N1 | 旧版真实 WebDAV 账号、服务器端文件、恢复/移除/冲突语义和 Native 真实账户行为 |
 | 自定义看板与子任务弹层 | life-workspace.html:1026-1027,2461-2463。建改删看板列、状态/标签绑定；为任务新增子任务 | PlannerPage.qml、planner.py 有源码。旧版 L0；Native N1 | 看板限制、拖动/排序、任务保留关系、子任务完成与删除 |
-| 全局数据菜单与危险操作 | life-workspace.html:822-836。导出完整明文备份、导出加密备份、配置/上传/恢复 WebDAV 快照、导出原生迁移包、导入 JSON/.wxbackup、清除全部数据、仅清除样例数据；导入文件输入接受 application/json/.json/.wxbackup | Main.qml、backup.py、migration.py 有源码；README:46 记载相关 Native 流程。旧版 L0；Native N1 | 每种文件格式/备份内容、重复导入、失败回滚、危险操作确认，以及真实迁移包数量和内容对账 |
+| 全局数据菜单与危险操作 | life-workspace.html:822-836。明文备份与清理操作；仓库当前 main 另有加密备份、WebDAV 快照、Native 专用迁移包及 `.wxbackup` 导入，v1.0.3 标签未发现这些新增控件 | Main.qml、backup.py、migration.py 有源码；README:46 记载相关 Native 流程。旧版 main L0；Native N1 | 按具体版本核对每种文件格式/备份内容、重复导入、失败回滚、危险操作确认，以及真实迁移包数量和内容对账 |
 | 外部服务与云账户边界 | life-workspace.html:约 1200-1370 的条件式 SmartPage 数据库调用、planner 远端同步逻辑；Native README:9 明确 provider 注入和云账号范围/历史未验证 | Native 不能从本地迁移源码推断云账户内容。旧版 L0；Native 对照状态待核 | SmartPage provider 实际注入、云端表/记录种类、账号与本地缓存边界、冲突/历史同步。须独立登录与服务端证据；不得以 localStorage 导出替代 |
 
 ## 最快补齐基线的追踪缺口
