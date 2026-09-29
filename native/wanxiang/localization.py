@@ -366,8 +366,46 @@ _CORE_ENGLISH_CATALOG: dict[str, str] = {
     "JSON 文件 (*.json)": "JSON files (*.json)",
     "导出本机完整备份": "Export full local backup",
     "新版完整备份 (*.wxbak)": "FLUKE full backup (*.wxbak)",
+    "Native 密码保护备份 (*.wxbak2)": "Native password-protected backup (*.wxbak2)",
+    "旧版密码保护备份 (*.wxbackup)": "Legacy password-protected backup (*.wxbackup)",
     "选择本机完整备份": "Choose local full backup",
     "旧版完整备份 JSON (*.json)": "Legacy full backup JSON (*.json)",
+    "导出密码保护 Native 备份": "Export password-protected Native backup",
+    "Native 密码保护备份请使用 .wxbak2 扩展名。": "Native password-protected backups must use the .wxbak2 extension.",
+    "可导出普通或密码保护的 Native 完整备份，也可恢复旧版 JSON 与 .wxbackup 加密备份。密码保护的 Native 文件使用独立 .wxbak2 格式，旧版软件无法读取。备份可能含个人数据，请妥善保管。": (
+        "Export a regular or password-protected Native backup, or restore legacy JSON and .wxbackup encrypted backups. "
+        "Password-protected Native files use the separate .wxbak2 format and cannot be read by the legacy app. "
+        "Backups may contain personal data; store them carefully."
+    ),
+    "导出密码保护备份…": "Export password-protected backup…",
+    "Native 密码保护备份采用独立 .wxbak2 格式；旧版软件不能读取。密码只在本次导出时使用，不会保存。": (
+        "Native password-protected backups use the separate .wxbak2 format and cannot be read by the legacy app. "
+        "The password is used for this export only and is not saved."
+    ),
+    "设置备份密码": "Set backup password",
+    "输入备份密码": "Enter backup password",
+    "再次输入备份密码": "Enter the backup password again",
+    "导出加密备份": "Export encrypted backup",
+    "两次输入的备份密码不一致。": "The backup passwords do not match.",
+    "请输入备份密码。": "Enter a backup password.",
+    "密码保护 Native 备份已保存。请妥善保管密码；旧版无法读取此格式。": (
+        "Password-protected Native backup saved. Keep the password safe; the legacy app cannot read this format."
+    ),
+    "密码保护备份导出失败。": "Failed to export the password-protected backup.",
+    "备份失败：%1": "Backup failed: %1",
+    "Native 密码保护完整备份": "Native password-protected full backup",
+    "旧版密码保护完整备份": "Legacy password-protected full backup",
+    " · 完整本机数据库约 %1 KB": " · Full local database about %1 KB",
+    " · 旧记录 %1 · 习惯 %2 · 书影音 %3 · 文件约 %4 KB": (
+        " · Legacy records %1 · Habits %2 · Media %3 · File about %4 KB"
+    ),
+    "加密备份无法预览：%1": "Cannot preview encrypted backup: %1",
+    "请检查密码或文件完整性。": "Check the password or file integrity.",
+    "密码只在本次恢复预览期间暂存在内存中；取消预览或完成恢复后会清除。": (
+        "The password stays in memory during this restore preview only and is cleared when you cancel or finish."
+    ),
+    "备份密码": "Backup password",
+    "解密并预览": "Decrypt and preview",
     "可导出新版本机数据库备份，也可恢复旧版“日常集”完整备份 JSON。备份可能含个人数据，请妥善保管。旧版迁移包请使用单独的导入入口。": (
         "Export a full backup of the new local database or restore a legacy Daily Atlas backup JSON. "
         "Backups may contain personal data; store them carefully. Use the separate import option "

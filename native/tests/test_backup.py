@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 from contextlib import closing
@@ -15,8 +16,11 @@ from wanxiang.backup import (
     MANIFEST_MEMBER,
     _database_summary,
     export_backup,
+    export_encrypted_backup,
     preview_backup,
+    preview_encrypted_backup,
     restore_backup,
+    restore_encrypted_backup,
 )
 from wanxiang.database import (
     get_app_setting,
@@ -33,6 +37,7 @@ from wanxiang.migration import (
     calculate_checksum,
     validate_package,
 )
+from wanxiang.webdav_planner import encrypt_snapshot
 
 
 class FullBackupTests(unittest.TestCase):
@@ -554,6 +559,101 @@ class FullBackupTests(unittest.TestCase):
         self.assertTrue(target.is_file())
         self.assertEqual(result["summary"]["legacy"]["keys_present"], 0)
         self.assertFalse(empty_database.exists())
+
+    def test_encrypted_v1_legacy_backup_accepts_password_and_restores(self) -> None:
+        plain = self.root / "legacy.json"
+        encrypted = self.root / "legacy.wxbackup"
+        password = "synthetic-v1-password"
+        self._write_old_full_backup(plain)
+        encrypted.write_text(
+            encrypt_snapshot(json.loads(plain.read_text(encoding="utf-8")), password),
+            encoding="utf-8",
+        )
+
+        preview = preview_encrypted_backup(encrypted, password)
+        self.assertEqual(preview["sourceFormat"], "daily-atlas-backup-v1-encrypted")
+        self.assertEqual(preview["summary"]["legacy"]["records"], 1)
+        restored = restore_encrypted_backup(encrypted, self.database_path, password)
+        self.assertEqual(restored["sourceFormat"], "daily-atlas-backup-v1-encrypted")
+        self.assertEqual(
+            load_imported_data(self.database_path)["entities"]["records"][0]["id"],
+            "legacy-record",
+        )
+
+    def test_encrypted_v1_wrong_password_and_tampering_leave_database_unchanged(self) -> None:
+        plain = self.root / "legacy.json"
+        encrypted = self.root / "legacy.wxbackup"
+        self._write_old_full_backup(plain)
+        envelope = json.loads(
+            encrypt_snapshot(
+                json.loads(plain.read_text(encoding="utf-8")), "synthetic-v1-password"
+            )
+        )
+        encrypted.write_text(json.dumps(envelope), encoding="utf-8")
+        before = hashlib.sha256(self.database_path.read_bytes()).hexdigest()
+
+        with self.assertRaises(BackupError):
+            restore_encrypted_backup(encrypted, self.database_path, "wrong-password")
+        self.assertEqual(hashlib.sha256(self.database_path.read_bytes()).hexdigest(), before)
+        self.assertEqual(self._setting(self.database_path), "before")
+
+        ciphertext = bytearray(base64.b64decode(envelope["ciphertext"], validate=True))
+        ciphertext[0] ^= 1
+        envelope["ciphertext"] = base64.b64encode(ciphertext).decode("ascii")
+        encrypted.write_text(json.dumps(envelope), encoding="utf-8")
+        with self.assertRaises(BackupError):
+            restore_encrypted_backup(encrypted, self.database_path, "synthetic-v1-password")
+        self.assertEqual(hashlib.sha256(self.database_path.read_bytes()).hexdigest(), before)
+        self.assertEqual(self._setting(self.database_path), "before")
+
+    def test_native_v2_encrypted_export_preview_and_restore_round_trip(self) -> None:
+        encrypted = self.root / "native-private.wxbak2"
+        password = "synthetic-native-password"
+        exported = export_encrypted_backup(self.database_path, encrypted, password)
+        self.assertTrue(encrypted.is_file())
+        envelope = json.loads(encrypted.read_text(encoding="utf-8"))
+        self.assertEqual(envelope["format"], "wanxiang-encrypted-backup")
+        self.assertEqual(envelope["version"], 2)
+        self.assertEqual(envelope["payloadFormat"], "wanxiang-native-backup")
+        self.assertEqual(envelope["payloadVersion"], 1)
+
+        preview = preview_encrypted_backup(encrypted, password)
+        self.assertEqual(preview["sourceFormat"], "wanxiang-native-backup-encrypted-v2")
+        self.assertEqual(preview["summary"], exported["summary"])
+        self._make_database(self.database_path, "after-export")
+        restored = restore_encrypted_backup(encrypted, self.database_path, password)
+        self.assertEqual(restored["summary"], exported["summary"])
+        self.assertEqual(self._setting(self.database_path), "before")
+
+    def test_malformed_native_envelope_does_not_change_database(self) -> None:
+        encrypted = self.root / "broken.wxbak2"
+        encrypted.write_text(
+            json.dumps({
+                "format": "wanxiang-encrypted-backup",
+                "version": 2,
+                "payloadFormat": "another-app-format",
+                "payloadVersion": 1,
+                "kdf": "PBKDF2-HMAC-SHA256",
+                "iterations": 600000,
+                "cipher": "AES-256-GCM",
+                "salt": "AA==",
+                "iv": "AA==",
+                "ciphertext": "AA==",
+            }),
+            encoding="utf-8",
+        )
+        before = hashlib.sha256(self.database_path.read_bytes()).hexdigest()
+        with self.assertRaises(BackupError):
+            restore_encrypted_backup(encrypted, self.database_path, "synthetic-password")
+        self.assertEqual(hashlib.sha256(self.database_path.read_bytes()).hexdigest(), before)
+
+    def test_native_encrypted_backup_keeps_legacy_password_length_bounds(self) -> None:
+        target = self.root / "password-bounds.wxbak2"
+        with self.assertRaisesRegex(BackupError, "至少需要 12 个字符"):
+            export_encrypted_backup(self.database_path, target, "too-short")
+        with self.assertRaisesRegex(BackupError, "256 字节"):
+            export_encrypted_backup(self.database_path, target, "😀" * 65)
+        self.assertFalse(target.exists())
 
 
 if __name__ == "__main__":

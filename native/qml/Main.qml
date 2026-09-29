@@ -161,6 +161,7 @@ ApplicationWindow {
     property bool migrationRestartRequired: false
     property var backupReport: null
     property string backupNotice: ""
+    property url pendingEncryptedBackupUrl: ""
     property string cleanupMode: "samples"
     property var cleanupPreview: ({})
     property string cleanupNotice: ""
@@ -294,6 +295,12 @@ ApplicationWindow {
 
     function showFullBackupPreview(fileUrl) {
         const result = root.backupController.previewBackup(fileUrl)
+        if (result.requiresPassword) {
+            root.pendingEncryptedBackupUrl = fileUrl
+            encryptedRestorePasswordInput.text = ""
+            encryptedRestorePasswordDialog.open()
+            return
+        }
         if (result.ok) {
             root.backupReport = result
             fullBackupPreviewDialog.open()
@@ -308,6 +315,45 @@ ApplicationWindow {
         root.backupNotice = result.ok
                 ? (result.warning || "本机完整备份已保存。请妥善保管，不要上传到公开仓库。")
                 : "备份失败：" + result.error
+        backupStatusDialog.open()
+    }
+
+    function previewEncryptedFullBackup() {
+        const password = encryptedRestorePasswordInput.text
+        encryptedRestorePasswordInput.text = ""
+        encryptedRestorePasswordDialog.close()
+        const result = root.backupController.previewEncryptedBackup(
+                    root.pendingEncryptedBackupUrl, password)
+        if (result.ok) {
+            root.backupReport = result
+            fullBackupPreviewDialog.open()
+        } else {
+            root.backupNotice = qsTr("加密备份无法预览：%1").arg(result.error || qsTr("请检查密码或文件完整性。"))
+            backupStatusDialog.open()
+        }
+        root.pendingEncryptedBackupUrl = ""
+    }
+
+    function exportEncryptedFullBackup() {
+        const password = encryptedExportPasswordInput.text
+        const confirmation = encryptedExportConfirmationInput.text
+        encryptedExportPasswordInput.text = ""
+        encryptedExportConfirmationInput.text = ""
+        encryptedExportPasswordDialog.close()
+        if (!password || password !== confirmation) {
+            root.backupNotice = password
+                    ? qsTr("两次输入的备份密码不一致。")
+                    : qsTr("请输入备份密码。")
+            backupStatusDialog.open()
+            root.pendingEncryptedBackupUrl = ""
+            return
+        }
+        const result = root.backupController.exportEncryptedBackup(
+                    root.pendingEncryptedBackupUrl, password)
+        root.pendingEncryptedBackupUrl = ""
+        root.backupNotice = result.ok
+                ? (result.warning || qsTr("密码保护 Native 备份已保存。请妥善保管密码；旧版无法读取此格式。"))
+                : qsTr("备份失败：%1").arg(result.error || qsTr("密码保护备份导出失败。"))
         backupStatusDialog.open()
     }
 
@@ -1112,9 +1158,136 @@ ApplicationWindow {
         objectName: "fullBackupOpenDialog"
         title: qsTr("选择本机完整备份")
         fileMode: FileDialog.OpenFile
-        nameFilters: [qsTr("新版完整备份 (*.wxbak)"), qsTr("旧版完整备份 JSON (*.json)")]
+        nameFilters: [qsTr("Native 密码保护备份 (*.wxbak2)"),
+                      qsTr("旧版密码保护备份 (*.wxbackup)"),
+                      qsTr("新版完整备份 (*.wxbak)"),
+                      qsTr("旧版完整备份 JSON (*.json)")]
         onAccepted: {
             root.showFullBackupPreview(selectedFile)
+        }
+    }
+
+    FileDialog {
+        id: encryptedBackupSaveDialog
+        objectName: "encryptedBackupSaveDialog"
+        title: qsTr("导出密码保护 Native 备份")
+        fileMode: FileDialog.SaveFile
+        defaultSuffix: "wxbak2"
+        nameFilters: [qsTr("Native 密码保护备份 (*.wxbak2)")]
+        onAccepted: {
+            root.pendingEncryptedBackupUrl = selectedFile
+            encryptedExportPasswordInput.text = ""
+            encryptedExportConfirmationInput.text = ""
+            encryptedExportPasswordDialog.open()
+        }
+        onRejected: root.pendingEncryptedBackupUrl = ""
+    }
+
+    Dialog {
+        id: encryptedExportPasswordDialog
+        objectName: "encryptedExportPasswordDialog"
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(460, root.width - 36)
+        title: qsTr("设置备份密码")
+        onOpened: {
+            encryptedExportPasswordInput.text = ""
+            encryptedExportConfirmationInput.text = ""
+        }
+        onClosed: {
+            encryptedExportPasswordInput.text = ""
+            encryptedExportConfirmationInput.text = ""
+        }
+        onRejected: root.pendingEncryptedBackupUrl = ""
+        contentItem: ColumnLayout {
+            spacing: 10
+            RootText {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: qsTr("Native 密码保护备份采用独立 .wxbak2 格式；旧版软件不能读取。密码只在本次导出时使用，不会保存。")
+                color: root.muted
+            }
+            TextField {
+                id: encryptedExportPasswordInput
+                objectName: "encryptedExportPasswordInput"
+                Layout.fillWidth: true
+                placeholderText: qsTr("输入备份密码")
+                echoMode: TextInput.Password
+                inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData
+            }
+            TextField {
+                id: encryptedExportConfirmationInput
+                objectName: "encryptedExportConfirmationInput"
+                Layout.fillWidth: true
+                placeholderText: qsTr("再次输入备份密码")
+                echoMode: TextInput.Password
+                inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData
+            }
+        }
+        footer: RowLayout {
+            Button {
+                objectName: "encryptedExportCancelButton"
+                text: qsTr("取消")
+                onClicked: {
+                    root.pendingEncryptedBackupUrl = ""
+                    encryptedExportPasswordDialog.close()
+                }
+            }
+            Item { Layout.fillWidth: true }
+            Button {
+                objectName: "encryptedExportConfirmButton"
+                text: qsTr("导出加密备份")
+                onClicked: root.exportEncryptedFullBackup()
+            }
+        }
+    }
+
+    Dialog {
+        id: encryptedRestorePasswordDialog
+        objectName: "encryptedRestorePasswordDialog"
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(430, root.width - 36)
+        title: qsTr("输入备份密码")
+        onOpened: encryptedRestorePasswordInput.text = ""
+        onClosed: encryptedRestorePasswordInput.text = ""
+        onRejected: {
+            root.backupController.cancelPreview()
+            root.pendingEncryptedBackupUrl = ""
+        }
+        contentItem: ColumnLayout {
+            spacing: 10
+            RootText {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: qsTr("密码只在本次恢复预览期间暂存在内存中；取消预览或完成恢复后会清除。")
+                color: root.muted
+            }
+            TextField {
+                id: encryptedRestorePasswordInput
+                objectName: "encryptedRestorePasswordInput"
+                Layout.fillWidth: true
+                placeholderText: qsTr("备份密码")
+                echoMode: TextInput.Password
+                inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData
+            }
+        }
+        footer: RowLayout {
+            Button {
+                objectName: "encryptedRestoreCancelButton"
+                text: qsTr("取消")
+                onClicked: {
+                    root.backupController.cancelPreview()
+                    root.pendingEncryptedBackupUrl = ""
+                    encryptedRestorePasswordDialog.close()
+                }
+            }
+            Item { Layout.fillWidth: true }
+            Button {
+                objectName: "encryptedRestoreContinueButton"
+                text: qsTr("解密并预览")
+                onClicked: root.previewEncryptedFullBackup()
+            }
         }
     }
 
@@ -1128,7 +1301,7 @@ ApplicationWindow {
         contentItem: ColumnLayout {
             spacing: 10
             RootText {
-                text: qsTr("可导出新版本机数据库备份，也可恢复旧版“日常集”完整备份 JSON。备份可能含个人数据，请妥善保管。旧版迁移包请使用单独的导入入口。")
+                text: qsTr("可导出普通或密码保护的 Native 完整备份，也可恢复旧版 JSON 与 .wxbackup 加密备份。密码保护的 Native 文件使用独立 .wxbak2 格式，旧版软件无法读取。备份可能含个人数据，请妥善保管。")
                 color: root.muted
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
@@ -1139,6 +1312,15 @@ ApplicationWindow {
                 onClicked: {
                     dataToolsDialog.close()
                     fullBackupSaveDialog.open()
+                }
+            }
+            Button {
+                objectName: "exportEncryptedBackupButton"
+                text: qsTr("导出密码保护备份…")
+                Layout.fillWidth: true
+                onClicked: {
+                    dataToolsDialog.close()
+                    encryptedBackupSaveDialog.open()
                 }
             }
             Button {
@@ -1273,6 +1455,7 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: Math.min(470, root.width - 36)
         title: qsTr("核对完整备份")
+        onClosed: root.backupController.cancelPreview()
         contentItem: ColumnLayout {
             spacing: 8
             RootText {
@@ -1288,21 +1471,33 @@ ApplicationWindow {
                     const summary = report.summary || ({})
                     const legacy = summary.legacy || ({})
                     const sourceFormat = report.sourceFormat || ""
-                    return (sourceFormat === "daily-atlas-backup-v1"
-                            ? qsTr("旧版完整备份")
-                            : qsTr("数据表 %1").arg(String(summary.tables || 0)))
-                            + qsTr(" · 记录 %1 · 习惯 %2 · 书影音 %3 · 本机数据约 %4 KB")
-                                    .arg(String(legacy.records || 0))
-                                    .arg(String(legacy.habits || 0))
-                                    .arg(String(legacy.media_items || 0))
-                                    .arg(String(Math.round(Number(report.databaseBytes || 0) / 1024)))
+                    const isLegacy = sourceFormat.indexOf("daily-atlas-backup-v1") === 0
+                    let label = qsTr("数据表 %1").arg(String(summary.tables || 0))
+                    if (isLegacy) {
+                        label = sourceFormat.indexOf("encrypted") >= 0
+                                ? qsTr("旧版密码保护完整备份")
+                                : qsTr("旧版完整备份")
+                    } else if (sourceFormat.indexOf("encrypted-v2") >= 0) {
+                        label = qsTr("Native 密码保护完整备份")
+                    }
+                    const databaseSize = String(
+                                Math.round(Number(report.databaseBytes || 0) / 1024))
+                    if (!isLegacy) {
+                        return label + qsTr(" · 完整本机数据库约 %1 KB").arg(databaseSize)
+                    }
+                    return label + qsTr(" · 旧记录 %1 · 习惯 %2 · 书影音 %3 · 文件约 %4 KB")
+                            .arg(String(legacy.records || 0))
+                            .arg(String(legacy.habits || 0))
+                            .arg(String(legacy.media_items || 0))
+                            .arg(databaseSize)
                 }
                 color: root.muted
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
             }
             RootText {
-                text: (root.backupReport && root.backupReport.sourceFormat === "daily-atlas-backup-v1"
+                text: (root.backupReport
+                       && String(root.backupReport.sourceFormat || "").indexOf("daily-atlas-backup-v1") === 0
                        ? qsTr("旧版备份将替换生活记录和刊期内容；本机独立设置及新闻问题簿会保留，依附旧记录的新版模块覆盖会清除。")
                        : qsTr("恢复会完整替换当前本机数据库。"))
                        + qsTr("确认后应用会自动关闭并重新打开；执行前会再次核验文件，取消不会更改数据库。")

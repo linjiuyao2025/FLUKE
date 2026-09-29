@@ -48,6 +48,7 @@ from wanxiang.migration import (
     calculate_checksum,
     validate_package,
 )
+from wanxiang.webdav_planner import encrypt_snapshot
 
 
 def _migration_package(
@@ -171,6 +172,21 @@ class BackupQmlIntegrationTests(unittest.TestCase):
         self.preview_summary = self.window.findChild(QObject, "fullBackupPreviewSummary")
         self.cancel_button = self.window.findChild(QObject, "backupPreviewCancelButton")
         self.confirm_button = self.window.findChild(QObject, "backupPreviewConfirmButton")
+        self.encrypted_restore_dialog = self.window.findChild(
+            QObject, "encryptedRestorePasswordDialog"
+        )
+        self.encrypted_restore_password_input = self.window.findChild(
+            QObject, "encryptedRestorePasswordInput"
+        )
+        self.encrypted_restore_continue = self.window.findChild(
+            QObject, "encryptedRestoreContinueButton"
+        )
+        self.encrypted_export_password_input = self.window.findChild(
+            QObject, "encryptedExportPasswordInput"
+        )
+        self.encrypted_export_confirmation_input = self.window.findChild(
+            QObject, "encryptedExportConfirmationInput"
+        )
         for label, item in (
             ("backup file picker", self.file_picker),
             ("backup save picker", self.save_picker),
@@ -178,6 +194,11 @@ class BackupQmlIntegrationTests(unittest.TestCase):
             ("backup preview summary", self.preview_summary),
             ("backup cancel button", self.cancel_button),
             ("backup confirm button", self.confirm_button),
+            ("encrypted restore dialog", self.encrypted_restore_dialog),
+            ("encrypted restore password", self.encrypted_restore_password_input),
+            ("encrypted restore continue", self.encrypted_restore_continue),
+            ("encrypted export password", self.encrypted_export_password_input),
+            ("encrypted export confirmation", self.encrypted_export_confirmation_input),
         ):
             self.assertIsNotNone(item, f"production {label} was not found")
 
@@ -200,6 +221,9 @@ class BackupQmlIntegrationTests(unittest.TestCase):
         for name in (
             "migration", "finance", "backup", "file_picker", "save_picker",
             "preview_dialog", "preview_summary", "cancel_button", "confirm_button",
+            "encrypted_restore_dialog", "encrypted_restore_password_input",
+            "encrypted_restore_continue", "encrypted_export_password_input",
+            "encrypted_export_confirmation_input",
         ):
             setattr(self, name, None)
         gc.collect()
@@ -234,6 +258,17 @@ class BackupQmlIntegrationTests(unittest.TestCase):
         QTest.qWait(50)
         self.assertTrue(self.preview_dialog.property("visible"))
 
+    def _show_encrypted_password_prompt(self, backup_path: Path) -> None:
+        invoked = QMetaObject.invokeMethod(
+            self.window,
+            "showFullBackupPreview",
+            Qt.ConnectionType.DirectConnection,
+            Q_ARG("QVariant", QUrl.fromLocalFile(str(backup_path))),
+        )
+        self.assertTrue(invoked, "the encrypted backup handler was not invokable")
+        QTest.qWait(50)
+        self.assertTrue(self.encrypted_restore_dialog.property("visible"))
+
     def _click(self, button: QObject) -> None:
         self.assertTrue(
             QMetaObject.invokeMethod(button, "click", Qt.ConnectionType.DirectConnection)
@@ -260,7 +295,9 @@ class BackupQmlIntegrationTests(unittest.TestCase):
         self.assertEqual(report["sourceFormat"], "daily-atlas-backup-v1")
         self.assertIn("旧版完整备份", str(self.preview_summary.property("text")))
         self.assertIn("记录 1", str(self.preview_summary.property("text")))
-        self._click(self.cancel_button)
+        QTest.keyClick(self.window, Qt.Key.Key_Escape)
+        QTest.qWait(50)
+        self.assertFalse(self.preview_dialog.property("visible"))
         self.assertFalse(self.preview_dialog.property("visible"))
         self.assertFalse(self.backup.applyPreview()["ok"], "cancel must clear the pending restore")
         after_cancel = load_imported_data(self.database_path)
@@ -335,6 +372,75 @@ class BackupQmlIntegrationTests(unittest.TestCase):
 
         after = load_imported_data(self.database_path)
         self.assertEqual(after["entities"]["records"][0]["id"], "current-before-restore")
+
+    def test_encrypted_legacy_preview_cancel_clears_password_then_confirm_restores(self) -> None:
+        payload_path = self.temp_path / "legacy.json"
+        encrypted_path = self.temp_path / "legacy.wxbackup"
+        password = "synthetic-legacy-password"
+        _write_legacy_backup(payload_path)
+        encrypted_path.write_text(
+            encrypt_snapshot(json.loads(payload_path.read_text(encoding="utf-8")), password),
+            encoding="utf-8",
+        )
+        before = self.database_path.read_bytes()
+
+        self._show_encrypted_password_prompt(encrypted_path)
+        self.encrypted_restore_password_input.setProperty("text", password)
+        self._click(self.encrypted_restore_continue)
+        self.assertFalse(self.encrypted_restore_dialog.property("visible"))
+        self.assertEqual(self.encrypted_restore_password_input.property("text"), "")
+        self.assertTrue(self.preview_dialog.property("visible"))
+        self.assertEqual(
+            self.window.property("backupReport")["sourceFormat"],
+            "daily-atlas-backup-v1-encrypted",
+        )
+        self.assertEqual(self.backup._pending_encrypted_password, password)
+
+        self._click(self.cancel_button)
+        self.assertIsNone(self.backup._pending_backup)
+        self.assertIsNone(self.backup._pending_encrypted_password)
+        self.assertFalse(self.backup.applyPreview()["ok"])
+        self.assertEqual(self.database_path.read_bytes(), before)
+
+        self._show_encrypted_password_prompt(encrypted_path)
+        self.encrypted_restore_password_input.setProperty("text", password)
+        self._click(self.encrypted_restore_continue)
+        self.assertTrue(self.preview_dialog.property("visible"))
+        self._click(self.confirm_button)
+        self.assertTrue(self.backup.restart_requested)
+        self.assertIsNone(self.backup._pending_encrypted_password)
+        restored = load_imported_data(self.database_path)
+        self.assertEqual(restored["entities"]["records"][0]["id"], "legacy-restored-row")
+
+    def test_encrypted_native_export_uses_qml_password_controls_and_v2_format(self) -> None:
+        target = self.temp_path / "native-ui-export.wxbak2"
+        password = "synthetic-native-password"
+        self.window.setProperty("pendingEncryptedBackupUrl", QUrl.fromLocalFile(str(target)))
+        self.encrypted_export_password_input.setProperty("text", password)
+        self.encrypted_export_confirmation_input.setProperty("text", password)
+        invoked = QMetaObject.invokeMethod(
+            self.window,
+            "exportEncryptedFullBackup",
+            Qt.ConnectionType.DirectConnection,
+        )
+        self.assertTrue(invoked, "the encrypted backup QML handler was not invokable")
+        QTest.qWait(50)
+        self.assertTrue(target.is_file())
+        envelope = json.loads(target.read_text(encoding="utf-8"))
+        self.assertEqual(envelope["version"], 2)
+        self.assertEqual(envelope["payloadFormat"], BACKUP_FORMAT)
+        self.assertEqual(self.encrypted_export_password_input.property("text"), "")
+        self.assertEqual(self.encrypted_export_confirmation_input.property("text"), "")
+        self.assertIn("密码保护 Native 备份已保存", str(self.window.property("backupNotice")))
+        self._show_encrypted_password_prompt(target)
+        self.encrypted_restore_password_input.setProperty("text", password)
+        self._click(self.encrypted_restore_continue)
+        self.assertTrue(self.preview_dialog.property("visible"))
+        summary = str(self.preview_summary.property("text"))
+        self.assertIn("Native 密码保护完整备份", summary)
+        self.assertIn("完整本机数据库", summary)
+        self.assertNotIn("旧记录 0", summary)
+        self._click(self.cancel_button)
 
     def test_twentieth_money_record_reminds_until_full_backup_is_exported(self) -> None:
         today = date.today().isoformat()

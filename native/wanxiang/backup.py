@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import binascii
 from datetime import datetime
 import hashlib
 import json
@@ -12,6 +14,9 @@ import tempfile
 from typing import Any, Callable
 import zipfile
 
+from cryptography.exceptions import InvalidTag
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
 from .database import SCHEMA_VERSION, initialize_schema, load_imported_data
 from .migration import (
     PACKAGE_FORMAT,
@@ -21,6 +26,7 @@ from .migration import (
     calculate_checksum,
     validate_package,
 )
+from .webdav_planner import CIPHER, FORMAT as ENCRYPTED_FORMAT, ITERATIONS, KDF
 
 
 BACKUP_FORMAT = "wanxiang-native-backup"
@@ -30,6 +36,10 @@ MANIFEST_MEMBER = "manifest.json"
 MAX_DATABASE_BYTES = 50 * 1024 * 1024
 MAX_MANIFEST_BYTES = 64 * 1024
 MAX_PACKAGE_BYTES = MAX_DATABASE_BYTES + 128 * 1024
+MAX_ENCRYPTED_PACKAGE_BYTES = 70 * 1024 * 1024
+MAX_PASSPHRASE_BYTES = 256
+ENCRYPTED_NATIVE_VERSION = 2
+ENCRYPTED_NATIVE_SUFFIX = ".wxbak2"
 
 _MIGRATION_TABLES = {
     "schema_info",
@@ -277,6 +287,229 @@ def export_backup(
             "sha256": manifest["sha256"],
             "summary": manifest["summary"],
         }
+
+
+def _validated_passphrase(passphrase: str) -> bytes:
+    if not isinstance(passphrase, str) or len(passphrase) < 12:
+        raise BackupError("备份密码至少需要 12 个字符。")
+    try:
+        encoded = passphrase.encode("utf-8", errors="strict")
+    except UnicodeError as exc:
+        raise BackupError("备份密码编码无效。") from exc
+    if len(encoded) > MAX_PASSPHRASE_BYTES:
+        raise BackupError("备份密码须为至少 12 个字符且不超过 256 字节。")
+    return encoded
+
+
+def _parse_encrypted_envelope(raw: bytes) -> dict[str, Any]:
+    if not raw or len(raw) > MAX_ENCRYPTED_PACKAGE_BYTES:
+        raise BackupError("加密备份为空或超过 70 MB。")
+    try:
+        envelope = json.loads(
+            raw.decode("utf-8", errors="strict"),
+            object_pairs_hook=_reject_duplicate_keys,
+            parse_constant=_reject_constant,
+        )
+    except BackupError:
+        raise
+    except (UnicodeError, json.JSONDecodeError, TypeError) as exc:
+        raise BackupError("加密备份不是有效的 UTF-8 JSON。") from exc
+    if not isinstance(envelope, dict):
+        raise BackupError("加密备份封套结构无效。")
+    version = envelope.get("version")
+    if envelope.get("format") != ENCRYPTED_FORMAT or type(version) is not int or version not in (1, 2):
+        raise BackupError("这不是受支持的密码保护备份。")
+    if (
+        envelope.get("kdf") != KDF
+        or envelope.get("iterations") != ITERATIONS
+        or envelope.get("cipher") != CIPHER
+    ):
+        raise BackupError("加密备份使用了不受支持的算法参数。")
+    if version == 2 and (
+        envelope.get("payloadFormat") != BACKUP_FORMAT
+        or type(envelope.get("payloadVersion")) is not int
+        or envelope.get("payloadVersion") != BACKUP_VERSION
+    ):
+        raise BackupError("Native 加密备份的载荷格式无效。")
+    return envelope
+
+
+def _decrypt_encrypted_bytes(raw: bytes, passphrase: str) -> tuple[int, dict[str, Any] | bytes]:
+    password = _validated_passphrase(passphrase)
+    envelope = _parse_encrypted_envelope(raw)
+    if envelope["version"] == 1:
+        # Keep the legacy format exactly as the old application wrote it.
+        from .webdav_planner import WebDavPlannerError, decrypt_snapshot
+
+        try:
+            return 1, decrypt_snapshot(raw, passphrase)
+        except WebDavPlannerError as exc:
+            raise BackupError("备份密码错误或文件已损坏。") from exc
+
+    encoded = [envelope.get(key) for key in ("salt", "iv", "ciphertext")]
+    if any(not isinstance(item, str) for item in encoded):
+        raise BackupError("加密备份缺少密文数据。")
+    try:
+        salt, iv, ciphertext = (
+            base64.b64decode(item, validate=True) for item in encoded
+        )
+    except (binascii.Error, ValueError) as exc:
+        raise BackupError("加密备份的 Base64 数据无效。") from exc
+    if len(salt) != 16 or len(iv) != 12 or not 16 <= len(ciphertext) <= MAX_PACKAGE_BYTES + 16:
+        raise BackupError("加密备份的密文大小无效。")
+    try:
+        key = hashlib.pbkdf2_hmac("sha256", password, salt, ITERATIONS, 32)
+        plaintext = AESGCM(key).decrypt(iv, ciphertext, None)
+    except InvalidTag as exc:
+        raise BackupError("无法解密备份，请检查密码或文件完整性。") from exc
+    if not plaintext or len(plaintext) > MAX_PACKAGE_BYTES:
+        raise BackupError("解密后的 Native 备份为空或超过 50 MB。")
+    return 2, plaintext
+
+
+def _encrypted_payload_path(
+    package_path: str | Path, passphrase: str, temporary_directory: str | Path
+) -> tuple[Path, int]:
+    source = Path(package_path).expanduser().resolve()
+    try:
+        size = source.stat().st_size
+        if size <= 0 or size > MAX_ENCRYPTED_PACKAGE_BYTES:
+            raise BackupError("加密备份为空或超过 70 MB。")
+        with source.open("rb") as stream:
+            raw = stream.read(MAX_ENCRYPTED_PACKAGE_BYTES + 1)
+        if len(raw) > MAX_ENCRYPTED_PACKAGE_BYTES:
+            raise BackupError("加密备份为空或超过 70 MB。")
+    except BackupError:
+        raise
+    except OSError as exc:
+        raise BackupError("加密备份文件无法读取。") from exc
+    version, payload = _decrypt_encrypted_bytes(raw, passphrase)
+    if version == 1:
+        if not isinstance(payload, dict):
+            raise BackupError("旧版加密备份明文必须是 JSON 对象。")
+        try:
+            plaintext = json.dumps(
+                payload, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+            ).encode("utf-8", errors="strict")
+        except (UnicodeError, TypeError, ValueError) as exc:
+            raise BackupError("旧版加密备份明文无法保存。") from exc
+        if not plaintext or len(plaintext) > MAX_DATABASE_BYTES:
+            raise BackupError("旧版加密备份为空或超过 50 MB。")
+        suffix = ".json"
+    else:
+        if not isinstance(payload, bytes) or not payload.startswith(b"PK\x03\x04"):
+            raise BackupError("Native 加密备份载荷不是支持的 ZIP 包。")
+        plaintext = payload
+        suffix = ".wxbak"
+    target = Path(temporary_directory) / f"decrypted{suffix}"
+    try:
+        target.write_bytes(plaintext)
+    except OSError as exc:
+        raise BackupError("解密备份暂存失败；当前数据库未修改。") from exc
+    return target, version
+
+
+def encrypted_backup_version(package_path: str | Path) -> int | None:
+    """Identify supported encrypted backup extensions without reading their contents."""
+    suffix = Path(package_path).suffix.lower()
+    if suffix == ".wxbackup":
+        return 1
+    if suffix == ENCRYPTED_NATIVE_SUFFIX:
+        return ENCRYPTED_NATIVE_VERSION
+    return None
+
+
+def export_encrypted_backup(
+    database_path: str | Path,
+    target_path: str | Path,
+    passphrase: str,
+    *,
+    prepare_snapshot: Callable[[Path], None] | None = None,
+) -> dict[str, Any]:
+    """Export the native SQLite archive in a password-protected v2 envelope."""
+    password = _validated_passphrase(passphrase)
+    target = Path(target_path).expanduser().resolve()
+    if target.suffix.lower() != ENCRYPTED_NATIVE_SUFFIX:
+        raise BackupError("Native 密码保护备份请使用 .wxbak2 扩展名。")
+    if Path(database_path).expanduser().resolve() == target:
+        raise BackupError("备份文件不能覆盖正在使用的数据库。")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    package_temp: str | None = None
+    with tempfile.TemporaryDirectory(prefix="fluke-encrypted-backup-") as temp_dir:
+        plain_path = Path(temp_dir) / "native.wxbak"
+        result = export_backup(
+            database_path,
+            plain_path,
+            prepare_snapshot=prepare_snapshot,
+        )
+        plaintext = plain_path.read_bytes()
+        if not plaintext or len(plaintext) > MAX_PACKAGE_BYTES:
+            raise BackupError("Native 完整备份为空或超过 50 MB。")
+        salt = os.urandom(16)
+        iv = os.urandom(12)
+        key = hashlib.pbkdf2_hmac("sha256", password, salt, ITERATIONS, 32)
+        ciphertext = AESGCM(key).encrypt(iv, plaintext, None)
+        envelope = {
+            "format": ENCRYPTED_FORMAT,
+            "version": ENCRYPTED_NATIVE_VERSION,
+            "payloadFormat": BACKUP_FORMAT,
+            "payloadVersion": BACKUP_VERSION,
+            "kdf": KDF,
+            "iterations": ITERATIONS,
+            "cipher": CIPHER,
+            "salt": base64.b64encode(salt).decode("ascii"),
+            "iv": base64.b64encode(iv).decode("ascii"),
+            "ciphertext": base64.b64encode(ciphertext).decode("ascii"),
+        }
+        raw = json.dumps(envelope, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        if len(raw) > MAX_ENCRYPTED_PACKAGE_BYTES:
+            raise BackupError("密码保护备份超过 70 MB。")
+        fd, package_temp = tempfile.mkstemp(
+            prefix=f".{target.name}.", suffix=".tmp", dir=target.parent
+        )
+        os.close(fd)
+        try:
+            with open(package_temp, "wb") as stream:
+                stream.write(raw)
+            os.replace(package_temp, target)
+            package_temp = None
+        except OSError as exc:
+            raise BackupError("密码保护备份写入失败；已有文件未被替换。") from exc
+        finally:
+            if package_temp and os.path.exists(package_temp):
+                os.unlink(package_temp)
+        return {**result, "path": str(target)}
+
+
+def preview_encrypted_backup(package_path: str | Path, passphrase: str) -> dict[str, Any]:
+    """Decrypt and validate without changing the current database."""
+    source = Path(package_path).expanduser().resolve()
+    with tempfile.TemporaryDirectory(prefix="fluke-encrypted-preview-") as temp_dir:
+        plain_path, version = _encrypted_payload_path(source, passphrase, temp_dir)
+        result = preview_backup(plain_path)
+    result["path"] = str(source)
+    result["sourceFormat"] = (
+        "daily-atlas-backup-v1-encrypted"
+        if version == 1
+        else "wanxiang-native-backup-encrypted-v2"
+    )
+    result["encryptedVersion"] = version
+    return result
+
+
+def restore_encrypted_backup(
+    package_path: str | Path, database_path: str | Path, passphrase: str
+) -> dict[str, Any]:
+    """Decrypt, fully validate, then restore using the existing atomic paths."""
+    with tempfile.TemporaryDirectory(prefix="fluke-encrypted-restore-") as temp_dir:
+        plain_path, version = _encrypted_payload_path(package_path, passphrase, temp_dir)
+        result = restore_backup(plain_path, database_path)
+    result["sourceFormat"] = (
+        "daily-atlas-backup-v1-encrypted"
+        if version == 1
+        else "wanxiang-native-backup-encrypted-v2"
+    )
+    return result
 
 
 def _check_manifest(manifest: dict[str, Any]) -> dict[str, Any]:

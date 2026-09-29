@@ -31,7 +31,16 @@ from PySide6.QtQuickControls2 import QQuickStyle
 from PySide6.QtWidgets import QApplication, QMessageBox, QStyle
 
 from migrate_legacy import default_database_path
-from wanxiang.backup import BackupError, export_backup, preview_backup, restore_backup
+from wanxiang.backup import (
+    BackupError,
+    export_backup,
+    export_encrypted_backup,
+    encrypted_backup_version,
+    preview_backup,
+    preview_encrypted_backup,
+    restore_backup,
+    restore_encrypted_backup,
+)
 from wanxiang.data_cleanup import DataCleanupError, LocalDataCleanupRepository
 from wanxiang.database import (
     get_app_setting,
@@ -313,6 +322,7 @@ class BackupBridge(QObject):
         self._database_path = database_path
         self._finance_bridge = finance_bridge
         self._pending_backup: Path | None = None
+        self._pending_encrypted_password: str | None = None
         self._restart_requested = False
 
     @Slot(QUrl, result="QVariant")
@@ -350,24 +360,96 @@ class BackupBridge(QObject):
             "warning": warning,
         }
 
+    @Slot(QUrl, str, result="QVariant")
+    def exportEncryptedBackup(self, file_url: QUrl, passphrase: str) -> dict[str, object]:
+        if not isinstance(file_url, QUrl) or not file_url.isLocalFile():
+            return {"ok": False, "error": "请选择本机位置保存密码保护备份。"}
+        target = Path(file_url.toLocalFile())
+
+        def prepare_snapshot(path: Path) -> None:
+            FinanceRepository(path).mark_backup_exported()
+
+        try:
+            result = export_encrypted_backup(
+                self._database_path,
+                target,
+                passphrase,
+                prepare_snapshot=prepare_snapshot,
+            )
+        except (BackupError, FinanceRepositoryError, OSError, RuntimeError,
+                sqlite3.Error, TypeError, ValueError) as exc:
+            return {"ok": False, "error": str(exc) or "密码保护备份导出失败。"}
+
+        counters = self._finance_bridge.markBackupExported()
+        warning = ""
+        if not counters.get("ok"):
+            warning = "备份已保存，但导出计数未能重置：" + str(
+                counters.get("error") or "本机状态无法写入。"
+            )
+        self.stateChanged.emit()
+        return {
+            "ok": True,
+            "path": result["path"],
+            "summary": result["summary"],
+            "warning": warning,
+        }
+
     @Slot(QUrl, result="QVariant")
     def previewBackup(self, file_url: QUrl) -> dict[str, object]:
+        self._pending_backup = None
+        self._pending_encrypted_password = None
         if not isinstance(file_url, QUrl) or not file_url.isLocalFile():
-            self._pending_backup = None
             return {"ok": False, "error": "请选择本机万象来信完整备份文件。"}
         path = Path(file_url.toLocalFile())
+        encrypted_version = encrypted_backup_version(path)
+        if encrypted_version is not None:
+            return {
+                "ok": False,
+                "requiresPassword": True,
+                "encryptedVersion": encrypted_version,
+            }
         try:
             result = preview_backup(path)
         except (BackupError, OSError, RuntimeError, sqlite3.Error, TypeError, ValueError) as exc:
-            self._pending_backup = None
             return {"ok": False, "error": str(exc) or "完整备份无法读取。"}
         self._pending_backup = path
+        return {"ok": True, **result}
+
+    @Slot(QUrl, str, result="QVariant")
+    def previewEncryptedBackup(self, file_url: QUrl, passphrase: str) -> dict[str, object]:
+        self._pending_backup = None
+        self._pending_encrypted_password = None
+        if not isinstance(file_url, QUrl) or not file_url.isLocalFile():
+            return {"ok": False, "error": "请选择本机密码保护备份文件。"}
+        path = Path(file_url.toLocalFile())
+        try:
+            result = preview_encrypted_backup(path, passphrase)
+        except (BackupError, OSError, RuntimeError, sqlite3.Error, TypeError, ValueError) as exc:
+            return {"ok": False, "error": str(exc) or "密码保护备份无法读取。"}
+        self._pending_backup = path
+        self._pending_encrypted_password = passphrase
         return {"ok": True, **result}
 
     @Slot(result="QVariant")
     def applyPreview(self) -> dict[str, object]:
         if self._pending_backup is None:
             return {"ok": False, "error": "请先选择并校验一份完整备份。"}
+        encrypted_password = self._pending_encrypted_password
+        if encrypted_password is not None:
+            pending_backup = self._pending_backup
+            self._pending_backup = None
+            self._pending_encrypted_password = None
+            try:
+                result = restore_encrypted_backup(
+                    pending_backup,
+                    self._database_path,
+                    encrypted_password,
+                )
+            except (BackupError, OSError, RuntimeError, sqlite3.Error, TypeError, ValueError) as exc:
+                return {"ok": False, "error": str(exc) or "恢复失败，当前数据库未替换。"}
+            self._restart_requested = True
+            self.restoreRequested.emit()
+            return {"ok": True, "path": result["path"], "summary": result["summary"]}
         try:
             result = restore_backup(self._pending_backup, self._database_path)
         except (BackupError, OSError, RuntimeError, sqlite3.Error, TypeError, ValueError) as exc:
@@ -380,6 +462,7 @@ class BackupBridge(QObject):
     @Slot()
     def cancelPreview(self) -> None:
         self._pending_backup = None
+        self._pending_encrypted_password = None
 
     @property
     def restart_requested(self) -> bool:
