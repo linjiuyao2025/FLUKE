@@ -1,6 +1,10 @@
 # FLUKE Windows 桌面版
 
-本页说明仍公开稳定的 FLUKE Electron v1.0.3，用于旧版维护和回退。FLUKE Native 正在迁移到 Python + PySide6 + Qt Quick，目前尚未发布安装包。旧版 Electron 的显示名称、应用标识、安装包文件名和本机数据目录会继续保留历史标识，以兼容现有安装、更新和记录。
+本页说明 FLUKE Windows 桌面版的下载与维护。稳定版仍为 Electron v1.0.3；Python + PySide6 + Qt Quick Native v0.1.0 Preview 1 已作为预览安装包单独发布。Native 仍在逐阶段对照旧版验收，尚不等同于完整替代版。旧版 Electron 的显示名称、应用标识、安装包文件名和本机数据目录会继续保留历史标识，以兼容现有安装、更新和记录。
+
+## Native 预览版
+
+从 [FLUKE Native v0.1.0 Preview 1 发布页](https://github.com/linjiuyao2025/FLUKE/releases/tag/native-v0.1.0-preview.1) 下载 Windows 安装包。安装器使用新的 FLUKE 品牌画面，并与旧版 Electron 使用不同的安装标识。Native 预览版尚无整应用内更新功能；新版本需从 GitHub 发布页手动下载。迁移验收完成前，请保留旧版、旧数据和可用备份。
 
 旧版页面、字体和资源会随应用一起打包。日常记录继续保存在本机；天气查询和 Spotify 播放需要联网。
 

@@ -1,6 +1,6 @@
-# FLUKE 更新与回退说明（旧版 Electron）
+# FLUKE 更新与回退说明
 
-本页适用于 FLUKE 旧版 Electron v1.0.3 的 GitHub Releases 更新和本机页面回退。FLUKE Native 尚未发布，也没有 Native 整应用更新器。
+本页的自动更新和本机页面回退流程适用于 FLUKE 旧版 Electron v1.0.3。FLUKE Native v0.1.0 Preview 1 是单独的预览安装包，暂不支持整应用自动更新；新版本需手动从 [GitHub 发布页](https://github.com/linjiuyao2025/FLUKE/releases) 下载。迁移验收完成前，Electron 仍是稳定回退版本。
 
 ## GitHub Releases
 

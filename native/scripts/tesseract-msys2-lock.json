@@ -1,0 +1,1135 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "msys2-mingw64-2026-09-29",
+  "capturedAt": "2026-09-29",
+  "repository": "https://mirror.msys2.org/mingw/mingw64/",
+  "sourceRepository": "https://mirror.msys2.org/mingw/sources/",
+  "rootPackage": "mingw-w64-x86_64-tesseract-ocr",
+  "packages": [
+    {
+      "name": "mingw-w64-x86_64-brotli",
+      "version": "1.2.0-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-brotli-1.2.0-1-any.pkg.tar.zst",
+      "binarySha256": "f5f2f7e723a08378241d15f0537386950c1a48e2d82bc47bedd632bd61852aba",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-brotli-1.2.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-brotli",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libbrotlicommon.dll",
+        "mingw64/bin/libbrotlidec.dll",
+        "mingw64/bin/libbrotlienc.dll",
+        "mingw64/share/licenses/brotli/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-bzip2",
+      "version": "1.0.8-4",
+      "license": "custom",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-bzip2-1.0.8-4-any.pkg.tar.zst",
+      "binarySha256": "123768f30ae14ba654a6feb70f8526146a331bc85f831a91a549ffb3f6cbffc7",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-bzip2-1.0.8-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-bzip2",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libbz2-1.dll",
+        "mingw64/share/licenses/bzip2/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-c-ares",
+      "version": "1.34.8-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-c-ares-1.34.8-1-any.pkg.tar.zst",
+      "binarySha256": "34c1b4c196f52bd3f0c0b4ac652fabd2325086183c000baa10f721c815b29542",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-c-ares-1.34.8-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-c-ares",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libcares-2.dll",
+        "mingw64/share/licenses/c-ares/LICENSE.md"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-ca-certificates",
+      "version": "20260816-1",
+      "license": "MPL OR GPL",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-ca-certificates-20260816-1-any.pkg.tar.zst",
+      "binarySha256": "6030a6e98afd408164e9fdf2b76b53492189b57c6d2ec3b460fcb4d9d249e1ed",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-ca-certificates-20260816-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-ca-certificates",
+      "depends": [
+        "mingw-w64-x86_64-p11-kit"
+      ],
+      "runtimeFiles": [
+        "mingw64/etc/ssl/cert.pem",
+        "mingw64/etc/ssl/certs/ca-bundle.crt",
+        "mingw64/etc/ssl/certs/ca-bundle.trust.crt"
+      ],
+      "sourceSha256": "b383044865046a1e8e6f8101d25f7d276ca5080a6673c2541bc48886aebcd8a1",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-cc-libs",
+      "version": "16.2.0-4",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-cc-libs-16.2.0-4-any.pkg.tar.zst",
+      "binarySha256": "691c243e8df80ab075cabf79236b9e2281907fb1f3ac7206fe3a2d71269e4fa2",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-cc-libs",
+      "depends": [
+        "mingw-w64-x86_64-libatomic",
+        "mingw-w64-x86_64-libgcc",
+        "mingw-w64-x86_64-libquadmath",
+        "mingw-w64-x86_64-libstdc++"
+      ],
+      "runtimeFiles": [],
+      "sourceSha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "sourceRequired": true,
+      "shipped": false,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-curl",
+      "version": "8.22.0-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-curl-8.22.0-1-any.pkg.tar.zst",
+      "binarySha256": "e8fbff7506b9d1ce2d1bbc646dce64005099ce3d2f894bb8e81047200f403277",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-curl-8.22.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-curl",
+      "depends": [
+        "mingw-w64-x86_64-brotli",
+        "mingw-w64-x86_64-c-ares",
+        "mingw-w64-x86_64-ca-certificates",
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-libidn2",
+        "mingw-w64-x86_64-libpsl",
+        "mingw-w64-x86_64-libssh2",
+        "mingw-w64-x86_64-nghttp2",
+        "mingw-w64-x86_64-nghttp3",
+        "mingw-w64-x86_64-ngtcp2",
+        "mingw-w64-x86_64-openssl",
+        "mingw-w64-x86_64-zlib",
+        "mingw-w64-x86_64-zstd"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libcurl-4.dll",
+        "mingw64/share/licenses/curl/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-expat",
+      "version": "2.8.5-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-expat-2.8.5-1-any.pkg.tar.zst",
+      "binarySha256": "254d05d2e89acbbb998636dd478fc1d640ce3ec4e63326f17398958d2b68dfeb",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-expat-2.8.5-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-expat",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libexpat-1.dll",
+        "mingw64/share/licenses/expat/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-gettext-runtime",
+      "version": "1.0-1",
+      "license": "GPL-3.0-or-later AND LGPL-2.1-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-gettext-runtime-1.0-1-any.pkg.tar.zst",
+      "binarySha256": "be68d7f260633284b910c588c6d82ee304a81c8817a686d2cd9df83f872c27af",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gettext-1.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-gettext-runtime",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-libiconv"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libasprintf-0.dll",
+        "mingw64/bin/libintl-8.dll",
+        "mingw64/share/licenses/gettext-runtime/COPYING",
+        "mingw64/share/licenses/gettext-runtime/intl/COPYING.LIB",
+        "mingw64/share/licenses/gettext-runtime/libasprintf/COPYING",
+        "mingw64/share/licenses/gettext-runtime/libasprintf/COPYING.LIB"
+      ],
+      "sourceSha256": "cca0d0c8f60353faccc5ad40405240014e4a7ccc8b1c6ca9f4626aef3097d26e",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-giflib",
+      "version": "6.1.3-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-giflib-6.1.3-1-any.pkg.tar.zst",
+      "binarySha256": "bfa540ab9892bbc5161e3f81fcfb0ca71f44bd2e00478b5df79f899825c523f5",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-giflib-6.1.3-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-giflib",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libgif-7.dll"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-gmp",
+      "version": "6.3.0-2",
+      "license": "LGPL3 OR GPL",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-gmp-6.3.0-2-any.pkg.tar.zst",
+      "binarySha256": "8924433974c4add46cb46ea4f6ef283b5c5139d3f552375115b5580f855015cc",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gmp-6.3.0-2.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-gmp",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libgmp-10.dll",
+        "mingw64/bin/libgmpxx-4.dll"
+      ],
+      "sourceSha256": "f288f944fd9609db220bcf6a8dd0703a5674eeb906ef35eb8485bb8192135994",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-gnutls",
+      "version": "3.8.13-3",
+      "license": "GPL-3.0-or-later OR LGPL-2.1-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-gnutls-3.8.13-3-any.pkg.tar.zst",
+      "binarySha256": "0d5a373ac558af20dc0a46d249e99f8a3b3d3562ae013e73f00642dc3bd118cf",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gnutls-3.8.13-3.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-gnutls",
+      "depends": [
+        "mingw-w64-x86_64-brotli",
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-gettext-runtime",
+        "mingw-w64-x86_64-gmp",
+        "mingw-w64-x86_64-libidn2",
+        "mingw-w64-x86_64-libtasn1",
+        "mingw-w64-x86_64-libunistring",
+        "mingw-w64-x86_64-libwinpthread",
+        "mingw-w64-x86_64-nettle",
+        "mingw-w64-x86_64-p11-kit",
+        "mingw-w64-x86_64-zlib",
+        "mingw-w64-x86_64-zstd"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libgnutls-30.dll",
+        "mingw64/bin/libgnutls-openssl-27.dll",
+        "mingw64/bin/libgnutlsxx-30.dll"
+      ],
+      "sourceSha256": "7889cd73810d909642c0f122b40cfe0eaec5b0d2985804f145cd90c6a51c0435",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-icu",
+      "version": "78.3-4",
+      "license": "ICU",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-icu-78.3-4-any.pkg.tar.zst",
+      "binarySha256": "8486a018aca2e56d1fcd2eed2069011f2e1da02e03af72b38916ee06cbe7203f",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-icu-78.3-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-icu",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libicudt78.dll",
+        "mingw64/bin/libicuin78.dll",
+        "mingw64/bin/libicuio78.dll",
+        "mingw64/bin/libicutest78.dll",
+        "mingw64/bin/libicutu78.dll",
+        "mingw64/bin/libicuuc78.dll"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-jbigkit",
+      "version": "2.1-6",
+      "license": "GPL-2.0",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-jbigkit-2.1-6-any.pkg.tar.zst",
+      "binarySha256": "3db9e32abca5d208920a096e5ae01952f2d8a361780428b9646b6da6750f7321",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-jbigkit-2.1-6.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-jbigkit",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libjbig-0.dll",
+        "mingw64/share/licenses/jbigkit/COPYING"
+      ],
+      "sourceSha256": "64757867df26308c14d22b184aaecb43742c25ee8d24f18da51e3d1e09be8ac2",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-lcms2",
+      "version": "2.19.1-1",
+      "license": "MIT AND GPL-3.0-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-lcms2-2.19.1-1-any.pkg.tar.zst",
+      "binarySha256": "f9858d910df27d3762590e5da75e2589f9f0216ebbf1b6d58bdddbab3d4f35ad",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-lcms2-2.19.1-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-lcms2",
+      "depends": [
+        "mingw-w64-x86_64-libjpeg-turbo",
+        "mingw-w64-x86_64-libtiff"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/liblcms2-2.dll",
+        "mingw64/bin/liblcms2_fast_float-2.dll",
+        "mingw64/share/licenses/lcms2/LICENSE",
+        "mingw64/share/licenses/lcms2/LICENSE-fast_float"
+      ],
+      "sourceSha256": "83414d0d95c5cb2548d3050670694e9efc64304a52190f42bcad951efa038b41",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-leptonica",
+      "version": "1.87.0-1",
+      "license": "BSD-2-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-leptonica-1.87.0-1-any.pkg.tar.zst",
+      "binarySha256": "702d6ee60255b083aa37a3cbbe1a53ef253d9119204d0478d025efea2d0c91f9",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-leptonica-1.87.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-leptonica",
+      "depends": [
+        "mingw-w64-x86_64-giflib",
+        "mingw-w64-x86_64-libjpeg-turbo",
+        "mingw-w64-x86_64-libpng",
+        "mingw-w64-x86_64-libtiff",
+        "mingw-w64-x86_64-libwebp",
+        "mingw-w64-x86_64-openjpeg2",
+        "mingw-w64-x86_64-zlib"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libleptonica-6.dll",
+        "mingw64/share/licenses/leptonica/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-lerc",
+      "version": "4.1.1-1",
+      "license": "Apache-2.0",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-lerc-4.1.1-1-any.pkg.tar.zst",
+      "binarySha256": "5bc170650bc02812a7c674a5f7b8ff2781b4bfa259ab2da2264c3008e2a04c72",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-lerc-4.1.1-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-lerc",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libLerc.dll",
+        "mingw64/share/licenses/lerc/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libarchive",
+      "version": "3.8.9-6",
+      "license": "BSD-2-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libarchive-3.8.9-6-any.pkg.tar.zst",
+      "binarySha256": "591e1e7fb90adc7503bf0edb59e1f6c98d9ffce76b9568a554ccdfe1ed0e4380",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libarchive-3.8.9-6.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libarchive",
+      "depends": [
+        "mingw-w64-x86_64-bzip2",
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-expat",
+        "mingw-w64-x86_64-libb2",
+        "mingw-w64-x86_64-libiconv",
+        "mingw-w64-x86_64-lz4",
+        "mingw-w64-x86_64-openssl",
+        "mingw-w64-x86_64-pcre2",
+        "mingw-w64-x86_64-xz",
+        "mingw-w64-x86_64-zlib",
+        "mingw-w64-x86_64-zstd"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libarchive-13.dll",
+        "mingw64/share/licenses/libarchive/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libatomic",
+      "version": "16.2.0-4",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libatomic-16.2.0-4-any.pkg.tar.zst",
+      "binarySha256": "c71710695b1a49a089e82c4fc4e2247003bfb7ac8ef3327291880eaa59dcebdc",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libatomic",
+      "depends": [
+        "mingw-w64-x86_64-libwinpthread"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libatomic-1.dll",
+        "mingw64/share/licenses/libatomic/COPYING.RUNTIME",
+        "mingw64/share/licenses/libatomic/COPYING3"
+      ],
+      "sourceSha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libb2",
+      "version": "0.98.1-3",
+      "license": "custom:CC0",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libb2-0.98.1-3-any.pkg.tar.zst",
+      "binarySha256": "3c898f08c5f19e25dc6d7e39aa36b6f323141f0e62c5c50f089cd3f89711854c",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libb2-0.98.1-3.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libb2",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libb2-1.dll",
+        "mingw64/share/licenses/libb2/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libdeflate",
+      "version": "1.26-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libdeflate-1.26-1-any.pkg.tar.zst",
+      "binarySha256": "aa0d9b5e2d0413d5e01745a48ef0c8fa293172d48c13f87b61ada627ab7407ad",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libdeflate-1.26-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libdeflate",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libdeflate.dll",
+        "mingw64/share/licenses/libdeflate/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libffi",
+      "version": "3.8.0-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libffi-3.8.0-1-any.pkg.tar.zst",
+      "binarySha256": "6dad7f3c6c900d3c64a4fe0c2764b405e678b22df3521d2284ffaeff0198b84b",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libffi-3.8.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libffi",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libffi-8.dll",
+        "mingw64/share/licenses/libffi/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libgcc",
+      "version": "16.2.0-4",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libgcc-16.2.0-4-any.pkg.tar.zst",
+      "binarySha256": "d615f6a8536ca16b1f049daea1fa440a3b7a405449ec0e93ad6106db43682d54",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libgcc",
+      "depends": [
+        "mingw-w64-x86_64-libwinpthread"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libgcc_s_seh-1.dll",
+        "mingw64/share/licenses/libgcc/COPYING.RUNTIME",
+        "mingw64/share/licenses/libgcc/COPYING3"
+      ],
+      "sourceSha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libgomp",
+      "version": "16.2.0-4",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libgomp-16.2.0-4-any.pkg.tar.zst",
+      "binarySha256": "b58a5b21e6e2138788229beb7924e6b54541c734d657b2431a745919e9cb0df4",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libgomp",
+      "depends": [
+        "mingw-w64-x86_64-libwinpthread"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libgomp-1.dll",
+        "mingw64/share/licenses/libgomp/COPYING.RUNTIME",
+        "mingw64/share/licenses/libgomp/COPYING3"
+      ],
+      "sourceSha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libiconv",
+      "version": "1.19-1",
+      "license": "LGPL-2.1-or-later OR documentation:spdx:GPL-3.0-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libiconv-1.19-1-any.pkg.tar.zst",
+      "binarySha256": "21e334d0911f25de75d3e18e0697648bcecfa9658256d600cad0827d719c2f35",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libiconv-1.19-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libiconv",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libcharset-1.dll",
+        "mingw64/bin/libiconv-2.dll",
+        "mingw64/share/licenses/libiconv/COPYING",
+        "mingw64/share/licenses/libiconv/COPYING.LIB",
+        "mingw64/share/licenses/libiconv/README",
+        "mingw64/share/licenses/libiconv/libcharset/COPYING.LIB"
+      ],
+      "sourceSha256": "74428280c17094da5b702c29b2e1a0abae59556ea5dfdd65705cc8ccc1e000fb",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libidn2",
+      "version": "2.3.8-4",
+      "license": "GPL-2.0-or-later OR LGPL-3.0-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libidn2-2.3.8-4-any.pkg.tar.zst",
+      "binarySha256": "f98a157446f9ac35465022e329cdaf6169b0c9fa19837e9d80aff9d4e5109013",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libidn2-2.3.8-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libidn2",
+      "depends": [
+        "mingw-w64-x86_64-gettext-runtime",
+        "mingw-w64-x86_64-libiconv",
+        "mingw-w64-x86_64-libunistring"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libidn2-0.dll"
+      ],
+      "sourceSha256": "cd83e8514fbeb6a4499299b88691b9b9ecc3114cca1e2be4f6c54aab6ae9ddd0",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libjpeg-turbo",
+      "version": "3.2.0-1",
+      "license": "custom:BSD-like",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libjpeg-turbo-3.2.0-1-any.pkg.tar.zst",
+      "binarySha256": "ef3f55cf5238a8045c8f37796d730e4a5ee619d29ca9254aaa62456e5b5b7e51",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libjpeg-turbo-3.2.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libjpeg-turbo",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libjpeg-8.dll",
+        "mingw64/bin/libturbojpeg.dll",
+        "mingw64/share/licenses/libjpeg-turbo/LICENSE.md",
+        "mingw64/share/licenses/libjpeg-turbo/README.ijg",
+        "mingw64/share/licenses/libjpeg-turbo/README.md",
+        "mingw64/share/licenses/libjpeg-turbo/simd/jsimdext.inc"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libpng",
+      "version": "1.6.58-1",
+      "license": "custom",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libpng-1.6.58-1-any.pkg.tar.zst",
+      "binarySha256": "d8ae6066f99b3a04b83b8013b554a26a205d7e68580b80823c173ed045ba76a5",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libpng-1.6.58-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libpng",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-zlib"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libpng16-16.dll",
+        "mingw64/share/licenses/libpng/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libpsl",
+      "version": "0.21.5-3",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libpsl-0.21.5-3-any.pkg.tar.zst",
+      "binarySha256": "2a86f7ce3cd3fabff7eb8e5c0d3eb1134808881a44c3838e1b518b75cb402e35",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libpsl-0.21.5-3.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libpsl",
+      "depends": [
+        "mingw-w64-x86_64-gettext-runtime",
+        "mingw-w64-x86_64-libiconv",
+        "mingw-w64-x86_64-libidn2",
+        "mingw-w64-x86_64-libunistring"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libpsl-5.dll",
+        "mingw64/share/licenses/libpsl/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libquadmath",
+      "version": "16.2.0-4",
+      "license": "LGPL-2.1-or-later AND GFDL-1.2-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libquadmath-16.2.0-4-any.pkg.tar.zst",
+      "binarySha256": "70317ed08299f8e40af8354e124db33fcf47840ec8cefbea5d7134c6d136d13e",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libquadmath",
+      "depends": [
+        "mingw-w64-x86_64-libgcc"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libquadmath-0.dll",
+        "mingw64/share/licenses/libquadmath/COPYING.LIB"
+      ],
+      "sourceSha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libssh2",
+      "version": "1.11.1-2",
+      "license": "BSD-3-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libssh2-1.11.1-2-any.pkg.tar.zst",
+      "binarySha256": "83d0b99f79e930b30eb642382662686b696d64ceb927c2606debd79cb6ff670a",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libssh2-1.11.1-2.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libssh2",
+      "depends": [
+        "mingw-w64-x86_64-openssl",
+        "mingw-w64-x86_64-zlib"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libssh2-1.dll",
+        "mingw64/share/licenses/libssh2/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libstdc++",
+      "version": "16.2.0-4",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libstdc%2B%2B-16.2.0-4-any.pkg.tar.zst",
+      "binarySha256": "3d4c3faf4c2c5c7a851ff12214ddcbf8c0d6df0964fc1d3ebd8c38f227183034",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libstdc++",
+      "depends": [
+        "mingw-w64-x86_64-libgcc",
+        "mingw-w64-x86_64-libwinpthread",
+        "mingw-w64-x86_64-tzdata"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libstdc++-6.dll",
+        "mingw64/share/licenses/libstdc++/COPYING.RUNTIME",
+        "mingw64/share/licenses/libstdc++/COPYING3"
+      ],
+      "sourceSha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libtasn1",
+      "version": "4.21.0-1",
+      "license": "GPL3, LGPL",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libtasn1-4.21.0-1-any.pkg.tar.zst",
+      "binarySha256": "9f7aa213d14135e5856cc7a1254d871cbed60dee00b40db87a6ca7a4e733d2b2",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libtasn1-4.21.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libtasn1",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libtasn1-6.dll",
+        "mingw64/share/licenses/libtasn1/COPYING",
+        "mingw64/share/licenses/libtasn1/COPYING.LESSERv2"
+      ],
+      "sourceSha256": "c626129c5131eef0a45c736274f0844747605a105161cc0f7d39f6e1c70ed0ff",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libtiff",
+      "version": "4.7.2-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libtiff-4.7.2-1-any.pkg.tar.zst",
+      "binarySha256": "ebc466fa5664c1528834c59ee7134ba57df6db224e503b690870e2c613f30c3e",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libtiff-4.7.2-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libtiff",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-jbigkit",
+        "mingw-w64-x86_64-lerc",
+        "mingw-w64-x86_64-libdeflate",
+        "mingw-w64-x86_64-libjpeg-turbo",
+        "mingw-w64-x86_64-libwebp",
+        "mingw-w64-x86_64-xz",
+        "mingw-w64-x86_64-zlib",
+        "mingw-w64-x86_64-zstd"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libtiff-6.dll",
+        "mingw64/bin/libtiffxx-6.dll",
+        "mingw64/share/licenses/libtiff/LICENSE.md"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libunistring",
+      "version": "1.4.2-1",
+      "license": "LGPL-3.0-or-later OR GPL-3.0-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libunistring-1.4.2-1-any.pkg.tar.zst",
+      "binarySha256": "c940cf52fb2b579baa596d3c1d911f7544cbf90f8bd19c260377aa115c65b059",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libunistring-1.4.2-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libunistring",
+      "depends": [
+        "mingw-w64-x86_64-libiconv"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libunistring-5.dll",
+        "mingw64/share/licenses/libunistring/LICENSE",
+        "mingw64/share/licenses/libunistring/LICENSE.LIB"
+      ],
+      "sourceSha256": "a5bafb360d5c13c5c52ef071d5a8288ce2345346b902f20ed6e9322766ec60eb",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-libwebp",
+      "version": "1.6.0-1",
+      "license": "BSD-3-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libwebp-1.6.0-1-any.pkg.tar.zst",
+      "binarySha256": "360b1690d41eb497dfe50526460a2424600a6a806cbb76c5b0fec9f14623ac59",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-libwebp-1.6.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libwebp",
+      "depends": [
+        "mingw-w64-x86_64-giflib",
+        "mingw-w64-x86_64-libjpeg-turbo",
+        "mingw-w64-x86_64-libpng",
+        "mingw-w64-x86_64-libtiff"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libsharpyuv-0.dll",
+        "mingw64/bin/libwebp-7.dll",
+        "mingw64/bin/libwebpdecoder-3.dll",
+        "mingw64/bin/libwebpdemux-2.dll",
+        "mingw64/bin/libwebpmux-3.dll",
+        "mingw64/share/licenses/libwebp/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-libwinpthread",
+      "version": "14.0.0.r426.g4564ee4b5-1",
+      "license": "MIT AND BSD-3-Clause-Clear",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libwinpthread-14.0.0.r426.g4564ee4b5-1-any.pkg.tar.zst",
+      "binarySha256": "543017ce2731292b215bf1d36fd70a86d8a8d5ed0afba9d3db9fff89804cda71",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-winpthreads-14.0.0.r426.g4564ee4b5-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-libwinpthread",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libwinpthread-1.dll",
+        "mingw64/share/licenses/libwinpthread/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-lz4",
+      "version": "1.10.0-1",
+      "license": "BSD OR GPL2",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-lz4-1.10.0-1-any.pkg.tar.zst",
+      "binarySha256": "a4c5a3bcd26111554c87591275b8a681bfa4473d1607647e24c22ef6213c055c",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-lz4-1.10.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-lz4",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/liblz4.dll"
+      ],
+      "sourceRequired": false,
+      "licenseChoice": "BSD",
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-nettle",
+      "version": "4.0-1",
+      "license": "GPL-2.0-or-later OR LGPL-3.0-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-nettle-4.0-1-any.pkg.tar.zst",
+      "binarySha256": "505773abfb4f3af514012e2926c11db6365299c7eda141d958a065740740dc86",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-nettle-4.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-nettle",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-gmp"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libhogweed-7.dll",
+        "mingw64/bin/libnettle-9.dll"
+      ],
+      "sourceSha256": "453187e86139bce3c5b94542cc709ead7f523f0fc33ce4cc2b8fe9d5a9719cdd",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-nghttp2",
+      "version": "1.70.0-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-nghttp2-1.70.0-1-any.pkg.tar.zst",
+      "binarySha256": "c086d42107f8c142f0f45e32f81665816732f071d9486359875da20df0a7cdd3",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-nghttp2-1.70.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-nghttp2",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libnghttp2-14.dll",
+        "mingw64/share/licenses/nghttp2/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-nghttp3",
+      "version": "1.18.0-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-nghttp3-1.18.0-1-any.pkg.tar.zst",
+      "binarySha256": "00c55f940bb8d2f4b06690858efcaa42158dc33ccb7b7b8412e05659d3e22802",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-nghttp3-1.18.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-nghttp3",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libnghttp3-9.dll",
+        "mingw64/share/licenses/nghttp3/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-ngtcp2",
+      "version": "1.25.0-1",
+      "license": "MIT",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-ngtcp2-1.25.0-1-any.pkg.tar.zst",
+      "binarySha256": "e110f5b9a2c783ac437be2b80955e79a72f9d3a329fdb626c41516044aaee47a",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-ngtcp2-1.25.0-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-ngtcp2",
+      "depends": [
+        "mingw-w64-x86_64-gnutls",
+        "mingw-w64-x86_64-openssl"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libngtcp2-16.dll",
+        "mingw64/bin/libngtcp2_crypto_gnutls-8.dll",
+        "mingw64/bin/libngtcp2_crypto_ossl-0.dll",
+        "mingw64/share/licenses/ngtcp2/COPYING"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-openjpeg2",
+      "version": "2.5.4-2",
+      "license": "BSD-2-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-openjpeg2-2.5.4-2-any.pkg.tar.zst",
+      "binarySha256": "32f8f5dc7df9f1f2d57157717136fbba431e15bc000420c953c00ffdf76ecde4",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-openjpeg2-2.5.4-2.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-openjpeg2",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-lcms2",
+        "mingw-w64-x86_64-libpng",
+        "mingw-w64-x86_64-libtiff",
+        "mingw-w64-x86_64-zlib"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libopenjp2-7.dll",
+        "mingw64/bin/libopenjpip-7.dll",
+        "mingw64/share/licenses/openjpeg/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-openssl",
+      "version": "3.6.4-1",
+      "license": "Apache-2.0",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-openssl-3.6.4-1-any.pkg.tar.zst",
+      "binarySha256": "d613ab4e1b5af9e95cde16895765e1be53ab05657d8d51ff2707d4e99c29c55b",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-openssl-3.6.4-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-openssl",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/libcrypto-3-x64.dll",
+        "mingw64/bin/libssl-3-x64.dll",
+        "mingw64/share/licenses/openssl/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-p11-kit",
+      "version": "0.26.5-1",
+      "license": "BSD-3-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-p11-kit-0.26.5-1-any.pkg.tar.zst",
+      "binarySha256": "171b877586efd64888648007a56c3a263eb2d4abc82594c90d30b1b7e4b9f5eb",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-p11-kit-0.26.5-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-p11-kit",
+      "depends": [
+        "mingw-w64-x86_64-gettext-runtime",
+        "mingw-w64-x86_64-libffi",
+        "mingw-w64-x86_64-libtasn1"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libp11-kit-0.dll"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-pcre2",
+      "version": "10.48-3",
+      "license": "BSD-3-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-pcre2-10.48-3-any.pkg.tar.zst",
+      "binarySha256": "c67c23f448693e8c9cc3973872372dabec2abdf6afacb563096f7eb0e6837f57",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-pcre2-10.48-3.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-pcre2",
+      "depends": [
+        "mingw-w64-x86_64-bzip2",
+        "mingw-w64-x86_64-wineditline",
+        "mingw-w64-x86_64-zlib"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libpcre2-16-0.dll",
+        "mingw64/bin/libpcre2-32-0.dll",
+        "mingw64/bin/libpcre2-8-0.dll",
+        "mingw64/bin/libpcre2-posix-3.dll",
+        "mingw64/share/licenses/pcre2/COPYING",
+        "mingw64/share/licenses/pcre2/LICENCE.md"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-tesseract-ocr",
+      "version": "5.5.3-1",
+      "license": "Apache-2.0",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-tesseract-ocr-5.5.3-1-any.pkg.tar.zst",
+      "binarySha256": "67c0a857e9f028f88d1463c0293885d806334346a81d70be5e38f08bad11e1e3",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-tesseract-ocr-5.5.3-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-tesseract-ocr",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs",
+        "mingw-w64-x86_64-curl",
+        "mingw-w64-x86_64-icu",
+        "mingw-w64-x86_64-leptonica",
+        "mingw-w64-x86_64-libarchive",
+        "mingw-w64-x86_64-omp"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libcommon_training.dll",
+        "mingw64/bin/libpango_training.dll",
+        "mingw64/bin/libtesseract-5.5.dll",
+        "mingw64/bin/libunicharset_training.dll",
+        "mingw64/bin/tesseract.exe",
+        "mingw64/share/licenses/tesseract-ocr/LICENSE",
+        "mingw64/share/tessdata/configs/alto",
+        "mingw64/share/tessdata/configs/ambigs.train",
+        "mingw64/share/tessdata/configs/api_config",
+        "mingw64/share/tessdata/configs/bazaar",
+        "mingw64/share/tessdata/configs/bigram",
+        "mingw64/share/tessdata/configs/box.train",
+        "mingw64/share/tessdata/configs/box.train.stderr",
+        "mingw64/share/tessdata/configs/digits",
+        "mingw64/share/tessdata/configs/get.images",
+        "mingw64/share/tessdata/configs/hocr",
+        "mingw64/share/tessdata/configs/inter",
+        "mingw64/share/tessdata/configs/kannada",
+        "mingw64/share/tessdata/configs/linebox",
+        "mingw64/share/tessdata/configs/logfile",
+        "mingw64/share/tessdata/configs/lstm.train",
+        "mingw64/share/tessdata/configs/lstmbox",
+        "mingw64/share/tessdata/configs/lstmdebug",
+        "mingw64/share/tessdata/configs/makebox",
+        "mingw64/share/tessdata/configs/page",
+        "mingw64/share/tessdata/configs/pdf",
+        "mingw64/share/tessdata/configs/quiet",
+        "mingw64/share/tessdata/configs/rebox",
+        "mingw64/share/tessdata/configs/strokewidth",
+        "mingw64/share/tessdata/configs/tsv",
+        "mingw64/share/tessdata/configs/txt",
+        "mingw64/share/tessdata/configs/unlv",
+        "mingw64/share/tessdata/configs/wordstrbox",
+        "mingw64/share/tessdata/osd.traineddata",
+        "mingw64/share/tessdata/tessconfigs/batch",
+        "mingw64/share/tessdata/tessconfigs/batch.nochop",
+        "mingw64/share/tessdata/tessconfigs/matdemo",
+        "mingw64/share/tessdata/tessconfigs/msdemo",
+        "mingw64/share/tessdata/tessconfigs/nobatch",
+        "mingw64/share/tessdata/tessconfigs/segdemo"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": true,
+      "sourceSha256": "3e96db347116a5f93671396bd2613e0de1defda9653668caeba120a0c4155d2b"
+    },
+    {
+      "name": "mingw-w64-x86_64-tzdata",
+      "version": "2026d-1",
+      "license": "custom: public domain",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-tzdata-2026d-1-any.pkg.tar.zst",
+      "binarySha256": "aa05089a14869bc05f841ce1caa61bb4ebbc392780f9daec4f3eaf01937e5091",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-tzdata-2026d-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-tzdata",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/share/licenses/tzdata/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-wineditline",
+      "version": "2.208-1",
+      "license": "BSD-3-Clause",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-wineditline-2.208-1-any.pkg.tar.zst",
+      "binarySha256": "dfe7fab66632eececc73d84053eae2be8dd2146ecefe0fc2133277706084d7ea",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-wineditline-2.208-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-wineditline",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/edit.dll",
+        "mingw64/share/licenses/wineditline/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-xz",
+      "version": "5.8.4-1",
+      "license": "0BSD AND LGPL-2.1-or-later AND GPL-2.0-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-xz-5.8.4-1-any.pkg.tar.zst",
+      "binarySha256": "2de0f26da60b7ff7aa192a226330d7de6b1099cb9b9f9de4145affb80146bbc8",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-xz-5.8.4-1.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-xz",
+      "depends": [
+        "mingw-w64-x86_64-gettext-runtime"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/liblzma-5.dll",
+        "mingw64/share/licenses/xz/COPYING",
+        "mingw64/share/licenses/xz/COPYING.0BSD",
+        "mingw64/share/licenses/xz/COPYING.GPLv2",
+        "mingw64/share/licenses/xz/COPYING.GPLv3",
+        "mingw64/share/licenses/xz/COPYING.LGPLv2.1"
+      ],
+      "sourceSha256": "b8acbc56b2bfe08df7bffff423f3bf07ee85dbec4e07416017ab04c8afb9d13e",
+      "sourceRequired": true,
+      "shipped": true,
+      "includeSourceArchive": true
+    },
+    {
+      "name": "mingw-w64-x86_64-zlib",
+      "version": "1.3.2-2",
+      "license": "Zlib",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-zlib-1.3.2-2-any.pkg.tar.zst",
+      "binarySha256": "9e75842a070ba648e986e12424e1c92c9d7d77200e85f6a34eeb600819f2e694",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-zlib-1.3.2-2.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-zlib",
+      "depends": [],
+      "runtimeFiles": [
+        "mingw64/bin/zlib1.dll",
+        "mingw64/share/licenses/zlib/LICENSE"
+      ],
+      "sourceRequired": false,
+      "shipped": true,
+      "includeSourceArchive": false
+    },
+    {
+      "name": "mingw-w64-x86_64-zstd",
+      "version": "1.5.7-2",
+      "license": "BSD-3-Clause OR GPL-2.0-or-later",
+      "binary": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-zstd-1.5.7-2-any.pkg.tar.zst",
+      "binarySha256": "1add6705b344664f6aca108c85f79ab5bdd9e1162662bb06a4cf40a34f6e0907",
+      "source": "https://mirror.msys2.org/mingw/sources/mingw-w64-zstd-1.5.7-2.src.tar.zst",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-zstd",
+      "depends": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "runtimeFiles": [
+        "mingw64/bin/libzstd.dll",
+        "mingw64/share/licenses/zstd/LICENSE"
+      ],
+      "sourceRequired": false,
+      "licenseChoice": "BSD-3-Clause",
+      "shipped": true,
+      "includeSourceArchive": false
+    }
+  ],
+  "virtualPackages": [
+    {
+      "name": "mingw-w64-x86_64-omp",
+      "version": "",
+      "license": "",
+      "binary": "",
+      "binarySha256": "",
+      "source": "",
+      "officialPage": "https://packages.msys2.org/packages/mingw-w64-x86_64-omp",
+      "depends": [
+        "mingw-w64-x86_64-libgomp"
+      ],
+      "runtimeFiles": []
+    }
+  ]
+}

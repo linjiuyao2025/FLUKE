@@ -21,9 +21,11 @@ datas = [
     (str(project_root / "qml"), "qml"),
     (str(project_root.parent / "assets" / "fonts"), "assets/fonts"),
 ]
-converter_engine_root = project_root / "third-party" / "converter-engines"
-if converter_engine_root.is_dir():
-    datas.append((str(converter_engine_root), "engines"))
+# Converter engines are copied into dist after PyInstaller finishes. Treating
+# these executable folders as Analysis datas makes PyInstaller promote some
+# third-party DLLs (notably Calibre's bundled Python/Qt runtime) into the
+# application's shared _internal directory, where they can conflict with
+# PySide6's runtime.
 rawpy_root = project_root / "third-party" / "rawpy"
 rawpy_notice = rawpy_root / "THIRD-PARTY-NOTICES.md"
 if rawpy_notice.is_file():

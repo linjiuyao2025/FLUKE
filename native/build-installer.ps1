@@ -52,6 +52,60 @@ try {
         throw "PyInstaller failed with exit code $LASTEXITCODE."
     }
 
+    $internalOutput = Join-Path $nativeRoot "dist\FLUKE\_internal"
+    if (-not (Test-Path -LiteralPath $internalOutput -PathType Container)) {
+        throw "PyInstaller completed without producing dist\FLUKE\_internal."
+    }
+    $engineSource = Join-Path $nativeRoot "third-party\converter-engines"
+    $engineOutput = Join-Path $internalOutput "engines"
+    if (-not (Test-Path -LiteralPath $engineSource -PathType Container)) {
+        throw "Prepared converter engines were not found at third-party\converter-engines."
+    }
+    if (Test-Path -LiteralPath $engineOutput) {
+        throw "Refusing to merge converter engines into an existing build output: $engineOutput"
+    }
+    Copy-Item -LiteralPath $engineSource -Destination $engineOutput -Recurse
+
+    $requiredEngineFiles = @(
+        (Join-Path $engineOutput "ffmpeg\bin\ffmpeg.exe"),
+        (Join-Path $engineOutput "tesseract\tesseract.exe"),
+        (Join-Path $engineOutput "calibre\Calibre\ebook-convert.exe")
+    )
+    foreach ($engineFile in $requiredEngineFiles) {
+        if (-not (Test-Path -LiteralPath $engineFile -PathType Leaf)) {
+            throw "A required converter engine is missing from dist\FLUKE\_internal\engines: $engineFile"
+        }
+    }
+
+    $pythonRuntimeInfo = @(& $python -c "import pathlib, sys; print('python%d%d.dll' % sys.version_info[:2]); print(sys.base_prefix); print(pathlib.Path(sys.base_prefix, 'python3.dll'))")
+    if ($LASTEXITCODE -ne 0 -or $pythonRuntimeInfo.Count -ne 3) {
+        throw "Could not determine the Python runtime DLL from the build virtual environment."
+    }
+    $pythonRuntimeName = $pythonRuntimeInfo[0].Trim()
+    $pythonStableRuntimeSource = $pythonRuntimeInfo[2].Trim()
+    $pythonRuntime = Join-Path $internalOutput $pythonRuntimeName.Trim()
+    if (-not (Test-Path -LiteralPath $pythonRuntime -PathType Leaf)) {
+        throw "The expected Python runtime DLL $pythonRuntimeName is missing from dist\FLUKE\_internal."
+    }
+    $pythonStableRuntime = Join-Path $internalOutput "python3.dll"
+    if (-not (Test-Path -LiteralPath $pythonStableRuntimeSource -PathType Leaf) -or
+        -not (Test-Path -LiteralPath $pythonStableRuntime -PathType Leaf)) {
+        throw "The Python stable-ABI DLL python3.dll is missing from the build runtime."
+    }
+    $stableSourceHash = (Get-FileHash -LiteralPath $pythonStableRuntimeSource -Algorithm SHA256).Hash
+    $stableOutputHash = (Get-FileHash -LiteralPath $pythonStableRuntime -Algorithm SHA256).Hash
+    if ($stableSourceHash -ne $stableOutputHash) {
+        throw "The shared python3.dll does not match the build virtual environment."
+    }
+    $unexpectedPythonRuntimes = @(
+        Get-ChildItem -LiteralPath $internalOutput -File -Filter "python3*.dll" |
+            Where-Object { $_.Name -notin @($pythonRuntimeName, "python3.dll") }
+    )
+    if ($unexpectedPythonRuntimes.Count -gt 0) {
+        $names = ($unexpectedPythonRuntimes | ForEach-Object Name) -join ", "
+        throw "Unexpected Python runtime DLLs leaked into the shared application runtime: $names"
+    }
+
     $appExecutable = Join-Path $nativeRoot "dist\FLUKE\FLUKE.exe"
     if (-not (Test-Path -LiteralPath $appExecutable)) {
         throw "PyInstaller completed without producing dist\FLUKE\FLUKE.exe."
