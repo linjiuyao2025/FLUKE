@@ -12,7 +12,7 @@ FLUKE 是本机优先的 Windows 生活工作台。本仓库正在把桌面核�
 
 ## 当前版本状态
 
-GitHub `main` 现包含 FLUKE Native 迁移源码。Native 正逐阶段对照旧版验收，**尚不是完整的旧版替代品**。当前公开稳定安装包仍是 [Electron v1.0.3](https://github.com/linjiuyao2025/FLUKE/releases/tag/v1.0.3)；[FLUKE Native v0.1.0 Preview 1](https://github.com/linjiuyao2025/FLUKE/releases/tag/native-v0.1.0-preview.1) 是供验收的预览安装包，不会替换旧版稳定包。旧版源码、安装包和数据路径继续保留作回退。Native 暂无整应用自动更新器；获取新版本需从发布页手动下载。
+GitHub `main` 现包含 FLUKE Native 迁移源码。GitHub 最新发布现指向 [FLUKE Native v0.1.0 迁移预览](https://github.com/linjiuyao2025/FLUKE/releases/tag/native-v0.1.0-preview.1)，安装包包含新的 FLUKE 品牌安装向导画面。Native 正逐阶段对照旧版验收，**尚不是完整的旧版替代品**。历史 [Electron v1.0.3](https://github.com/linjiuyao2025/FLUKE/releases/tag/v1.0.3) 仍保留，可作回退版本。Native 使用独立的安装标识和数据目录，不会覆盖旧版安装或数据；在迁移验收完成前，请保留旧版及备份。Native 暂无整应用自动更新器；获取新版本需从发布页手动下载。
 
 当前迁移状态和验证边界见 [FLUKE Native 说明](native/README.md)。真实个人数据、迁移包、SQLite 数据库、凭据和本机测试产物不属于公开仓库。
 
@@ -27,11 +27,11 @@ py -m venv .venv
 .\.venv\Scripts\python main.py
 ```
 
-原生版 Windows 安装包构建说明和预览版已知限制见 [native/README.md](native/README.md)。预览包使用独立的 FLUKE Native 安装标识，不会升级旧版 Electron；迁移验收完成前，请保留旧版及其本机数据和备份。
+原生版 Windows 安装包构建说明和预览版已知限制见 [native/README.md](native/README.md)。最新安装包使用独立的 FLUKE Native 安装标识，不会升级旧版 Electron；迁移验收完成前，请保留旧版及其本机数据和备份。
 
 ## 旧版 Electron 回退
 
-当前公开稳定版的 Electron 源码仍保留在仓库根目录，可按原流程运行：
+Electron v1.0.3 的源码和 GitHub 发布包仍保留在仓库中，可作为回退版本；源码可按原流程运行：
 
 ```powershell
 npm ci
