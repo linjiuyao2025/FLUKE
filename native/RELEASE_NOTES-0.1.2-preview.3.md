@@ -18,6 +18,7 @@
 - 候选包 SHA-256：`00ee1b1fdc8f9315bc9af4515ed83d6b6dd1cd70a7f5b7851be4b1ea75521012`
 - `scripts/verify-release-artifacts.ps1` 已通过，并确认 3 个引擎更新包清单。
 - PyInstaller 和 Inno Setup 编译成功；安装向导继续读取 `fluke-wizard.png` 与 `fluke-small.png`。
+- 正式候选包在全新隔离根目录安装成功；安装日志记录 `Installation process succeeded`，`versions\0.1.2\.install-complete.json`、根 launcher 和 `active.json` 均存在；安装后 payload 与 `dist\FLUKE.exe` SHA-256 一致，健康检查退出码为 0，独立 SQLite `PRAGMA integrity_check` 为 `ok`。
 - 更新器、launcher 和启动错误聚焦测试共 `22` 项通过；包含 API 限流回退、失败首次启动回退、SQLite 保留、下载中断/取消、磁盘空间不足、SHA-256/PE 校验和不完整版本保护。
 - 真实 GitHub API 返回 `403 rate limit exceeded` 时，官方 Atom/expanded-assets fallback 成功读取 preview.2，得到精确安装包大小并选出可用 Release。
 

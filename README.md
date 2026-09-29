@@ -12,7 +12,7 @@ FLUKE 是本机优先的 Windows 生活工作台。本仓库正在把桌面核�
 
 ## 当前版本状态（preview.2；下方旧段落保留 preview.1 历史说明）
 
-> **preview.3 更新**：更新器新增官方 Atom/expanded-assets 页面回退，已在 GitHub API `403` 限流环境下读取并选出 preview.2；preview.3 已完成重新打包，正在进行隔离安装和发布验证。阶段 6/7 仍未宣称通过。
+> **preview.3 更新**：更新器新增官方 Atom/expanded-assets 页面回退，已在 GitHub API `403` 限流环境下读取并选出 preview.2；preview.3 已完成重新打包和隔离安装健康检查，正在进行公开 Release 资产验证。阶段 6/7 仍未宣称通过。
 
 > **preview.2 更新（2026-09-30）**：当前公开候选为 [FLUKE Native v0.1.2 迁移预览 2](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.2)。候选安装包已完成 PyInstaller/Inno Setup 编译、SHA-256 sidecar 校验和隔离生产布局安装；受控全量回归为 648 项通过、1 项跳过。自动安装/重启/失败恢复闭环、默认 Windows GUI 逐控件验收、真实个人数据与阶段 7 并行观察仍未完成，旧版及旧版数据必须保留。
 
