@@ -1,0 +1,11 @@
+# Tesseract libtiff override
+
+`libtiff-6.dll` is built from the official MSYS2 libtiff 4.7.2-1 source package with JBIG disabled. The DLL SHA-256 is `4339d63bceb39630fda804b00f345d217c3893e75ae9618ba93438bf26b49161` (874,122 bytes). The official source-only archive is `source/msys2/mingw-w64-libtiff-4.7.2-1.src.tar.zst`, SHA-256 `11f3bdc23a154a5cea2f8fffeab3e2a118bd773d2769e1dcea926ff02f2cf3e2`; it contains the upstream `PKGBUILD`, source tarball and MSYS2 patch. The source tarball inside it has SHA-256 `672bd7d10aee4606171afb864f3570b83340f6a33e2c186dc0512f7145ffdf6a`; `patches/0002-libtiff-install-headers.patch` is the official MSYS2 patch (SHA-256 `493742947c8667655b6b89f2d7d27e92e1438a490ed86f50811112394b432a12`). `patches/0001-disable-jbig.patch` removes the JBIG package dependency and disables JBIG in both upstream configure profiles.
+
+## Build
+
+Use an MSYS2 MinGW64 shell with the seven pinned runtime dependency source packages under `source/dependencies/` and their lock versions listed in `override.json`. Extract the source-only archive, apply `0001-disable-jbig.patch` to its `PKGBUILD`, extract `tiff-4.7.2.tar.gz`, apply `0002-libtiff-install-headers.patch`, then run `autoreconf -fiv` in the source tree. Set `FLUKE_BUILD_ROOT` to the directory containing `tiff-4.7.2-clean-src` and run `build-nojbig.sh`; the result is `build6-MINGW64-shared/libtiff/.libs/libtiff-6.dll`.
+
+The tested configure flags are `--disable-static --enable-shared --enable-cxx --disable-jbig --enable-lerc --enable-libdeflate --enable-webp`, with `CC=gcc CXX=g++ AR=ar RANLIB=ranlib LD=ld LDFLAGS=-L/mingw64/lib`, `lt_cv_path_LD=ld`, `lt_cv_path_LDCXX=ld`, and `CFLAGS/CXXFLAGS` including `-fno-strict-aliasing`. The build command intentionally links only `libtiff.la`, the C DLL consumed by Tesseract.
+
+The source package and dependency archives are official MSYS2 source-only archives; their individual SHA-256 values, versions, URLs, and SPDX metadata are in `override.json`. Corresponding runtime license texts are carried under `licenses/msys2/` in the assembled engine package; this override includes libtiff's `LICENSE.md`. The build was validated against the recorded DLL hash and TIFF OCR smoke cases; toolchain-wide bit-for-bit reproducibility has not been independently established.

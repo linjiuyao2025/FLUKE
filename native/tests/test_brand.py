@@ -18,7 +18,7 @@ from wanxiang.brand import (
     inspect_avatar_source,
     prepare_avatar_image,
 )
-from wanxiang.database import get_app_setting, import_package, load_imported_data
+from wanxiang.database import get_app_setting, import_package, load_imported_data, set_app_setting
 from wanxiang.migration import (
     PACKAGE_FORMAT,
     PACKAGE_SCHEMA_VERSION,
@@ -60,7 +60,8 @@ class BrandRepositoryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "brand.sqlite3"
             repository = BrandRepository(path)
-            self.assertEqual(BRAND_DEFAULT["name"], "万象来信")
+            self.assertEqual(BRAND_DEFAULT["name"], "FLUKE")
+            self.assertEqual(BRAND_DEFAULT["avatar"], "F")
             self.assertEqual(repository.brand()["name"], BRAND_DEFAULT["name"])
             self.assertEqual(repository.brand()["theme"], "plum")
             self.assertIsNone(get_app_setting(path, BRAND_SETTING_KEY))
@@ -75,7 +76,7 @@ class BrandRepositoryTests(unittest.TestCase):
             self.assertEqual(reopened.brand(), saved)
             self.assertEqual(get_app_setting(path, BRAND_SETTING_KEY)["settingsOverrides"]["theme"], "forest")
 
-    def test_legacy_default_brand_survives_migration_and_reopen(self) -> None:
+    def test_legacy_default_brand_is_renamed_without_mutating_imported_data(self) -> None:
         old_brand = {
             "name": "万象来信",
             "avatar": "万",
@@ -87,13 +88,78 @@ class BrandRepositoryTests(unittest.TestCase):
             import_package(_package(old_brand), path)
 
             repository = BrandRepository(path)
-            self.assertEqual(repository.brand()["name"], "万象来信")
-            self.assertEqual(repository.brand()["avatar"], "万")
-            self.assertEqual(BrandRepository(path).brand()["name"], "万象来信")
+            self.assertEqual(repository.brand()["name"], "FLUKE")
+            self.assertEqual(repository.brand()["avatar"], "F")
+            self.assertEqual(BrandRepository(path).brand()["name"], "FLUKE")
 
             imported = load_imported_data(path)
             raw_state = json.loads(imported["raw_values"]["richangji-state-v1"])
             self.assertEqual(raw_state["settings"]["brand"], old_brand)
+
+    def test_later_legacy_import_renames_only_the_local_default_projection(self) -> None:
+        old_brand = {
+            "name": "万象来信",
+            "avatar": "万",
+            "tagline": "把远方与日常，折进今天",
+            "theme": "plum",
+        }
+        package = _package(old_brand, "later-default")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "later-import.sqlite3"
+            repository = BrandRepository(path)
+            import_package(package, path)
+            result = repository.adopt_imported_data({
+                "documents": {"richangji-state-v1": package.parsed_values["richangji-state-v1"]}
+            })
+            self.assertEqual(result["name"], "FLUKE")
+            imported = load_imported_data(path)
+            raw_state = json.loads(imported["raw_values"]["richangji-state-v1"])
+            self.assertEqual(raw_state["settings"]["brand"], old_brand)
+
+    def test_legacy_default_name_migration_preserves_other_custom_appearance(self) -> None:
+        old_brand = {
+            "name": "万象来信",
+            "avatar": "万",
+            "tagline": "我的工作台副标题",
+            "theme": "forest",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "custom-appearance.sqlite3"
+            import_package(_package(old_brand), path)
+
+            brand = BrandRepository(path).brand()
+
+            self.assertEqual(brand["name"], "FLUKE")
+            self.assertEqual(brand["avatar"], "F")
+            self.assertEqual(brand["tagline"], old_brand["tagline"])
+            self.assertEqual(brand["theme"], "forest")
+
+    def test_preexisting_explicit_legacy_name_override_is_preserved(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "explicit-legacy-override.sqlite3"
+            set_app_setting(path, BRAND_SETTING_KEY, {
+                "version": 1,
+                "legacyBrand": {"name": "万象来信", "theme": "plum"},
+                "settingsOverrides": {"name": "万象来信", "tagline": "自定义工作台"},
+            })
+
+            brand = BrandRepository(path).brand()
+
+            self.assertEqual(brand["name"], "万象来信")
+            self.assertEqual(brand["tagline"], "自定义工作台")
+
+    def test_explicitly_saved_legacy_name_is_not_rewritten_again(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "explicit-name.sqlite3"
+            repository = BrandRepository(path, {"settings": {"brand": {}}})
+            saved = repository.save({
+                "name": "万象来信",
+                "tagline": "用户自定义名称",
+                "theme": "plum",
+            })
+            reopened = BrandRepository(path)
+            self.assertEqual(saved["name"], "万象来信")
+            self.assertEqual(reopened.brand()["name"], "万象来信")
 
     def test_migrated_fields_and_unknown_values_survive_save_and_reset(self) -> None:
         old_brand = {

@@ -1,12 +1,15 @@
 param(
-    [Parameter(Mandatory = $true)][string]$Version
+    [Parameter(Mandatory = $true)][string]$Version,
+    [Parameter(Mandatory = $true)][string]$ReleaseTag
 )
 
 $ErrorActionPreference = "Stop"
 $nativeRoot = Split-Path -Parent $PSScriptRoot
 $bundleRoot = Join-Path $nativeRoot "third-party\converter-engines"
 $outputRoot = Join-Path $nativeRoot "release\engine-updates"
-$releaseTag = "v$Version"
+if ($ReleaseTag -notmatch "^native-v$([regex]::Escape($Version))-preview\.[1-9][0-9]*$") {
+    throw "The engine update manifest must target a Native preview release tag for version $Version."
+}
 
 if (Test-Path -LiteralPath $outputRoot) {
     $resolvedOutput = [IO.Path]::GetFullPath($outputRoot)
@@ -31,7 +34,7 @@ foreach ($engineId in @("ffmpeg", "tesseract", "calibre")) {
         throw "Converter engine $engineId is missing its third-party license notice."
     }
     if (($engineId -eq "ffmpeg" -or $engineId -eq "tesseract" -or $engineId -eq "calibre") -and
-        -not (Get-ChildItem -LiteralPath (Join-Path $engineRoot "source") -File -ErrorAction SilentlyContinue)) {
+        -not (Get-ChildItem -LiteralPath (Join-Path $engineRoot "source") -Recurse -File -ErrorAction SilentlyContinue)) {
         throw "Converter engine $engineId is missing its corresponding source archive."
     }
     $asset = "fluke-engine-$engineId-win-x64-$($metadata.version).zip"
@@ -54,7 +57,7 @@ if ($components.Count -eq 0) {
 
 $manifest = [ordered]@{
     schemaVersion = 1
-    releaseTag = $releaseTag
+    releaseTag = $ReleaseTag
     components = $components
 }
 $manifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $outputRoot "fluke-engines.json") -Encoding utf8

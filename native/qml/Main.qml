@@ -55,7 +55,7 @@ ApplicationWindow {
     height: 960
     minimumWidth: 760
     minimumHeight: 620
-    title: "万象来信"
+    title: "FLUKE"
     onClosing: function(close) {
         if (!root.closeAfterUnsavedNews
                 && root.newsController
@@ -129,7 +129,7 @@ ApplicationWindow {
     property string quickEntryFocusTarget: ""
     property var previewBrand: null
     readonly property var savedBrand: root.brandController ? root.brandController.brand : ({
-        name: "万象来信", avatar: "万", avatarImage: "",
+        name: "FLUKE", avatar: "F", avatarImage: "",
         tagline: "把远方与日常，折进今天", theme: "plum"
     })
     readonly property var shownBrand: previewBrand || savedBrand
@@ -269,7 +269,7 @@ ApplicationWindow {
         return true
     }
 
-    onShownBrandChanged: title = String(shownBrand.name || "万象来信")
+    onShownBrandChanged: title = String(shownBrand.name || "FLUKE")
 
     Timer {
         id: quickEntryFocusTimer
@@ -2711,7 +2711,7 @@ ApplicationWindow {
                         RootText {
                             visible: !String(root.savedBrand.avatarImage || "").length
                             anchors.centerIn: parent
-                            text: root.savedBrand.avatar || "万"
+                            text: root.savedBrand.avatar || "F"
                             color: "white"
                             font.family: root.serifFamily
                             font.pixelSize: 20
@@ -2730,7 +2730,7 @@ ApplicationWindow {
                     ColumnLayout {
                         spacing: 3
                         RootText {
-                            text: root.savedBrand.name || "万象来信"
+                            text: root.savedBrand.name || "FLUKE"
                             color: root.ink
                             font.family: root.serifFamily
                             font.pixelSize: 18
@@ -3139,7 +3139,7 @@ ApplicationWindow {
                                         Layout.fillWidth: true
                                         spacing: 0
                                         RootText {
-                                            text: "万象来信："
+                                            text: "FLUKE："
                                             color: root.red
                                             font.family: root.serifFamily
                                             font.pixelSize: root.compactNavigation ? 26 : 34

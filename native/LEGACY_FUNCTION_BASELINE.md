@@ -12,7 +12,7 @@
 | 源码与 v1.0.3 安装包是否同源 | **待核**。当前没有建立发布标签、源码提交、安装包散列和运行文件之间的对应关系；旧版迁移导出写入 sourceVersion=unknown | life-workspace.html:2988-3003；native/README.md:7-9 |
 | 本清单的旧版证据 | L0：只从旧版 HTML/脚本静态列出可见界面和操作；没有在本轮打开或操作旧版 v1.0.3 安装程序 | 下表每项旧版来源锚点 |
 | Native 对照证据 | N1：Native QML/Python 对应源码存在；只表示可以找到实现位置，不表示与旧版逐操作一致或运行通过 | 各行 Native 对照列；native/README.md:43-49 |
-| 自动化与安装证据 | 本轮运行 Native 全量 unittest：620 项通过、1 项跳过；这是源码/QML 合成回归（N2），不等于逐控件的 Native 安装版验收（N3）或旧版运行验收（L3） | `native/.venv\Scripts\python.exe -m unittest discover -s tests -v`；安装版逐功能和旧版现场证据仍待补 |
+| 自动化与安装证据 | v0.1.1 发布候选源码运行 Native 全量 unittest：624 项通过、1 项跳过；这是源码/QML 合成回归（N2），不等于逐控件的 Native 安装版验收（N3）或旧版运行验收（L3） | `native/.venv\Scripts\python.exe -m unittest discover -s tests -v`；安装版逐功能和旧版现场证据仍待补 |
 
 ## 版本范围
 

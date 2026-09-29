@@ -1,0 +1,12 @@
+ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers
+built with gcc 16.2.0 (Rev4, Built by MSYS2 project)
+configuration: --prefix=/x/native/build/ffmpeg-no-zvbi/staging --bindir=/x/native/build/ffmpeg-no-zvbi/staging/bin --libdir=/x/native/build/ffmpeg-no-zvbi/staging/bin --shlibdir=/x/native/build/ffmpeg-no-zvbi/staging/bin --pkg-config=pkg-config --cc=gcc --cxx=g++ --ar=ar --ranlib=ranlib --nm=nm --windres=windres --target-os=mingw32 --arch=x86_64 --enable-cross-compile --disable-autodetect --disable-gpl --disable-nonfree --disable-libzvbi --enable-version3 --enable-shared --disable-static --enable-pthreads --disable-w32threads --enable-d3d11va --enable-mediafoundation --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libvpx --disable-debug
+libavutil      61.  1.102 / 61.  1.102
+libavcodec     63.  1.102 / 63.  1.102
+libavformat    63.  1.102 / 63.  1.102
+libavdevice    63.  1.102 / 63.  1.102
+libavfilter    12.  1.102 / 12.  1.102
+libswscale     10.  1.102 / 10.  1.102
+libswresample   7.  1.102 /  7.  1.102
+
+Exiting with exit code 0

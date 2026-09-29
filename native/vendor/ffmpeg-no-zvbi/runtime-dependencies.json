@@ -1,0 +1,579 @@
+{
+  "generated_utc": "2026-09-29T13:25:54Z",
+  "executables": [
+    "ffmpeg.exe",
+    "ffprobe.exe"
+  ],
+  "pe_files": [
+    {
+      "file": "ffmpeg.exe",
+      "sha256": "7af5c5af3397ed41c86455d474695765350f60e38e5966538ceef460dd5f498c"
+    },
+    {
+      "file": "ffprobe.exe",
+      "sha256": "1686d35006315cf2efadf552035c0587a9efb9bbd65661a9b6695e6cf78adec1"
+    },
+    {
+      "file": "libgcc_s_seh-1.dll",
+      "sha256": "d7e343dd266747177c3699bc3201ea36eceef158e98530e089263bc55bb2a6d7"
+    },
+    {
+      "file": "libwinpthread-1.dll",
+      "sha256": "72bf8802de3a99d28f0bc2db9a11f281a9f9f3fa83dab2bc67e69fac3bd3d9c0"
+    },
+    {
+      "file": "avcodec-63.dll",
+      "sha256": "41af19c20003530f0c36a4d303d889b45a3450625af1acccb1102a5d5ab89c37"
+    },
+    {
+      "file": "avdevice-63.dll",
+      "sha256": "aa7d9a858b28a656949f225136937a33d34f8db445c381db20210fd9cd76ea34"
+    },
+    {
+      "file": "avfilter-12.dll",
+      "sha256": "e9494c2a62829fdb0eefa1b1d04b4a29cd4841ba56c3dab318f72e3f52024e1a"
+    },
+    {
+      "file": "avformat-63.dll",
+      "sha256": "3618a762506c6dd0f4a7bb13e763fd31b1b31b1738f84081e1e69aff3f2c217b"
+    },
+    {
+      "file": "avutil-61.dll",
+      "sha256": "2914a85b30ed0151cd40ae54d9803349af41501e148e0f264fe9ab6430b723c1"
+    },
+    {
+      "file": "swresample-7.dll",
+      "sha256": "9c5a8f1f5bb1b33e2a565722b5601388f0f9217cce8c967658d9e583028a13ea"
+    },
+    {
+      "file": "swscale-10.dll",
+      "sha256": "5a98c62fe55da0c6bfcc1126ad962bc3fd16f3d4a674a545fdb5dc1bef580e28"
+    },
+    {
+      "file": "libmp3lame-0.dll",
+      "sha256": "f40c566b56a97e32036f3d5263fd7dc2dafa6fc7ded326045dd637dd55d68c24"
+    },
+    {
+      "file": "libopus-0.dll",
+      "sha256": "90aa25a0a6525d7da48a7ae8dd3306e45b0c28ce09a73d2a02b56cd95418d5be"
+    },
+    {
+      "file": "libvorbis-0.dll",
+      "sha256": "3282629e1b5d6ececcfde133b20fe73de5c81b6eadfbb4697e6718886c7c97a6"
+    },
+    {
+      "file": "libvorbisenc-2.dll",
+      "sha256": "090f0734883464af440eb9084b22384951b95b1bf325236b322dbef7f93530aa"
+    },
+    {
+      "file": "libvpx-1.dll",
+      "sha256": "ce199be3f352d76a1994ca7e4b0549ca6f8a6700ba5f5bbde24adef262256f01"
+    },
+    {
+      "file": "libstdc++-6.dll",
+      "sha256": "494bd9045948198ef4d3bc838c7362d4cfd49c890b439c096b1817aa7c7fa6ff"
+    },
+    {
+      "file": "libogg-0.dll",
+      "sha256": "3038ce8d161324a6349bf7c83b78493857ff6a3501e3adb3d541c6a07bd94a57"
+    }
+  ],
+  "imports": [
+    {
+      "from": "ffmpeg.exe",
+      "dll": "libgcc_s_seh-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "SHELL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "avcodec-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "avdevice-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "avfilter-12.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "avformat-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "swresample-7.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffmpeg.exe",
+      "dll": "swscale-10.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "SHELL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "avcodec-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "avdevice-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "avfilter-12.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "avformat-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "swresample-7.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "ffprobe.exe",
+      "dll": "swscale-10.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libgcc_s_seh-1.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libgcc_s_seh-1.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libgcc_s_seh-1.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libwinpthread-1.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libwinpthread-1.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "libmp3lame-0.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "ole32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "libopus-0.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "libvorbis-0.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "libvorbisenc-2.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "libvpx-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avcodec-63.dll",
+      "dll": "swresample-7.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "GDI32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "ole32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "OLEAUT32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "SHLWAPI.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "USER32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "AVICAP32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "avcodec-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "avfilter-12.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "avformat-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avdevice-63.dll",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "libgcc_s_seh-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "libstdc++-6.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "USER32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "avcodec-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "avformat-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "swresample-7.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avfilter-12.dll",
+      "dll": "swscale-10.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avformat-63.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avformat-63.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avformat-63.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avformat-63.dll",
+      "dll": "WS2_32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avformat-63.dll",
+      "dll": "avcodec-63.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avformat-63.dll",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "avutil-61.dll",
+      "dll": "bcrypt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avutil-61.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avutil-61.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "avutil-61.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "swresample-7.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "swresample-7.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "swresample-7.dll",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "swscale-10.dll",
+      "dll": "libgcc_s_seh-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "swscale-10.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "swscale-10.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "swscale-10.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "swscale-10.dll",
+      "dll": "avutil-61.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libmp3lame-0.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libmp3lame-0.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libopus-0.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libopus-0.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libvorbis-0.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libvorbis-0.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libvorbis-0.dll",
+      "dll": "libogg-0.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libvorbisenc-2.dll",
+      "dll": "libvorbis-0.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libvorbisenc-2.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libvorbisenc-2.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libvpx-1.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libvpx-1.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libvpx-1.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libstdc++-6.dll",
+      "dll": "libgcc_s_seh-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libstdc++-6.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libstdc++-6.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libstdc++-6.dll",
+      "dll": "libwinpthread-1.dll",
+      "kind": "candidate-stage"
+    },
+    {
+      "from": "libogg-0.dll",
+      "dll": "KERNEL32.dll",
+      "kind": "windows-system32"
+    },
+    {
+      "from": "libogg-0.dll",
+      "dll": "msvcrt.dll",
+      "kind": "windows-system32"
+    }
+  ],
+  "unresolved": []
+}

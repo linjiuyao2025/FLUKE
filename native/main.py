@@ -399,7 +399,7 @@ class BackupBridge(QObject):
         self._pending_backup = None
         self._pending_encrypted_password = None
         if not isinstance(file_url, QUrl) or not file_url.isLocalFile():
-            return {"ok": False, "error": "请选择本机万象来信完整备份文件。"}
+            return {"ok": False, "error": "请选择本机 FLUKE 完整备份文件。"}
         path = Path(file_url.toLocalFile())
         encrypted_version = encrypted_backup_version(path)
         if encrypted_version is not None:

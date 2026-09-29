@@ -40,8 +40,8 @@ Dialog {
     signal appearanceSaved(var brand)
 
     readonly property var defaults: ({
-        name: "万象来信",
-        avatar: "万",
+        name: "FLUKE",
+        avatar: "F",
         avatarImage: "",
         tagline: "把远方与日常，折进今天",
         theme: "plum"
@@ -98,7 +98,7 @@ Dialog {
     function firstLetter(value) {
         var text = String(value || "").trim()
         if (!text.length)
-            return "万"
+            return "F"
         if (brandStore && brandStore.firstLetter)
             return brandStore.firstLetter(text)
         return Array.from(text)[0]

@@ -1,0 +1,27 @@
+--- a/PKGBUILD
++++ b/PKGBUILD
+@@ -22,6 +22,5 @@
+ license=('spdx:MIT')
+ depends=("${MINGW_PACKAGE_PREFIX}-cc-libs"
+-         "${MINGW_PACKAGE_PREFIX}-jbigkit"
+          "${MINGW_PACKAGE_PREFIX}-lerc"
+          "${MINGW_PACKAGE_PREFIX}-libjpeg-turbo"
+          "${MINGW_PACKAGE_PREFIX}-libdeflate"
+@@ -59,7 +58,7 @@ build() {
+     --enable-static \
+     --disable-shared \
+     --enable-cxx \
+-    --enable-jbig \
++    --disable-jbig \
+     --enable-lerc \
+     --enable-libdeflate \
+     --enable-webp
+@@ -76,7 +75,7 @@ build() {
+     --disable-static \
+     --enable-shared \
+     --enable-cxx \
+-    --enable-jbig \
++    --disable-jbig \
+     --enable-lerc \
+     --enable-libdeflate \
+     --enable-webp

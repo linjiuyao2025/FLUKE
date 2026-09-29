@@ -1,0 +1,311 @@
+{
+  "ffmpeg": {
+    "version": "9.0.2-10-g51c4a23d74",
+    "sourceUrl": "https://codeload.github.com/FFmpeg/FFmpeg/tar.gz/51c4a23d74",
+    "sourceArchive": "ffmpeg-g51c4a23d74.tar.gz",
+    "sourceSha256": "10323f69c6a2b69e035c5cfdd3a1ab366af784e3bbe25d1cb64534027791b384",
+    "license": "LGPL-3.0-or-later"
+  },
+  "externalPackages": [
+    {
+      "name": "mingw-w64-lame",
+      "version": "3.100-3",
+      "license": "LGPL",
+      "homepage": "https://lame.sourceforge.io/",
+      "sourceOnlyArchive": "mingw-w64-lame-3.100-3.src.tar.zst",
+      "sourceOnlyUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-lame-3.100-3.src.tar.zst",
+      "sourceOnlyArchiveSha256": "dfd51143ea25aa0b67f5d355127b8a89a27379b1b128f0b2f9eed7c3327656ab",
+      "sourcesAndPatches": [
+        {
+          "filename": "lame-3.100.tar.gz",
+          "sha256": "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e",
+          "source": "https://downloads.sourceforge.net/lame/lame-3.100.tar.gz"
+        },
+        {
+          "filename": "0002-07-field-width-fix.all.patch",
+          "sha256": "d3ba595816761706d1e5dcf432f0b3ad8c9c6b37584032e21bf24c89e4fd0fc8",
+          "source": "0002-07-field-width-fix.all.patch"
+        },
+        {
+          "filename": "0005-no-gtk.all.patch",
+          "sha256": "cd3c8807de5b435b8e97200e369e7e8f93f7fc0eba7d44b393ede925e42d3b00",
+          "source": "0005-no-gtk.all.patch"
+        },
+        {
+          "filename": "0006-dont-use-outdated-symbol-list.patch",
+          "sha256": "21c7ee85854be00a3e8e6790911292837676f083a5c1085718bed899096d3679",
+          "source": "0006-dont-use-outdated-symbol-list.patch"
+        },
+        {
+          "filename": "0007-revert-posix-code.patch",
+          "sha256": "1e7f61456b15ceea613de8fd982b3f892340b851393d4ca4aff44395ae237ae9",
+          "source": "0007-revert-posix-code.patch"
+        },
+        {
+          "filename": "0008-skip-termcap.patch",
+          "sha256": "8fddeebd0ccdec62ede2932ce3bbe767af6ed6f06018f7f13113401d4ce06179",
+          "source": "0008-skip-termcap.patch"
+        },
+        {
+          "filename": "0009-lame-add-pkgconfig.patch",
+          "sha256": "65edcb5090417f822227b4a43f2f0c0224ceca7486fb3fd01aa9a6cf153ad714",
+          "source": "0009-lame-add-pkgconfig.patch"
+        }
+      ]
+    },
+    {
+      "name": "mingw-w64-libvpx",
+      "version": "1.17.0-1",
+      "license": "BSD-3-Clause",
+      "homepage": "https://github.com/webmproject/libvpx",
+      "sourceOnlyArchive": "mingw-w64-libvpx-1.17.0-1.src.tar.zst",
+      "sourceOnlyUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-libvpx-1.17.0-1.src.tar.zst",
+      "sourceOnlyArchiveSha256": "7b322fffe50501d26bbbb489135e5001f6096da2529ad992c712c00c94bb38dd",
+      "sourcesAndPatches": [
+        {
+          "filename": "libvpx-1.17.0.tar.gz",
+          "sha256": "1020f184046187baa2985dbde38e0691f49c44088bca7a1842b0236c6081dc0a",
+          "source": "https://github.com/webmproject/libvpx/archive/v1.17.0/libvpx-1.17.0.tar.gz"
+        },
+        {
+          "filename": "0001-enable-shared-on.mingw.patch",
+          "sha256": "f37a24525725cad215d73c538c0b06343b043f2b07553e7dc25835bd68af0695",
+          "source": "0001-enable-shared-on.mingw.patch"
+        }
+      ]
+    },
+    {
+      "name": "mingw-w64-opus",
+      "version": "1.6.1-1",
+      "license": "BSD-3-Clause",
+      "homepage": "https://github.com/xiph/opus",
+      "sourceOnlyArchive": "mingw-w64-opus-1.6.1-1.src.tar.zst",
+      "sourceOnlyUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-opus-1.6.1-1.src.tar.zst",
+      "sourceOnlyArchiveSha256": "f9f4f73a700edcd35e11d7f47bcb164c850b781fa2cccb48cd30d505262b43a2",
+      "sourcesAndPatches": [
+        {
+          "filename": "opus-1.6.1.tar.gz",
+          "sha256": "6ffcb593207be92584df15b32466ed64bbec99109f007c82205f0194572411a1",
+          "source": "https://downloads.xiph.org/releases/opus/opus-1.6.1.tar.gz"
+        },
+        {
+          "filename": "001-aarch64-features.patch",
+          "sha256": "5fb0f28264492d6512acb6eec7b5e147c922751f6df30d1317114048eca01516",
+          "source": "001-aarch64-features.patch"
+        }
+      ]
+    },
+    {
+      "name": "mingw-w64-libvorbis",
+      "version": "1.3.7-3",
+      "license": "custom (Xiph license text included)",
+      "homepage": "https://gitlab.xiph.org/xiph/vorbis",
+      "sourceOnlyArchive": "mingw-w64-libvorbis-1.3.7-3.src.tar.zst",
+      "sourceOnlyUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-libvorbis-1.3.7-3.src.tar.zst",
+      "sourceOnlyArchiveSha256": "429f3219de93435cbaa7737627b3b548ba8917d09c525f2005b9283ac5b39142",
+      "sourcesAndPatches": [
+        {
+          "filename": "libvorbis-1.3.7.tar.gz",
+          "sha256": "0e982409a9c3fc82ee06e08205b1355e5c6aa4c36bca58146ef399621b0ce5ab",
+          "source": "https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "mingw-w64-libogg",
+      "version": "1.3.6-1",
+      "license": "BSD-3-Clause",
+      "homepage": "https://gitlab.xiph.org/xiph/ogg",
+      "sourceOnlyArchive": "mingw-w64-libogg-1.3.6-1.src.tar.zst",
+      "sourceOnlyUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-libogg-1.3.6-1.src.tar.zst",
+      "sourceOnlyArchiveSha256": "af94ea3c4011694b7a68904144ec1ab73c6c649152c78cb93a7df2a6c386b351",
+      "sourcesAndPatches": [
+        {
+          "filename": "libogg-1.3.6.tar.gz",
+          "sha256": "83e6704730683d004d20e21b8f7f55dcb3383cdf84c0daedf30bde175f774638",
+          "source": "https://downloads.xiph.org/releases/ogg/libogg-1.3.6.tar.gz"
+        },
+        {
+          "filename": "libogg-1.3.4-versioned-dll-cmake.patch",
+          "sha256": "18772896694597eb60ab3f9fb6bc7629759d51a7fa0c1645da1f8d7ba11c1bf8",
+          "source": "libogg-1.3.4-versioned-dll-cmake.patch"
+        }
+      ]
+    },
+    {
+      "name": "mingw-w64-gcc",
+      "version": "16.2.0-4",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later",
+      "homepage": "https://gcc.gnu.org",
+      "sourceOnlyArchive": "mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "sourceOnlyUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "sourceOnlyArchiveSha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "srcInfoFile": "mingw-w64-gcc-16.2.0-4.SRCINFO",
+      "srcInfoSha256": "c175f88951ae11e5d3410277d85c1776ce60d56d542c3559e2422b2bcbb2f285",
+      "runtimeFiles": [
+        "libgcc_s_seh-1.dll",
+        "libstdc++-6.dll"
+      ],
+      "sourcesAndPatches": [
+        {
+          "source": "https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz",
+          "sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e"
+        },
+        {
+          "source": "https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz.sig",
+          "sha256": null
+        },
+        {
+          "source": "gdbinit",
+          "sha256": "bce81824fc89e5e62cca350de4c17a27e27a18a1a1ad5ca3492aec1fc5af3234"
+        },
+        {
+          "source": "0002-i386-Keep-SEH-enabled-for-Win64-sysv_abi-functions.patch",
+          "sha256": "fdf4e90a56fc195a8f9a969af39335f158a29f29d42d33c00d908fc47cf5ad24"
+        },
+        {
+          "source": "0003-Windows-Follow-Posix-dir-exists-semantics-more-close.patch",
+          "sha256": "3fc35067823f87e48dd3bfd265e7593000dc110fa9ad5f16c81b896765fc897a"
+        },
+        {
+          "source": "0007-Build-EXTRA_GNATTOOLS-for-Ada.patch",
+          "sha256": "90d5cb570083f9dea4ac0f0f87e3e8d2230f5052e6f9b946061a20a224a9d195"
+        },
+        {
+          "source": "0008-Prettify-linking-no-undefined.patch",
+          "sha256": "8d2d53ae26b777d90189240494de1b895c5efa1ebdcdfbf5774f29fc742499d9"
+        },
+        {
+          "source": "0011-Enable-shared-gnat-implib.patch",
+          "sha256": "5ef4148acc4a2b7ed648d4fe75fab5545e84b4b93a12d6ba4e4ea6061dd635fa"
+        },
+        {
+          "source": "0012-Handle-spaces-in-path-for-default-manifest.patch",
+          "sha256": "e98805ead7d78ee2a92f237894c4b2b7ddc1688e1b517d8c04f28d440202e40f"
+        },
+        {
+          "source": "0014-gcc-9-branch-clone_function_name_1-Retain-any-stdcall-suffix.patch",
+          "sha256": "fd9bdecb2bbc4796bbc9f00b708dac42ef9e3464a06d6d27e5475cee117de5be"
+        },
+        {
+          "source": "0020-libgomp-Don-t-hard-code-MS-printf-attributes.patch",
+          "sha256": "ad1f7b5e7afaaec008b7cbd14feea13a10989fa91bda7003af72d457619bb199"
+        },
+        {
+          "source": "0021-bootstrap-gnattools-Pass-target-sysroot-flags-to-boo.patch",
+          "sha256": "76455c46eec4df95a80bbf7e5bcd2d165f300976c79c1baf0bf7ed20f000cdd4"
+        },
+        {
+          "source": "0022-mingw-Remove-outdated-mingw-stuff.patch",
+          "sha256": "ec05f8f26698dae4e0e0b58189cbf509185ad6d40b4950b33e28b638bf70c7ae"
+        },
+        {
+          "source": "0023-Ada-Don-t-export-gnat1-s-symbols-on-PE-hosts.patch",
+          "sha256": "395dd4df29c295f917aa4a136a0aa72af34eee6320ecc2d92ee717397578398d"
+        },
+        {
+          "source": "0024-libgfortran-Guard-locale-restoration-for-formatted-I0.patch",
+          "sha256": "976d14f803a211b19d9bf0169c08d4fde05af5cc18073f2fc8efc9a3cb17890a"
+        },
+        {
+          "source": "0025-libgfortran-Copy-LC_NUMERIC-string-for-formatted-IO.patch",
+          "sha256": "f591efc820a2c72aefb83179f7cbd3f4654231b68700486bd04ee32e2db61de5"
+        },
+        {
+          "source": "0140-gcc-diagnostic-color.patch",
+          "sha256": "c94004dab1685a6fa9124de86aae742df4136a2e9ff5d5e1ad87ecdc35fbcef4"
+        },
+        {
+          "source": "0200-add-m-no-align-vector-insn-option-for-i386.patch",
+          "sha256": "1484911163634f30324827619c873a6267b377abba0df8bbedfd128163c53ea4"
+        },
+        {
+          "source": "2001-fix-building-rust-on-mingw-w64.patch",
+          "sha256": "a411f59953553a3d01dd64c79b1acbb91eca092c4cb01bfd26b1c51c3eb798e8"
+        },
+        {
+          "source": "3001-fix-codeview-crashes.patch",
+          "sha256": "f21f9ab731e9cab8fd4ca8c289497f859ef7004e6fa0507877dc2559ac2071c3"
+        }
+      ]
+    },
+    {
+      "name": "mingw-w64-winpthreads",
+      "version": "14.0.0.r426.g4564ee4b5-1",
+      "license": "MIT AND BSD-3-Clause-Clear",
+      "homepage": "https://www.mingw-w64.org/",
+      "sourceOnlyArchive": "mingw-w64-winpthreads-14.0.0.r426.g4564ee4b5-1.src.tar.zst",
+      "sourceOnlyUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-winpthreads-14.0.0.r426.g4564ee4b5-1.src.tar.zst",
+      "sourceOnlyArchiveSha256": "5493832de1b7e24f09edb556ed409091b0844f9677212c4865618d6f93c508be",
+      "srcInfoFile": "mingw-w64-winpthreads-14.0.0.r426.g4564ee4b5-1.SRCINFO",
+      "srcInfoSha256": "c99535913544afa7a57e5c7da19d92c42d8401e5978fabade279619799de91ff",
+      "runtimeFiles": [
+        "libwinpthread-1.dll"
+      ],
+      "sourcesAndPatches": [
+        {
+          "source": "mingw-w64::git+https://git.code.sf.net/p/mingw-w64/mingw-w64#commit=4564ee4b5063097bf747af3a3f8270a28adff820",
+          "sha256": "6d5e5e4c55ec1b28a36768bf8fa64658724ce2e0d0cc95a069faeddf59dd6599"
+        },
+        {
+          "source": "0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch",
+          "sha256": "2e779bcc60a1422b23e0cfdb5c0f6851f2382592bb4675d08a6bdef78d5e5c10"
+        }
+      ]
+    }
+  ],
+  "licenseTexts": [
+    {
+      "path": "notices/ffmpeg-COPYING.LGPLv3",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+    },
+    {
+      "path": "notices/lame-COPYING",
+      "sha256": "bfe4a52dc4645385f356a8e83cc54216a293e3b6f1cb4f79f5fc0277abf937fd"
+    },
+    {
+      "path": "notices/lame-LICENSE",
+      "sha256": "7a40cbd8818c57e5285e83c772a459a996d1662c824a879836b97b473c07cae4"
+    },
+    {
+      "path": "notices/libvpx-LICENSE",
+      "sha256": "8267348d5af1262c11d1a08de2f5afc77457755f1ac658627dd9acf71011d615"
+    },
+    {
+      "path": "notices/libvpx-PATENTS",
+      "sha256": "cc3273e0694ea5896145e0677699b53471b03ea43021ddc50e7923fbb9f5023c"
+    },
+    {
+      "path": "notices/opus-COPYING",
+      "sha256": "01e1167d54a096d123cf6dfbbeb19587278845c6481d2d66d545669846079551"
+    },
+    {
+      "path": "notices/libvorbis-COPYING",
+      "sha256": "ec1815db59fcd302846df949d7424876cb2e2dc5ed1606c5fb0b36787b1cf43a"
+    },
+    {
+      "path": "notices/libogg-COPYING",
+      "sha256": "d2ab5758336489da61c12cc5bb757da5339c4ae9001f9bb0562b4370249af814"
+    },
+    {
+      "path": "notices/gcc-COPYING.RUNTIME",
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74"
+    },
+    {
+      "path": "notices/gcc-COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "path": "notices/libstdc++-COPYING.RUNTIME",
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74"
+    },
+    {
+      "path": "notices/libstdc++-COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "path": "notices/libwinpthread-COPYING",
+      "sha256": "63263614cdd29f2f93cba85e992f041b31f9fc7b4033692f31269489a8a1b177"
+    }
+  ]
+}

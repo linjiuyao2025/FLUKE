@@ -1,3 +1,7 @@
+param(
+    [string]$ReleaseTag
+)
+
 $ErrorActionPreference = "Stop"
 
 $nativeRoot = $PSScriptRoot
@@ -8,6 +12,9 @@ if (-not $versionMatch.Success) {
     throw "Could not read the FLUKE version from pyproject.toml."
 }
 $version = $versionMatch.Groups[1].Value
+if ([string]::IsNullOrWhiteSpace($ReleaseTag)) {
+    $ReleaseTag = "native-v$version-preview.1"
+}
 $python = Join-Path $nativeRoot ".venv\Scripts\python.exe"
 if (-not (Test-Path -LiteralPath $python)) {
     throw 'Python environment not found. Create .venv and install the project with: pip install -e ".[build]"'
@@ -116,7 +123,7 @@ try {
         throw "PyInstaller completed without producing dist\FLUKE\FLUKE-convert.exe."
     }
 
-    & (Join-Path $nativeRoot "scripts\package-converter-engine-updates.ps1") -Version $version
+    & (Join-Path $nativeRoot "scripts\package-converter-engine-updates.ps1") -Version $version -ReleaseTag $ReleaseTag
 
     $installerScript = Join-Path $nativeRoot "installer\FLUKE.iss"
     & $innoCompiler "/DAppVersion=$version" $installerScript
@@ -131,4 +138,5 @@ $installer = Join-Path $nativeRoot "release\FLUKE-$version-Setup.exe"
 if (-not (Test-Path -LiteralPath $installer)) {
     throw "The FLUKE installer was not created at the expected output path."
 }
+& (Join-Path $nativeRoot "scripts\verify-release-artifacts.ps1") -Version $version -ReleaseTag $ReleaseTag
 Get-Item -LiteralPath $installer | Select-Object FullName, Length, LastWriteTime

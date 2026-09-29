@@ -1,0 +1,134 @@
+{
+  "engine": "D:\\Projects\\my work\\native\\build\\ffmpeg-no-zvbi\\staging\\bin\\ffmpeg.exe",
+  "outputs": {
+    "mp3": {
+      "size": 5195,
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "flac": {
+      "size": 20413,
+      "streams": [
+        {
+          "codec_name": "flac",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "m4a": {
+      "size": 17651,
+      "streams": [
+        {
+          "codec_name": "aac",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "aac": {
+      "size": 16980,
+      "streams": [
+        {
+          "codec_name": "aac",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "ogg": {
+      "size": 6110,
+      "streams": [
+        {
+          "codec_name": "vorbis",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "opus": {
+      "size": 19370,
+      "streams": [
+        {
+          "codec_name": "opus",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "wma": {
+      "size": 35742,
+      "streams": [
+        {
+          "codec_name": "wmav2",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "wav": {
+      "size": 88278,
+      "streams": [
+        {
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "webm_vp9_opus": {
+      "size": 67495,
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "codec_type": "video"
+        },
+        {
+          "codec_name": "opus",
+          "codec_type": "audio"
+        }
+      ]
+    },
+    "mp4_h264_mf": {
+      "size": 99651,
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video"
+        },
+        {
+          "codec_name": "aac",
+          "codec_type": "audio"
+        }
+      ]
+    }
+  },
+  "targets": {
+    "audio_from_wav": [
+      "mp3",
+      "flac",
+      "m4a",
+      "aac",
+      "ogg",
+      "opus",
+      "wma"
+    ],
+    "video_from_avi": [
+      "mp3",
+      "wav",
+      "flac",
+      "m4a",
+      "aac",
+      "ogg",
+      "opus",
+      "wma",
+      "mp4",
+      "mkv",
+      "mov",
+      "webm"
+    ],
+    "webm_codecs": [
+      {
+        "value": "vp9",
+        "label": "VP9"
+      }
+    ]
+  }
+}

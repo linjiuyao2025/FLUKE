@@ -133,7 +133,7 @@ class NewsDropQmlIntegrationTests(unittest.TestCase):
             "production Main.qml failed to load:\n" + "\n".join(self.qml_warnings),
         )
         self.window = self.engine.rootObjects()[0]
-        self.assertEqual(self.window.title(), "万象来信")
+        self.assertEqual(self.window.title(), "FLUKE")
         self.window.resize(1480, 960)
         self.window.show()
         QTest.qWait(150)

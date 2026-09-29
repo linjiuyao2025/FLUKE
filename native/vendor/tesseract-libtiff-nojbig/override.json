@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "name": "fluke-tesseract-libtiff-nojbig",
+  "version": "4.7.2-1",
+  "binary": {
+    "path": "libtiff-6.dll",
+    "sha256": "4339d63bceb39630fda804b00f345d217c3893e75ae9618ba93438bf26b49161",
+    "sizeBytes": 874122,
+    "license": "MIT",
+    "upstreamPackage": "mingw-w64-x86_64-libtiff 4.7.2-1"
+  },
+  "sourceArchive": {
+    "path": "source/msys2/mingw-w64-libtiff-4.7.2-1.src.tar.zst",
+    "url": "https://mirror.msys2.org/mingw/sources/mingw-w64-libtiff-4.7.2-1.src.tar.zst",
+    "sha256": "11f3bdc23a154a5cea2f8fffeab3e2a118bd773d2769e1dcea926ff02f2cf3e2",
+    "license": "MIT"
+  },
+  "licenseFile": {
+    "path": "LICENSE.md",
+    "sha256": "0e27c2382d7b8147972bbb746e04059a1152c8d0fda9d03ef1399d1a433c4ade"
+  },
+  "build": {
+    "officialRecipe": "PKGBUILD",
+    "officialRecipeSha256": "2eecac8b6120c97e3b2754098f57c9bd026dcc121f67a9e2f9bf7e1a689e9819",
+    "officialPatch": "patches/0002-libtiff-install-headers.patch",
+    "officialPatchSha256": "493742947c8667655b6b89f2d7d27e92e1438a490ed86f50811112394b432a12",
+    "localPatch": "patches/0001-disable-jbig.patch",
+    "localPatchSha256": "a8717190f0551eb476314b5fce9c1a19789991ba295e0b7e28ee2cc14f00746d",
+    "script": "build-nojbig.sh",
+    "scriptSha256": "f5c22b78e92531c1de66915e61eae335205fedd2d8d9da71ee56cd79296aad71",
+    "configureFlags": [
+      "--disable-static",
+      "--enable-shared",
+      "--enable-cxx",
+      "--disable-jbig",
+      "--enable-lerc",
+      "--enable-libdeflate",
+      "--enable-webp"
+    ],
+    "environment": {
+      "CC": "gcc",
+      "CXX": "g++",
+      "AR": "ar",
+      "RANLIB": "ranlib",
+      "LD": "ld",
+      "LDFLAGS": "-L/mingw64/lib",
+      "lt_cv_path_LD": "ld",
+      "lt_cv_path_LDCXX": "ld",
+      "CFLAGS": "-fno-strict-aliasing",
+      "CXXFLAGS": "-fno-strict-aliasing"
+    }
+  },
+  "imports": [
+    "libdeflate.dll",
+    "libjpeg-8.dll",
+    "libLerc.dll",
+    "liblzma-5.dll",
+    "libwebp-7.dll",
+    "zlib1.dll",
+    "libzstd.dll",
+    "KERNEL32.dll",
+    "msvcrt.dll"
+  ],
+  "dependencies": [
+    {
+      "name": "mingw-w64-x86_64-lerc",
+      "version": "4.1.1-1",
+      "license": "Apache-2.0",
+      "source": "source/dependencies/mingw-w64-lerc-4.1.1-1.src.tar.zst",
+      "sourceUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-lerc-4.1.1-1.src.tar.zst",
+      "sourceSha256": "697824f8dba0b297949b294d7f850a21dfa817802cf91f3a73b6192a7c234f46"
+    },
+    {
+      "name": "mingw-w64-x86_64-libdeflate",
+      "version": "1.26-1",
+      "license": "MIT",
+      "source": "source/dependencies/mingw-w64-libdeflate-1.26-1.src.tar.zst",
+      "sourceUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-libdeflate-1.26-1.src.tar.zst",
+      "sourceSha256": "8f08ba1c541d7cdffde7113e0796fa3ed5ae494702c57d86b736f82167805ea6"
+    },
+    {
+      "name": "mingw-w64-x86_64-libjpeg-turbo",
+      "version": "3.2.0-1",
+      "license": "custom:BSD-like",
+      "source": "source/dependencies/mingw-w64-libjpeg-turbo-3.2.0-1.src.tar.zst",
+      "sourceUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-libjpeg-turbo-3.2.0-1.src.tar.zst",
+      "sourceSha256": "98bfbef730e79ca74c88842eb27730db11429dbae4d95e0f5d7859e316026a74"
+    },
+    {
+      "name": "mingw-w64-x86_64-libwebp",
+      "version": "1.6.0-1",
+      "license": "BSD-3-Clause",
+      "source": "source/dependencies/mingw-w64-libwebp-1.6.0-1.src.tar.zst",
+      "sourceUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-libwebp-1.6.0-1.src.tar.zst",
+      "sourceSha256": "c8c63f98e018a7595d22e8a3e65b7caf83345fed666866a6e67d153b16f48141"
+    },
+    {
+      "name": "mingw-w64-x86_64-xz",
+      "version": "5.8.4-1",
+      "license": "0BSD AND LGPL-2.1-or-later AND GPL-2.0-or-later",
+      "source": "source/dependencies/mingw-w64-xz-5.8.4-1.src.tar.zst",
+      "sourceUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-xz-5.8.4-1.src.tar.zst",
+      "sourceSha256": "b8acbc56b2bfe08df7bffff423f3bf07ee85dbec4e07416017ab04c8afb9d13e"
+    },
+    {
+      "name": "mingw-w64-x86_64-zlib",
+      "version": "1.3.2-2",
+      "license": "Zlib",
+      "source": "source/dependencies/mingw-w64-zlib-1.3.2-2.src.tar.zst",
+      "sourceUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-zlib-1.3.2-2.src.tar.zst",
+      "sourceSha256": "eef69dea52357e01b272d6fd6dc4d7c0773f71260cb7bcde6047c8c383518db3"
+    },
+    {
+      "name": "mingw-w64-x86_64-zstd",
+      "version": "1.5.7-2",
+      "license": "BSD-3-Clause OR GPL-2.0-or-later",
+      "source": "source/dependencies/mingw-w64-zstd-1.5.7-2.src.tar.zst",
+      "sourceUrl": "https://mirror.msys2.org/mingw/sources/mingw-w64-zstd-1.5.7-2.src.tar.zst",
+      "sourceSha256": "306797282df799e95d550e6d0bb4b0a7b848027b8e13893a24236e060837c217"
+    }
+  ]
+}

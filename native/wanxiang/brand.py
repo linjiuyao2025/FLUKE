@@ -29,9 +29,10 @@ from .migration import MigrationPackage
 
 
 BRAND_SETTING_KEY = "brandAppearance"
+LEGACY_BRAND_DEFAULT_NAME = "万象来信"
 BRAND_DEFAULT: dict[str, Any] = {
-    "name": "万象来信",
-    "avatar": "万",
+    "name": "FLUKE",
+    "avatar": "F",
     "tagline": "把远方与日常，折进今天",
     "theme": "plum",
 }
@@ -131,6 +132,23 @@ def _normalize_runtime(value: Any) -> dict[str, Any]:
         "legacyBrand": _json_copy(legacy, "旧版品牌外观"),
         "settingsOverrides": _json_copy(overrides, "本机品牌设置覆盖"),
     }
+
+
+def _migrate_legacy_default_name(runtime: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Rename an imported built-in name unless a local name was explicitly saved."""
+    if runtime.get("brandNameMigrationVersion") == 1:
+        return runtime, False
+    overrides = runtime["settingsOverrides"]
+    legacy = runtime["legacyBrand"]
+    if "name" in overrides or legacy.get("name") != LEGACY_BRAND_DEFAULT_NAME:
+        return runtime, False
+    updated_overrides = deepcopy(overrides)
+    updated_overrides["name"] = BRAND_DEFAULT["name"]
+    return {
+        **runtime,
+        "settingsOverrides": updated_overrides,
+        "brandNameMigrationVersion": 1,
+    }, True
 
 
 def _utf16_length(value: str) -> int:
@@ -313,13 +331,20 @@ class BrandRepository:
         stored = get_app_setting(self.database_path, BRAND_SETTING_KEY, _MISSING)
         if stored is _MISSING:
             self._runtime = _normalize_runtime({"version": 1, "legacyBrand": incoming_brand, "settingsOverrides": {}})
+            self._runtime, migrated_name = _migrate_legacy_default_name(self._runtime)
+            if migrated_name:
+                self._commit(self._runtime)
         else:
             self._runtime = _normalize_runtime(stored)
+            changed = False
             if has_main:
                 merged_legacy = {**self._runtime["legacyBrand"], **incoming_brand}
                 if merged_legacy != self._runtime["legacyBrand"]:
                     self._runtime["legacyBrand"] = merged_legacy
-                    self._commit(self._runtime)
+                    changed = True
+            self._runtime, migrated_name = _migrate_legacy_default_name(self._runtime)
+            if changed or migrated_name:
+                self._commit(self._runtime)
     def _commit(self, runtime: dict[str, Any]) -> None:
         normalized = _normalize_runtime(runtime)
         try:
@@ -385,7 +410,11 @@ class BrandRepository:
             "tagline": tagline,
             "theme": theme,
         })
-        runtime = {**self._runtime, "settingsOverrides": overrides}
+        runtime = {
+            **self._runtime,
+            "settingsOverrides": overrides,
+            "brandNameMigrationVersion": 1,
+        }
         self._commit(runtime)
         return self.brand()
 
@@ -396,7 +425,11 @@ class BrandRepository:
             **BRAND_DEFAULT,
             "avatarImage": "",
         })
-        self._commit({**self._runtime, "settingsOverrides": overrides})
+        self._commit({
+            **self._runtime,
+            "settingsOverrides": overrides,
+            "brandNameMigrationVersion": 1,
+        })
         return self.brand()
 
     def adopt_imported_data(self, snapshot: Any) -> dict[str, Any]:
@@ -405,8 +438,10 @@ class BrandRepository:
         if not has_main:
             return self.brand()
         merged = {**self._runtime["legacyBrand"], **incoming_brand}
-        if merged != self._runtime["legacyBrand"]:
-            self._commit({**self._runtime, "legacyBrand": merged})
+        runtime = {**self._runtime, "legacyBrand": merged}
+        runtime, migrated_name = _migrate_legacy_default_name(runtime)
+        if merged != self._runtime["legacyBrand"] or migrated_name:
+            self._commit(runtime)
         return self.brand()
 
 

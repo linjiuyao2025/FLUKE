@@ -1,0 +1,12 @@
+{
+  "id": "ffmpeg",
+  "version": "9.0.2-10-g51c4a23d74-fluke.1",
+  "executable": "bin/ffmpeg.exe",
+  "probeArgument": "-version",
+  "upstream": "https://github.com/FFmpeg/FFmpeg/commit/51c4a23d74",
+  "ffmpegSource": "https://codeload.github.com/FFmpeg/FFmpeg/tar.gz/51c4a23d74",
+  "ffmpegSourceSha256": "10323f69c6a2b69e035c5cfdd3a1ab366af784e3bbe25d1cb64534027791b384",
+  "license": "LGPL-3.0-or-later",
+  "build": "MINGW64 shared LGPL build; no GPL, nonfree, autodetect, or libzvbi",
+  "tested": "Clean-PATH PE closure; FLUKE media-conversion adapter synthetic audio/video conversions"
+}

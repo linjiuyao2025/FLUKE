@@ -369,7 +369,7 @@ class WebDavPlannerSyncBridge(QObject):
                 ) from exc
             remote = normalize_snapshot(decoded)
             if remote is None:
-                raise WebDavPlannerError("云端文件不是有效的万象来信日程快照，未覆盖任何数据。")
+                raise WebDavPlannerError("云端文件不是有效的 FLUKE 日程快照，未覆盖任何数据。")
         else:
             remote = {
                 "format": SYNC_FORMAT,

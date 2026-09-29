@@ -337,7 +337,7 @@ def _extract_component(
         raise ValueError("更新包缺少第三方许可说明。")
     if spec["source_required"] == "true":
         source_root = staging / "source"
-        if not source_root.is_dir() or not any(path.is_file() for path in source_root.iterdir()):
+        if not source_root.is_dir() or not any(path.is_file() for path in source_root.rglob("*")):
             raise ValueError("此组件更新包缺少对应源码归档，未启用更新。")
     metadata = {
         "id": component["id"],
