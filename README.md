@@ -12,7 +12,7 @@ FLUKE 是本机优先的 Windows 生活工作台。本仓库正在把桌面核�
 
 ## 当前版本状态
 
-GitHub `main` 现包含 FLUKE Native 迁移源码。当前 Latest 是 [FLUKE Native v0.1.2 迁移预览](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.1)。候选实现包含新的 FLUKE 安装向导、side-by-side 版本目录、根目录 launcher，以及只在可回滚布局中出现的自动安装入口：更新器会先检查官方 Release、下载并校验 SHA-256 sidecar，再用隔离临时 SQLite 做启动健康检查；失败时保留旧版本并支持回退。当前全量回归仍有 QtQuick.Pdf/pdfquickplugin 阻塞，真实旧版运行、个人数据、云服务和自动更新闭环也仍待验收，所以这只是预览发布，不代表阶段 6/7 完成。旧版 v0.1.1 的 `D:\FLUKE` 安装仍只允许手动下载/安装，不会被新方案覆盖。Native 正逐阶段对照旧版验收，**整体迁移尚未完成，Native 还不是完整的旧版替代品**。历史 [Electron v1.0.3](https://github.com/linjiyao2025/FLUKE/releases/tag/v1.0.3) 和 Native v0.1.0 仍保留，可作回退版本；在迁移验收完成前，请保留旧版及备份。
+GitHub `main` 现包含 FLUKE Native 迁移源码。当前公开预览是 [FLUKE Native v0.1.2 迁移预览](https://github.com/linjiyao2025/FLUKE/releases/tag/native-v0.1.2-preview.1)。候选实现包含新的 FLUKE 安装向导、side-by-side 版本目录、根目录 launcher，以及只在可回滚布局中出现的自动安装入口：更新器会先检查官方 Release、下载并校验 SHA-256 sidecar，再用隔离临时 SQLite 做启动健康检查；失败时保留旧版本并支持回退。当前全量回归仍有 QtQuick.Pdf/pdfquickplugin 阻塞，真实旧版运行、个人数据、云服务和自动更新闭环也仍待验收，所以这只是预览发布，不代表阶段 6/7 完成。旧版 v0.1.1 的 `D:\FLUKE` 安装仍只允许手动下载/安装，不会被新方案覆盖。Native 正逐阶段对照旧版验收，**整体迁移尚未完成，Native 还不是完整的旧版替代品**。历史 [Electron v1.0.3](https://github.com/linjiyao2025/FLUKE/releases/tag/v1.0.3) 和 Native v0.1.0 仍保留，可作回退版本；在迁移验收完成前，请保留旧版及备份。
 
 当前迁移状态和验证边界见 [FLUKE Native 说明](native/README.md)。真实个人数据、迁移包、SQLite 数据库、凭据和本机测试产物不属于公开仓库。
 
