@@ -18,4 +18,6 @@ The preview.2 candidate has a successful isolated production-layout install, com
 
 The implementation uses the side-by-side design above. Before enabling the button for a build, verify success, cancellation, disk-full, forced termination during installation, failed first launch, restart, and rollback in an isolated Windows environment. Keep user data outside the versioned program payload and confirm it remains readable after both update and rollback. Do not treat the source tests as proof of installed-app acceptance.
 
+The release listing now has a bounded official-page fallback: when the unauthenticated GitHub API returns HTTP 403 or 429, the updater reads `releases.atom`, validates each supported tag through GitHub's `expanded_assets` page, and obtains exact asset sizes through official HTTPS `HEAD` requests. It still requires the exact GitHub download path, sidecar filename, SHA-256, PE, and download-size checks before retaining an installer.
+
 The SHA-256 sidecar detects a damaged or mismatched download; because the installer is not Authenticode-signed, it does not independently prove who published the sidecar.

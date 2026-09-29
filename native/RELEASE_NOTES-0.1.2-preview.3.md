@@ -1,0 +1,28 @@
+# FLUKE Native v0.1.2 — 迁移预览 3
+
+这是 FLUKE Native v0.1.2-preview.3 的公开预览发布。它不会覆盖 `native-v0.1.2-preview.1` 或 `native-v0.1.2-preview.2`，也不会删除 Electron v1.0.3、旧版数据、本机备份或旧版回退路径。
+
+## 本版内容
+
+- 保留 preview.2 的 PyInstaller、Inno Setup 6.7.3、side-by-side 版本目录、根 launcher、安装向导资源和外部 SQLite 数据边界。
+- 应用内更新器在 GitHub API 返回公共限流 `403/429` 时，回退到官方 `releases.atom`、`expanded_assets/<tag>` 页面和官方安装包 `HEAD Content-Length`；仍只接受精确的 FLUKE 官方资产路径。
+- API 与页面回退都继续执行 sidecar 文件名、SHA-256、安装包大小、Windows PE 和失败清理校验。
+- 只有 side-by-side 版本目录具有自动安装入口；旧式平面安装仍保持下载/校验模式。
+
+## 发布资产与证据
+
+- GitHub tag：`native-v0.1.2-preview.3`
+- 安装包：`FLUKE-0.1.2-Setup.exe`
+- 本地候选包路径：`native/release/FLUKE-0.1.2-Setup.exe`
+- 候选包大小：`962,040,550` bytes
+- 候选包 SHA-256：`00ee1b1fdc8f9315bc9af4515ed83d6b6dd1cd70a7f5b7851be4b1ea75521012`
+- `scripts/verify-release-artifacts.ps1` 已通过，并确认 3 个引擎更新包清单。
+- PyInstaller 和 Inno Setup 编译成功；安装向导继续读取 `fluke-wizard.png` 与 `fluke-small.png`。
+- 更新器、launcher 和启动错误聚焦测试共 `22` 项通过；包含 API 限流回退、失败首次启动回退、SQLite 保留、下载中断/取消、磁盘空间不足、SHA-256/PE 校验和不完整版本保护。
+- 真实 GitHub API 返回 `403 rate limit exceeded` 时，官方 Atom/expanded-assets fallback 成功读取 preview.2，得到精确安装包大小并选出可用 Release。
+
+## 阶段边界
+
+本版仍不是阶段 6/7 的最终通过版本。本轮还没有用公开资产完成无人值守的应用内自动安装、重启、失败恢复闭环，也没有完成默认 Windows GUI 逐控件人工验收、真实个人数据切换和长期新旧版并行观察。因此旧版、旧数据和旧回退路径必须保留；自动安装不得扩大到旧式平面布局。
+
+`.sha256` 只证明下载内容与 sidecar 一致；安装包没有 Authenticode 签名，不能单独证明发布者身份。
