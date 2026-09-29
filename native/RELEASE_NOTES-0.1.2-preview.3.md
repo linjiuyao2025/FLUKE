@@ -21,6 +21,7 @@
 - 正式候选包在全新隔离根目录安装成功；安装日志记录 `Installation process succeeded`，`versions\0.1.2\.install-complete.json`、根 launcher 和 `active.json` 均存在；安装后 payload 与 `dist\FLUKE.exe` SHA-256 一致，健康检查退出码为 0，独立 SQLite `PRAGMA integrity_check` 为 `ok`。
 - 更新器、launcher 和启动错误聚焦测试共 `22` 项通过；包含 API 限流回退、失败首次启动回退、SQLite 保留、下载中断/取消、磁盘空间不足、SHA-256/PE 校验和不完整版本保护。
 - 真实 GitHub API 返回 `403 rate limit exceeded` 时，官方 Atom/expanded-assets fallback 成功读取 preview.2，得到精确安装包大小并选出可用 Release。
+- 在同一隔离生产根目录构造失败的 `0.1.3` launcher 候选后，实际根 launcher 激活失败仍保留可启动的 `0.1.1` 活动版本；外部健康 SQLite 的完整性仍为 `ok`。
 
 ## 阶段边界
 
