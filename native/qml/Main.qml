@@ -880,7 +880,9 @@ ApplicationWindow {
                         model: ["1", "2", "3", "4", "5", "6", "7"]
                         currentIndex: root.homeLayoutCardPositionIndex(modelData.id)
                         Layout.preferredWidth: 82
-                        onActivated: root.saveHomeLayoutCardPosition(modelData.id, index)
+                        onActivated: function(index) {
+                            root.saveHomeLayoutCardPosition(modelData.id, index)
+                        }
                     }
                     ComboBox {
                         objectName: "homeLayoutSlot_" + modelData.id
@@ -2273,8 +2275,8 @@ ApplicationWindow {
                     text: {
                         const issue = newsCard.historyIssue(newsCard.pendingHistoryIndex)
                         return issue
-                               ? qsTr("%1 · %2").arg(issue.date || qsTr("日期待定"),
-                                                     issue.topic || qsTr("未命名主题"))
+                               ? qsTr("%1 · %2").arg(issue.date || qsTr("日期待定"))
+                                                     .arg(issue.topic || qsTr("未命名主题"))
                                : qsTr("历史刊期不存在")
                     }
                     color: root.ink
@@ -2350,8 +2352,8 @@ ApplicationWindow {
                 objectName: "newsHistoryReplaceSummary"
                 text: newsCard.draftIssue
                       ? qsTr("当前草稿“%1”将被历史刊期“%2”替换。").arg(
-                                newsCard.draftIssue.topic || qsTr("未命名主题"),
-                                newsCard.pendingHistoryTopic)
+                                newsCard.draftIssue.topic || qsTr("未命名主题"))
+                                .arg(newsCard.pendingHistoryTopic)
                       : qsTr("将载入历史刊期“%1”。").arg(newsCard.pendingHistoryTopic)
                 color: root.ink
                 wrapMode: Text.WordWrap

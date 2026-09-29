@@ -166,6 +166,8 @@ class MediaQmlIntegrationTests(unittest.TestCase):
         snapshot = migration.data
         finance = FinanceBridge(self.database_path, snapshot)
         self.media = MediaBridge(self.database_path, snapshot)
+        self.converter = ConverterBridge()
+        self.converter_engine_controller = ConverterEngineUpdateBridge(self.temp_path / "engine-updates")
         controllers = {
             "migrationController": migration,
             "weatherController": WeatherBridge(self.database_path, snapshot),
@@ -181,8 +183,8 @@ class MediaQmlIntegrationTests(unittest.TestCase):
             "shoppingController": ShoppingBridge(self.database_path, snapshot),
             "mediaController": self.media,
             "archiveController": ArchiveBridge(self.database_path, snapshot),
-            "converterController": ConverterBridge(),
-            "converterEngineController": ConverterEngineUpdateBridge(self.temp_path / "engine-updates"),
+            "converterController": self.converter,
+            "converterEngineController": self.converter_engine_controller,
             "brandController": BrandBridge(BrandRepository(self.database_path), self.engine),
         }
         self.shopping = controllers["shoppingController"]
