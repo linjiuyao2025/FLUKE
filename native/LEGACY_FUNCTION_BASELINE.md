@@ -12,7 +12,7 @@
 | 源码与 v1.0.3 安装包是否同源 | **待核**。当前没有建立发布标签、源码提交、安装包散列和运行文件之间的对应关系；旧版迁移导出写入 sourceVersion=unknown | life-workspace.html:2988-3003；native/README.md:7-9 |
 | 本清单的旧版证据 | L0：只从旧版 HTML/脚本静态列出可见界面和操作；没有在本轮打开或操作旧版 v1.0.3 安装程序 | 下表每项旧版来源锚点 |
 | Native 对照证据 | N1：Native QML/Python 对应源码存在；只表示可以找到实现位置，不表示与旧版逐操作一致或运行通过 | 各行 Native 对照列；native/README.md:43-49 |
-| 自动化与安装证据 | v0.1.1 发布候选源码的历史结果是 624 项通过、1 项跳过；当前 main 在明确记录的 Qt 受控环境下为 644 项通过、1 项跳过；这些都是源码/QML 合成回归（N2），不等于逐控件的 Native 安装版验收（N3）或旧版运行验收（L3） | `native/.venv\Scripts\python.exe -m unittest discover -s tests -v`；当前结果见 `qa-artifacts/stage5/native-unittest-main-offscreen-2026-09-30.log`，安装版逐功能和旧版现场证据仍待补 |
+| 自动化与安装证据 | v0.1.1 发布候选源码的历史结果是 624 项通过、1 项跳过；当前 main 在明确记录的 Qt 受控环境下为 647 项通过、1 项跳过；这些都是源码/QML 合成回归（N2），不等于逐控件的 Native 安装版验收（N3）或旧版运行验收（L3） | `native/.venv\Scripts\python.exe -m unittest discover -s tests -v`；当前结果见 `qa-artifacts/stage5/native-unittest-main-offscreen-2026-09-30-after-health-report-fix.log`，安装版逐功能和旧版现场证据仍待补 |
 
 ## 本轮逐功能状态标签
 
@@ -91,7 +91,7 @@
 | 阶段/功能 | 当前证据等级 | 已确认内容 | 仍未确认内容 |
 |---|---|---|---|
 | 阶段 1：启动、退出、主窗口、主题、窗口尺寸和系统缩放 | N1 + N2 + N3 | 源码入口和健康检查存在；阶段 1 针对性测试通过；旧 QA 包有首次/第二次启动、退出、1024x700 窄窗口、150% 缩放和主题切换截图；当前 main QA 安装版四个持久化主题读取截图均成功且像素哈希不同，并完成当前 main `1024x700` 逻辑尺寸截图 | 当前 main 安装版逐项人工键盘焦点/Tab 顺序、外观弹层真实点击切换、所有窄屏断点和不同 Windows 显示器组合仍需现场记录 |
-| 阶段 1：键盘、无障碍和离线/异常状态 | N1 + N2；部分 N3 | QML/窗口/主题与异常状态自动化检查通过；旧 QA 包有离线启动截图；当前 main QA 包有离线隔离启动/健康检查证据；损坏 SQLite 的 `--health-check` 现在返回可理解错误且不覆盖原文件 | 尚无当前 main 安装版逐控件 Tab 录屏或可访问树现场记录；离线新闻、天气、Spotify 网络失败的每个 UI 文案仍未逐项人工验收 |
+| 阶段 1：键盘、无障碍和离线/异常状态 | N1 + N2；部分 N3 | QML/窗口/主题与异常状态自动化检查通过；最新 QA 安装版有离线隔离启动/渲染和健康检查证据；损坏 SQLite 的 `--health-check` 在安装版返回退出码 1、写出可理解错误且不覆盖原文件；错误输出兼容无 stderr 句柄的 GUI 打包环境 | 尚无当前 main 安装版逐控件 Tab 录屏或可访问树现场记录；离线新闻、天气、Spotify 网络失败的每个 UI 文案仍未逐项人工验收 |
 | 阶段 3：新闻链接拖入 | N1 + N2 | `DailyFlowPage.qml`、`daily.py` 和新闻导入流程存在；针对链接拖入、错误处理、预览/保存/发布/历史的自动化检查通过 | QA 安装版真实鼠标拖入链接尚未验收 |
 | 阶段 3：JSON 文件拖入 | N1 + N2 | 文件拖入与 JSON 刊期解析、错误提示和保存/重启流程的自动化检查通过 | QA 安装版真实文件拖入尚未验收 |
 | 阶段 3：天气、保存后重启和排版操作 | N1 + N2；重启有合成证据 | 城市设置、查询失败、预览、草稿、发布、历史、排版和隔离数据库重启读取均有针对性或全量 unittest 证据 | 真实天气服务、安装版重启后的人工操作和真实用户数据尚未验收 |
@@ -99,8 +99,8 @@
 | 阶段 3：应用更新器 | N1 + N2 | 14/14 updater unittest 通过；离线 probe 的 8 个本地校验点通过，包含大小、PE、SHA-256、`.part` 清理和错误包不保留；GitHub Release 真实读取受未认证 API 403 限流影响 | 真实 GitHub Release 端到端读取、下载和安装重启仍未验证；当前源码环境默认不执行自动安装 |
 | 阶段 4：生活记录、计划、媒体、提醒、首页和设置 | N1 + N2 | 当前 Native 对应页面、Python 存储和数据关联纳入完整 unittest；本轮 fail-fast 全量重跑通过 644 项、跳过 1 项 | QA 安装版只做了合成数据导入和首页渲染；每个页面的人工逐字段等价、真实提醒/通知和真实用户数据仍未完成 |
 | 阶段 4：备份、恢复、WebDAV、云端边界 | N1 + N2；N3 未完成 | 备份/恢复、迁移、冲突和 WebDAV localhost 合成路径保留并通过源码/合成检查；本地数据与远端数据仍分层 | 真实 WebDAV 账号、远端文件、日历/云端冲突、真实恢复回滚和系统通知仍未验证；不得以合成服务结果代替云端验收 |
-| 阶段 5：自动化回归 | N2（受控 Qt 环境稳定；默认 GUI 后端仍未证明） | 默认环境首次完整运行：639 项，144 failures，1 skipped；随后未改源码的 fail-fast 完整重跑：644 项通过，1 项跳过；2026-09-30 默认环境再次不带 fail-fast 的全量重跑在 `test_news_preview_offers_publish_and_cancel_returns_to_preview` 处进程中止；加入损坏数据库安全处理后，固定 `QT_QPA_PLATFORM=offscreen`、`QTWEBENGINE_CHROMIUM_FLAGS=--disable-gpu` 的当前 main 普通全量运行：647 项通过，1 项跳过，362.649s。跳过项是 FFmpeg 构建不含视频测试 codec | 受控环境已经有当前源码普通全量绿色结果；默认 Windows GUI/图形后端仍需单独稳定性记录，不能把受控 offscreen 回归写成安装版或默认图形后端验收 |
-| 阶段 5：隔离 QA 安装版 | N3（限定范围） | 旧 `qa-ds20260929` 包有历史启动/退出、第二次启动、窄窗口、150% 缩放、合成数据和离线截图；当前 main 重新打包为 `FLUKE QA 0.1.2` 后，在 `qa-ds20260930-current` 独立目录安装成功，当前安装版启动截图成功，`--health-check` 退出码为 0，独立 SQLite 已创建。QA AppId 为 `FLUKE-Desktop-Native-QA` | 未完成安装版 Tab/拖放、真实 Spotify、真实天气/云服务、干净用户/VM 与正式发布包验收；当前截图/健康检查不等于逐项人工操作验收 |
+| 阶段 5：自动化回归 | N2（受控 Qt 环境稳定；默认 GUI 后端仍未证明） | 默认环境首次完整运行：639 项，144 failures，1 skipped；随后未改源码的 fail-fast 完整重跑：644 项通过，1 项跳过；2026-09-30 默认环境再次不带 fail-fast 的全量重跑在 `test_news_preview_offers_publish_and_cancel_returns_to_preview` 处进程中止；健康报告修复后，固定 `QT_QPA_PLATFORM=offscreen`、`QTWEBENGINE_CHROMIUM_FLAGS=--disable-gpu` 的当前 main 普通全量运行：647 项通过，1 项跳过，343.359s。跳过项是 FFmpeg 构建不含视频测试 codec | 受控环境已经有当前源码普通全量绿色结果；默认 Windows GUI/图形后端仍需单独稳定性记录，不能把受控 offscreen 回归写成安装版或默认图形后端验收 |
+| 阶段 5：隔离 QA 安装版 | N3（限定范围） | 用最新源码和稳定的 5,939 文件 dist 重新编译 `FLUKE-QA-0.1.2-Setup.exe`；安装退出码 0，安装目录 5,941 文件，QML/FFmpeg/Tesseract/Calibre 关键文件均存在；安装版隔离启动生成 1024x700 截图，健康检查数据库创建成功；损坏 SQLite 检查返回 1、错误可读且原文件保持不变。QA AppId 为 `FLUKE-Desktop-Native-QA` | 未完成安装版 Tab/拖放、真实 Spotify、真实天气/云服务、干净用户/VM 与正式发布包验收；当前截图/健康检查不等于逐项人工操作验收 |
 
 ### 本轮可复现证据位置
 
@@ -108,7 +108,8 @@
 - 阶段 5 完整重跑结果：`qa-artifacts/stage5/native-unittest-failfast-2026-09-29.log`。
 - 阶段 5 2026-09-30 非 fail-fast 重跑：`qa-artifacts/stage5/native-unittest-main-rerun-2026-09-30.log`；在新闻预览 QML 用例处中止，无测试汇总。
 - 阶段 5 2026-09-30 受控 Qt 环境普通全量结果：`qa-artifacts/stage5/native-unittest-main-offscreen-2026-09-30.log`；`644` 项通过、`1` 项跳过，退出码 0。
-- 阶段 5 当前 main（损坏数据库安全处理后）普通全量结果：`qa-artifacts/stage5/native-unittest-main-offscreen-2026-09-30-after-startup-error.log`；`647` 项通过、`1` 项跳过，退出码 0，`362.649s`。
+- 阶段 5 当前 main（健康报告兼容 GUI 打包环境后）普通全量结果：`qa-artifacts/stage5/native-unittest-main-offscreen-2026-09-30-after-health-report-fix.log`；`647` 项通过、`1` 项跳过，退出码 0，`343.359s`。
+- 阶段 1 启动异常最新针对性结果：`qa-artifacts/stage5/startup-error-stage1-focused-2026-09-30.log` 与本轮 19 项重跑；损坏数据库不覆盖原文件检查通过。
 - 阶段 1/3/4 针对性结果：`qa-artifacts/stage5/focused-stage1-3-4-2026-09-30.log`；`127` 项通过，退出码 0。
 - 阶段 1 启动异常针对性结果：`qa-artifacts/stage5/startup-error-stage1-focused-2026-09-30.log`；`19` 项通过，包含损坏数据库不覆盖原文件检查。
 - 更新器与 side-by-side launcher 针对性结果：`qa-artifacts/stage5/updater-launcher-focused-2026-09-30.log`；`19` 项通过，退出码 0。
@@ -120,6 +121,9 @@
 - 当前 main QA 安装目录：`qa-artifacts/qa-ds20260930-current/program/`；启动截图：`qa-artifacts/qa-ds20260930-current/current-main-capture.png`；启动输出：`qa-artifacts/qa-ds20260930-current/launch.stdout.log`、`launch.stderr.log`；健康检查数据库：`qa-artifacts/qa-ds20260930-current/db/health-check.sqlite3`。本轮仍只写入 `native/qa-artifacts`，没有安装到 `D:\FLUKE`，没有使用日常数据库。
 - 当前 main QA 主题读取证据：`qa-artifacts/qa-ds20260930-current/theme-capture-results.txt` 与 `theme-{plum,forest,clay,navy}-capture.png`；四个隔离数据库分别保存主题后，安装版均退出码 0，截图哈希不同。这证明安装版能读取并渲染持久化主题，不等于人工打开外观弹层点击切换。
 - 当前 main QA 紧凑窗口证据：`qa-artifacts/qa-ds20260930-current/current-main-1024x700.png`；请求逻辑尺寸 `1024x700`，安装版截图退出码 0，实际截图为 `1536x1050`，保留滚动区域且未发现启动级布局溢出。
+- 最新源码 QA 构建日志：`qa-artifacts/qa-ds20260930-current-after-health-report-fix/qa-installer-build.log`；编译包含 `5,939` 个文件。
+- 最新源码 QA 安装包：`qa-artifacts/qa-ds20260930-current-after-health-report-fix/installer-output/FLUKE-QA-0.1.2-Setup.exe`；SHA-256 为 `D71D9869AE5AFFCFABBA4C623CCE5AD547E42F573BD8B79882368662690C12FF`。
+- 最新源码 QA 安装目录：`qa-artifacts/qa-ds20260930-current-after-health-report-fix/installed/program/`；QA 数据目录：`qa-artifacts/qa-ds20260930-current-after-health-report-fix/installed/db/`，隔离 profile：`qa-artifacts/qa-ds20260930-current-after-health-report-fix/installed/profile/`；有效安装版截图为 `installed/direct-capture.png`，健康检查数据库为 `installed/db/direct-health.sqlite3`，损坏数据库为 `installed/db/direct-corrupt.sqlite3`。
 - 桌面控制器现场限制：启动的 QA 窗口实际存在且标题为 `FLUKE`，但桌面控制连接器仍返回 `apps=[]`；因此本轮没有生成键盘/Tab/鼠标拖放的伪造 N3 结论，相关日志和截图证据边界保持不变。
 
 ### 发布门槛判断
