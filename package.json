@@ -1,8 +1,8 @@
 {
-  "name": "wanxiang-life-workspace",
+  "name": "fluke",
   "version": "1.0.3",
   "private": true,
-  "description": "万象来信：本机生活工作台 Windows 桌面版",
+  "description": "FLUKE: local-first Windows life workspace (legacy Electron build)",
   "repository": {
     "type": "git",
     "url": "https://github.com/linjiuyao2025/FLUKE.git"
