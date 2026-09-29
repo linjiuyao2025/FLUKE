@@ -8,7 +8,7 @@
 - Electron v1.0.3 标签源码可核对九个 localStorage 键，对应 schema 1。仓库当前 main 的迁移格式在这九个键上增加设备同步标识，形成 schema 2 十键；权威清单为 native/wanxiang/migration.py:13-30，当前 main 导出列表和读取位置为 life-workspace.html:2976-3003。
 - 当前 main 的导出器读取 localStorage 原始字符串或 null，不改动旧值，并将包元信息的 sourceVersion 标为 unknown。v1.0.3 标签、实际日常使用的安装包/profile 与当前 main 源码之间的对应关系仍待核。
 - Native 的迁移模型先将每个键的原始值写入 SQLite legacy_storage.raw_value；可解析 JSON 同时保存在 json_documents.document_json。records、habits、media_items 等是供本机模块查询的投影，不替代原始快照。
-- 下表的 SQLite “目标”表示源码可追索到的设计/消费位置。本轮在本机 Downloads 目录发现一份可被 Native 校验器读取的迁移文件：schema 1、sourceVersion=1.0.2、九键；其来源与旧版 v1.0.3 实际 profile 未建立对应关系。只读预览将它与当前活动 Native schema 2 快照判为 `new_snapshot`，存在键/实体差异；本轮未执行导入。不得把文件存在、源码映射或预览结果误作 v1.0.3 运行验收。
+- 下表的 SQLite “目标”表示源码可追索到的设计/消费位置。本轮明确复核的候选是 Downloads 中的 `Wanxiang-native-migration-20260927052508400.json`：schema 1、sourceVersion=1.0.2、九键。将它与隔离 QA schema 2 快照 `native/qa-artifacts/qa-ds20260929/db/fluke.sqlite3`（当前 checksum `82751066423808d10fd3fe5eb1f99e1658ff3935bcf85e949d61cc28f3d3a525`）只读比较，结果为 `new_snapshot`，存在键/实体差异；本轮未执行导入。该文件的来源与旧版 v1.0.3 实际 profile 未建立对应关系，不得把文件存在、源码映射或预览结果误作 v1.0.3 运行验收。
 - 导出器只覆盖本地 localStorage 快照。它不能证明云端 SmartPage 表、WebDAV 服务器快照、远程日历订阅或任何服务端账号记录已导入。即使本地对象里有远程 ID、同步队列或缓存，也只能说明本地保存过这些字段。
 
 ## 十个 localStorage 键逐项映射
@@ -39,11 +39,11 @@
 | 类型化实体投影 | native/wanxiang/database.py:72-115,754-814 | 记录、习惯、媒体条目有查询列及完整 JSON 载荷；一般设置有 app_settings | 不等于八个 Native 页面逐项等价 |
 | 包校验和 | life-workspace.html:2995-3000；native/wanxiang/migration.py:13-30,87-100,214-258 | 旧版按固定键顺序序列化 [key, 原字符串/null] 并计算 SHA-256；Native 按对应 schema 键顺序重新计算并拒绝不一致 | 本机最新候选已由 `read_package_file` 通过 schema/键清单/SHA-256 校验；该候选标记 sourceVersion=1.0.2，而当前导出源码标记 unknown；不证明 v1.0.3 当前 profile 同源 |
 | 导入快照完整性复核 | native/wanxiang/database.py:489-650,754-814 | 加载时重算快照校验和，并核对 JSON 文档/实体投影是否匹配数据库批次 | 最新候选只读预览命中现有活动快照，校验和、原始键和实体投影一致；精确个人数量只保存在本机私有报告 |
-| 预览和差异 | native/wanxiang/database.py:898-978 | 写入前可呈现每键差异、实体新增/变更/未变、当前及候选 checksum 和重复批次识别 | 本机最新候选预览为 `same_snapshot`，十个键均未变化、受统计实体均未变化；不证明快照与当前旧版 v1.0.3 profile 同步 |
+| 预览和差异 | native/wanxiang/database.py:898-978 | 写入前可呈现每键差异、实体新增/变更/未变、当前及候选 checksum 和重复批次识别 | 已命名的 Downloads schema 1 候选对隔离 QA schema 2 快照的结果为 `new_snapshot`；同一文档不再把未绑定文件的结果写成 `same_snapshot`。不证明快照与当前旧版 v1.0.3 profile 同步 |
 | 事务、重复导入和回滚 | native/wanxiang/database.py:991-1096 | BEGIN IMMEDIATE 包围批次、原文、文档和实体投影写入；可按来源身份+checksum 识别重复批次，异常时回滚 | 源码/合成测试设计不等于真实数据实测成功 |
 | 迁移包数量摘要 | native/wanxiang/migration.py:192-213 | 预览统计 keys_total/keys_present、记录/习惯/媒体、settings 顶层字段、草稿项、日历来源、布局顺序/槽位/隐藏项、样例清理/稍后读/设备 ID 标记，以及新闻刊期/文章/问题/主题/剪报数量；不输出这些字段的个人内容 | settings 只统计顶层字段数，复杂嵌套设置仍由每键原文差异和 SHA-256 核对；摘要数量不是用户数据完成迁移的证明 |
 
-本轮已在本机只读解析候选包并对照活动 SQLite；不把原文、具体个人字段或完整校验和写入仓库。预览结果为 `new_snapshot`，且发现 schema 1 与当前活动 schema 2 的键/实体差异；没有执行 `--apply`，旧版数据库和 Native 活动快照保持不变。候选来源版本为 1.0.2，但没有据此锁定日常使用的旧版稳定安装目录及其 profile，因此“与当前旧版实际使用 profile 同步”仍为待验证。v0.1.1 发布候选源码/QML 合成回归为 624 项通过、1 项跳过，不替代旧版运行或正式安装版的逐功能验收。
+本轮已在本机只读解析已命名候选包，并对照隔离 QA SQLite；不把原文、具体个人字段或完整校验和写入仓库。`Wanxiang-native-migration-20260927052508400.json` 对 `qa-ds20260929/db/fluke.sqlite3` 的预览结果为 `new_snapshot`，存在键/实体差异；没有执行 `--apply`，旧版数据库和 Native 活动快照保持不变。候选来源版本为 1.0.2，但没有据此锁定日常使用的旧版稳定安装目录及其 profile，因此“与当前旧版实际使用 profile 同步”仍为待验证。当前冻结提交的受控全量源码/QML 回归为 647 项通过、1 项跳过，不替代旧版运行或正式安装版的逐功能验收。
 
 ## Stage 2 合成证据（2026-09-29）
 
