@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import Request
 from unittest.mock import patch
 
@@ -18,6 +18,7 @@ from wanxiang.app_updates import (
     _download_verified_setup,
     _has_install_space,
     _is_windows_pe,
+    _release_from_expanded_assets,
     _read_releases,
     _release_for_update,
     UpdateCancelled,
@@ -131,6 +132,28 @@ def download_release(installer: bytes) -> dict[str, object]:
 
 
 class AppUpdateCheck(unittest.TestCase):
+    def test_expanded_assets_fallback_builds_exact_release_sizes(self) -> None:
+        tag = "native-v0.1.2-preview.2"
+        html = f'''<a href="/linjiuyao2025/FLUKE/releases/download/{tag}/FLUKE-0.1.2-Setup.exe"><span class="text-bold">FLUKE-0.1.2-Setup.exe</span></a>
+<a href="/linjiuyao2025/FLUKE/releases/download/{tag}/FLUKE-0.1.2-Setup.exe.sha256"><span class="text-bold">FLUKE-0.1.2-Setup.exe.sha256</span></a>'''
+        with patch("wanxiang.app_updates._read_public_page", return_value=html.encode()), patch(
+            "wanxiang.app_updates._head_content_length", side_effect=[962034879, 88]
+        ):
+            found = _release_from_expanded_assets(tag)
+        self.assertEqual(found["tag_name"], tag)
+        self.assertEqual(found["assets"][0]["size"], 962034879)
+        self.assertEqual(found["assets"][1]["size"], 88)
+        self.assertEqual(_release_for_update([found], "0.1.1")["setupSize"], 962034879)
+
+    def test_api_rate_limit_uses_official_atom_fallback(self) -> None:
+        expected = release("native-v0.1.2-preview.2", "0.1.2")
+        with patch(
+            "wanxiang.app_updates._read_releases_api",
+            side_effect=HTTPError("https://api.github.com", 403, "rate limit", {}, None),
+        ), patch("wanxiang.app_updates._read_releases_from_atom", return_value=[expected]) as fallback:
+            self.assertEqual(_read_releases(), [expected])
+        fallback.assert_called_once_with()
+
     def test_selects_highest_complete_official_release(self) -> None:
         incomplete = release("native-v0.1.4-preview.1", "0.1.4", with_checksum=False)
         tampered_page = release(

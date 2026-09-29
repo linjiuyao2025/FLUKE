@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from html import unescape
 import json
 import os
 from pathlib import Path
@@ -11,8 +12,9 @@ import shutil
 import sys
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlsplit
+from urllib.parse import quote, unquote, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
+import xml.etree.ElementTree as ElementTree
 
 from PySide6.QtCore import QObject, Property, QRunnable, QProcess, QThreadPool, QUrl, Signal, Slot
 from PySide6.QtGui import QDesktopServices
@@ -22,7 +24,9 @@ APP_VERSION = "0.1.2"  # Keep in sync with pyproject.toml and installer/FLUKE.is
 MINIMUM_UPDATE_VERSION = (0, 1, 2)
 GITHUB_REPOSITORY = "linjiuyao2025/FLUKE"
 GITHUB_RELEASES_API = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/releases?per_page=100"
+GITHUB_RELEASES_ATOM = f"https://github.com/{GITHUB_REPOSITORY}/releases.atom"
 GITHUB_API_HOST = "api.github.com"
+GITHUB_WEB_HOST = "github.com"
 GITHUB_DOWNLOAD_HOSTS = {
     "github.com",
     "release-assets.githubusercontent.com",
@@ -221,6 +225,15 @@ def _open_github_url(request: Request, allowed_hosts: set[str], timeout: int) ->
 
 
 def _read_releases() -> list[dict[str, Any]]:
+    try:
+        return _read_releases_api()
+    except HTTPError as exc:
+        if exc.code not in {403, 429}:
+            raise
+        return _read_releases_from_atom()
+
+
+def _read_releases_api() -> list[dict[str, Any]]:
     releases: list[dict[str, Any]] = []
     for page in range(1, MAX_RELEASE_PAGES + 1):
         url = f"{GITHUB_RELEASES_API}&page={page}"
@@ -244,6 +257,92 @@ def _read_releases() -> list[dict[str, Any]]:
         if len(payload) < 100:
             return releases
     raise ValueError("FLUKE GitHub Release 数量超出检查上限。")
+
+
+def _read_public_page(url: str, limit: int, accept: str) -> bytes:
+    request = Request(
+        url,
+        headers={"User-Agent": "FLUKE-Desktop-Updater", "Accept": accept},
+    )
+    with _open_github_url(request, {GITHUB_WEB_HOST}, timeout=25) as response:
+        if not _is_trusted_https_url(response.geturl(), {GITHUB_WEB_HOST}):
+            raise ValueError("FLUKE 更新页面没有来自 github.com 的 HTTPS 地址。")
+        body = response.read(limit + 1)
+    if len(body) > limit:
+        raise ValueError("FLUKE GitHub 更新页面超过大小上限。")
+    return body
+
+
+def _head_content_length(url: str) -> int:
+    request = Request(
+        url,
+        method="HEAD",
+        headers={"User-Agent": "FLUKE-Desktop-Updater", "Accept": "application/octet-stream"},
+    )
+    with _open_github_url(request, GITHUB_DOWNLOAD_HOSTS, timeout=25) as response:
+        if not _is_trusted_https_url(response.geturl(), GITHUB_DOWNLOAD_HOSTS):
+            raise ValueError("FLUKE Release 资产没有来自 GitHub 的 HTTPS 地址。")
+        value = response.headers.get("Content-Length")
+    try:
+        size = int(value or "")
+    except ValueError as exc:
+        raise ValueError("FLUKE Release 资产缺少有效的 Content-Length。") from exc
+    return size
+
+
+def _release_from_expanded_assets(tag: str) -> dict[str, Any]:
+    _release_key(tag)
+    page_url = f"https://{GITHUB_WEB_HOST}/{GITHUB_REPOSITORY}/releases/expanded_assets/{quote(tag, safe='')}"
+    page = unescape(_read_public_page(page_url, MAX_RELEASES_BYTES, "text/html").decode("utf-8", "replace"))
+    asset_paths = set(
+        re.findall(
+            rf'href="/{re.escape(GITHUB_REPOSITORY)}/releases/download/{re.escape(quote(tag, safe=""))}/([^"?]+)"',
+            page,
+        )
+    )
+    version = ".".join(str(part) for part in _release_key(tag)[:3])
+    setup_name = f"FLUKE-{version}-Setup.exe"
+    checksum_name = f"{setup_name}.sha256"
+    if setup_name not in asset_paths or checksum_name not in asset_paths:
+        raise ValueError(f"FLUKE {version} Release 页面缺少安装包或 SHA-256 sidecar。")
+    setup_url = f"https://{GITHUB_WEB_HOST}/{GITHUB_REPOSITORY}/releases/download/{quote(tag, safe='')}/{setup_name}"
+    checksum_url = f"https://{GITHUB_WEB_HOST}/{GITHUB_REPOSITORY}/releases/download/{quote(tag, safe='')}/{checksum_name}"
+    return {
+        "draft": False,
+        "prerelease": bool(TAG_PATTERN.fullmatch(tag).group("preview")),
+        "tag_name": tag,
+        "html_url": f"https://{GITHUB_WEB_HOST}/{GITHUB_REPOSITORY}/releases/tag/{quote(tag, safe='')}",
+        "assets": [
+            {"name": setup_name, "size": _head_content_length(setup_url), "browser_download_url": setup_url},
+            {"name": checksum_name, "size": _head_content_length(checksum_url), "browser_download_url": checksum_url},
+        ],
+    }
+
+
+def _read_releases_from_atom() -> list[dict[str, Any]]:
+    body = _read_public_page(GITHUB_RELEASES_ATOM, MAX_RELEASES_BYTES, "application/atom+xml")
+    try:
+        root = ElementTree.fromstring(body)
+    except ElementTree.ParseError as exc:
+        raise ValueError("FLUKE GitHub Release Atom 清单无法解析。") from exc
+    namespace = "{http://www.w3.org/2005/Atom}"
+    releases: list[dict[str, Any]] = []
+    for entry in root.findall(f"{namespace}entry")[:MAX_RELEASE_PAGES * 10]:
+        tag = ""
+        for link in entry.findall(f"{namespace}link"):
+            if link.get("rel") == "alternate":
+                href = link.get("href", "")
+                tag = unquote(urlsplit(href).path.rsplit("/", 1)[-1])
+                break
+        if not TAG_PATTERN.fullmatch(tag):
+            continue
+        try:
+            releases.append(_release_from_expanded_assets(tag))
+        except (HTTPError, URLError, OSError, ValueError):
+            continue
+    if not releases:
+        raise ValueError("FLUKE GitHub Release 页面没有可用的安装资产。")
+    return releases
 
 
 def _is_windows_pe(path: Path) -> bool:
