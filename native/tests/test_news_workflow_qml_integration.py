@@ -261,6 +261,20 @@ class NewsWorkflowQmlIntegrationTests(unittest.TestCase):
         QTest.qWait(40)
         return control
 
+    def _home_layout_slot_children(self, slot_id: str) -> list[str]:
+        flow = self._control("homeLayoutCards_" + slot_id)
+        self.assertIsInstance(flow, QQuickItem)
+        assert isinstance(flow, QQuickItem)
+        return [child.objectName() for child in flow.childItems()]
+
+    def _home_layout_slot_visual_order(self, slot_id: str) -> list[str]:
+        flow = self._control("homeLayoutCards_" + slot_id)
+        self.assertIsInstance(flow, QQuickItem)
+        assert isinstance(flow, QQuickItem)
+        visible_cards = [child for child in flow.childItems() if child.isVisible()]
+        visible_cards.sort(key=lambda child: float(child.y()))
+        return [child.objectName() for child in visible_cards]
+
     def test_preferences_prompt_copy_and_active_issue_export_handlers(self) -> None:
         legacy_result = self.preferences.save(
             ["future-topic"],
@@ -841,6 +855,28 @@ class NewsWorkflowQmlIntegrationTests(unittest.TestCase):
         self.assertTrue(bool(lead.property("visible")))
         self.assertTrue(bool(weekly.property("visible")))
         self.assertTrue(bool(recent.property("visible")))
+        self.assertEqual(lead.parentItem().objectName(), "homeLayoutCards_flow-briefing-slot")
+        self.assertEqual(news.parentItem().objectName(), "homeLayoutCards_flow-briefing-slot")
+        self.assertEqual(question_desk.parentItem().objectName(), "homeLayoutCards_flow-review-slot")
+        self.assertEqual(weekly.parentItem().objectName(), "homeLayoutCards_flow-review-slot")
+        self.assertEqual(recent.parentItem().objectName(), "homeLayoutCards_flow-review-slot")
+        self.assertEqual(habits.parentItem().objectName(), "homeLayoutCards_flow-work-slot")
+        self.assertEqual(quick.parentItem().objectName(), "homeLayoutCards_flow-work-slot")
+        self.assertEqual(
+            self._home_layout_slot_children("flow-review-slot"),
+            ["dailyQuestionDesk", "dailyWeeklyCard", "dailyRecentCard"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_visual_order("flow-review-slot"),
+            ["dailyQuestionDesk", "dailyWeeklyCard", "dailyRecentCard"],
+        )
+        question_input = self._control("dailyQuestionInput")
+        question_input.setProperty("text", "通过新布局保留的问题簿输入")
+        self._click("dailyQuestionAddButton")
+        self.assertEqual(
+            self.controllers["dailyController"].state["questions"][0]["text"],
+            "通过新布局保留的问题簿输入",
+        )
 
         self._click("homeLayoutSettingsButton")
         dialog = self._control("homeLayoutDialog")
@@ -867,9 +903,12 @@ class NewsWorkflowQmlIntegrationTests(unittest.TestCase):
         QTest.qWait(30)
         self.assertTrue(bool(lead.property("visible")))
         self.assertFalse(bool(news.property("visible")))
+        self.assertFalse(bool(self._control("newsIssueContentHeader").property("visible")))
         self.assertEqual(self.home_layout.saved_layout["hidden"], ["briefs"])
         self._click("homeLayoutVisibleSwitch_briefs")
+        QTest.qWait(30)
         self.assertEqual(self.home_layout.saved_layout["hidden"], [])
+        self.assertTrue(bool(self._control("newsIssueContentHeader").property("visible")))
 
         order_combo = self._control("homeLayoutOrder_lead")
         self.assertEqual(int(order_combo.property("currentIndex")), 3)
@@ -885,6 +924,12 @@ class NewsWorkflowQmlIntegrationTests(unittest.TestCase):
         ))
         self.assertEqual(
             self.home_layout.saved_layout["slots"]["quick"], "flow-briefing-slot"
+        )
+        QTest.qWait(60)
+        self.assertEqual(quick.parentItem().objectName(), "homeLayoutCards_flow-briefing-slot")
+        self.assertEqual(
+            self._home_layout_slot_children("flow-briefing-slot"),
+            ["newsScopeCard", "dailyQuickAddCard", "newsCard", "newsIssueContentHeader"],
         )
 
         self._click("homeLayoutHabitsSwitch")
@@ -911,6 +956,18 @@ class NewsWorkflowQmlIntegrationTests(unittest.TestCase):
         self.assertTrue(bool(recap_items.property("visible")))
         self.assertTrue(bool(work.property("visible")))
         self.assertTrue(bool(news.property("visible")))
+        self.assertEqual(
+            self._home_layout_slot_children("flow-briefing-slot"),
+            ["newsScopeCard", "dailyQuickAddCard", "newsCard", "newsIssueContentHeader"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-review-slot"),
+            ["dailyQuestionDesk", "dailyWeeklyCard", "dailyRecentCard"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-work-slot"),
+            ["dailyHabitQuickChecks"],
+        )
         self.assertEqual(
             self.home_layout.saved_layout["hidden"], ["habits", "question-desk"]
         )
@@ -944,6 +1001,22 @@ class NewsWorkflowQmlIntegrationTests(unittest.TestCase):
             reopened_bridge.saved_layout["unknownMetadata"],
             {"keep": "through-toggle"},
         )
+        QTest.qWait(60)
+        self.assertEqual(
+            self._home_layout_slot_children("flow-briefing-slot"),
+            ["newsScopeCard", "dailyQuickAddCard", "newsCard", "newsIssueContentHeader"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-review-slot"),
+            ["dailyQuestionDesk", "dailyWeeklyCard", "dailyRecentCard"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-work-slot"),
+            ["dailyHabitQuickChecks"],
+        )
+        self.assertEqual(
+            quick.parentItem().objectName(), "homeLayoutCards_flow-briefing-slot"
+        )
 
         reopened_bridge.fail_next_save = True
         self._click("homeLayoutQuestionDeskSwitch")
@@ -974,12 +1047,51 @@ class NewsWorkflowQmlIntegrationTests(unittest.TestCase):
         self.assertEqual(saved_layout["order"][-1], "lead")
         self.assertEqual(saved_layout["slots"]["quick"], "flow-briefing-slot")
         self.assertEqual(saved_layout["hidden"], ["weekly"])
+        QTest.qWait(60)
+        self.assertEqual(
+            self._home_layout_slot_children("flow-briefing-slot"),
+            ["newsCard", "newsIssueContentHeader", "dailyQuickAddCard", "newsScopeCard"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_visual_order("flow-briefing-slot"),
+            ["newsCard", "newsIssueContentHeader", "dailyQuickAddCard", "newsScopeCard"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-review-slot"),
+            ["dailyWeeklyCard", "dailyRecentCard", "dailyQuestionDesk"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-work-slot"),
+            ["dailyHabitQuickChecks"],
+        )
 
         reopened = HomeLayoutBridge(self.database_path)
         self.assertEqual(reopened.state["layout"], saved_layout)
         self.assertTrue(self.window.setProperty("homeLayoutController", reopened))
+        QTest.qWait(60)
+        self.assertEqual(
+            self._home_layout_slot_children("flow-briefing-slot"),
+            ["newsCard", "newsIssueContentHeader", "dailyQuickAddCard", "newsScopeCard"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_visual_order("flow-briefing-slot"),
+            ["newsCard", "newsIssueContentHeader", "dailyQuickAddCard", "newsScopeCard"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-review-slot"),
+            ["dailyWeeklyCard", "dailyRecentCard", "dailyQuestionDesk"],
+        )
+        self.assertEqual(
+            self._home_layout_slot_children("flow-work-slot"),
+            ["dailyHabitQuickChecks"],
+        )
+        self.assertEqual(
+            self._control("dailyQuickAddCard").parentItem().objectName(),
+            "homeLayoutCards_flow-briefing-slot",
+        )
         self._click("homeLayoutSettingsButton")
         self.assertFalse(bool(self._control("homeLayoutVisibleSwitch_weekly").property("checked")))
+        self.assertFalse(bool(self._control("dailyWeeklyCard").property("visible")))
         self.assertEqual(
             str(self._control("homeLayoutSlot_quick").property("currentValue")),
             "flow-briefing-slot",

@@ -18,6 +18,7 @@ ApplicationWindow {
     required property var backupController
     required property var fitnessController
     required property var plannerController
+    property var webdavPlannerController: null
     required property var shoppingController
     required property var mediaController
     required property var archiveController
@@ -32,6 +33,8 @@ ApplicationWindow {
     property var trayController: null
     property string homeLayoutSaveStatus: ""
     property bool homeLayoutSaveStatusIsError: false
+    property var homeLayoutQuestionDeskItem: null
+    onHomeLayoutControllerChanged: Qt.callLater(root.applyHomeLayoutVisuals)
     readonly property var homeLayoutCards: [
         { id: "lead", label: qsTr("显示新闻头条") },
         { id: "briefs", label: qsTr("显示新闻快讯") },
@@ -526,6 +529,78 @@ ApplicationWindow {
         return cards
     }
 
+    function homeLayoutFindItemByObjectName(parentItem, targetName) {
+        if (!parentItem) return null
+        if (String(parentItem.objectName || "") === targetName) return parentItem
+        const children = root.listFromVariant(parentItem.children)
+        for (let index = 0; index < children.length; index++) {
+            const found = root.homeLayoutFindItemByObjectName(children[index], targetName)
+            if (found) return found
+        }
+        return null
+    }
+
+    function homeLayoutItemsForCard(cardId) {
+        let card = null
+        if (cardId === "lead") card = newsScopeCard
+        else if (cardId === "briefs") card = newsCard
+        else if (cardId === "weekly") card = dailyWeeklyCardItem
+        else if (cardId === "recent") card = dailyRecentCardItem
+        else if (cardId === "question-desk") {
+            card = root.homeLayoutQuestionDeskItem
+                    || root.homeLayoutFindItemByObjectName(dailyFlowPageItem, "dailyQuestionDesk")
+            if (card) root.homeLayoutQuestionDeskItem = card
+        }
+        else if (cardId === "habits") card = dailyHabitQuickChecksItem
+        else if (cardId === "quick") card = dailyQuickAddCardItem
+        const items = card ? [card] : []
+        if (cardId === "briefs") items.push(newsIssueContentHeaderItem)
+        return items
+    }
+
+    function homeLayoutFlowForSlot(slotId) {
+        if (slotId === "flow-briefing-slot") return homeLayoutBriefingCards
+        if (slotId === "flow-review-slot") return homeLayoutReviewCards
+        return homeLayoutWorkCards
+    }
+
+    function homeLayoutSlotHasVisibleCards(slotId) {
+        const cards = root.homeLayoutCardsInSavedOrder()
+        for (let index = 0; index < cards.length; index++) {
+            if (root.homeLayoutCardSlot(cards[index].id) === slotId
+                    && root.homeLayoutCardVisible(cards[index].id))
+                return true
+        }
+        return false
+    }
+
+    function applyHomeLayoutVisuals() {
+        if (!root.homeLayoutController) return false
+        if (!homeLayoutParkingLot) return false
+        const cards = root.homeLayoutCardsInSavedOrder()
+        const cardItems = ({})
+        for (let index = 0; index < cards.length; index++) {
+            const cardId = cards[index].id
+            cardItems[cardId] = root.homeLayoutItemsForCard(cardId)
+            const items = cardItems[cardId]
+            for (let itemIndex = 0; itemIndex < items.length; itemIndex++)
+                items[itemIndex].parent = homeLayoutParkingLot
+        }
+        for (let index = 0; index < cards.length; index++) {
+            const card = cards[index]
+            const items = cardItems[card.id]
+            const host = root.homeLayoutFlowForSlot(root.homeLayoutCardSlot(card.id))
+            for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+                const item = items[itemIndex]
+                item.parent = host
+                item.width = Qt.binding(function() { return host.width })
+                if (card.id === "habits" || card.id === "quick" || card.id === "question-desk")
+                    item.height = Qt.binding(function() { return item.implicitHeight })
+            }
+        }
+        return true
+    }
+
     function homeLayoutCardSlot(cardId) {
         const layout = (((root.homeLayoutController || {}).state || {}).layout || ({}))
         const slots = layout.slots || ({})
@@ -657,9 +732,24 @@ ApplicationWindow {
         onTriggered: root.clockDate = new Date()
     }
 
+    Item {
+        id: homeLayoutParkingLot
+        objectName: "homeLayoutParkingLot"
+        visible: false
+        width: 0
+        height: 0
+    }
+
+    Component.onCompleted: Qt.callLater(root.applyHomeLayoutVisuals)
+
     Connections {
         target: root.plannerController
         function onRemindersDue(rows) { root.showReminders(rows) }
+    }
+
+    Connections {
+        target: root.homeLayoutController
+        function onStateChanged() { Qt.callLater(root.applyHomeLayoutVisuals) }
     }
 
     Dialog {
@@ -3052,7 +3142,7 @@ ApplicationWindow {
                                                                         && root.weatherController.temperature !== null
                                                                         && String(root.weatherController.temperature).trim() !== ""
                                                                         && Number.isFinite(Number(root.weatherController.temperature))
-                                width: briefingCards.width >= 900 ? (briefingCards.width - briefingCards.spacing) / 2 : briefingCards.width
+                                width: briefingCards.width
                                 height: root.compactNavigation && !hasWeatherData ? 260 : 320
                                 color: "#f4f6f8"
                                 border.color: "#d6dfe2"
@@ -4547,10 +4637,13 @@ ApplicationWindow {
                         }
 
                         Rectangle {
+                            id: newsIssueContentHeaderItem
                             objectName: "newsIssueContentHeader"
                             Layout.fillWidth: true
                             Layout.preferredHeight: 46
-                            visible: Boolean(newsCard.draftIssue || newsCard.activeIssue)
+                            height: 46
+                            visible: root.homeLayoutCardVisible("briefs")
+                                     && Boolean(newsCard.draftIssue || newsCard.activeIssue)
                             color: "#ffffff"
                             border.color: root.line
                             RowLayout {
@@ -4565,6 +4658,77 @@ ApplicationWindow {
                                     font.family: root.sansFamily
                                     font.pixelSize: 12
                                     elide: Text.ElideRight
+                                }
+                            }
+                        }
+
+                        ColumnLayout {
+                            id: homeLayoutDeck
+                            objectName: "homeLayoutDeck"
+                            Layout.fillWidth: true
+                            Layout.leftMargin: root.compactNavigation ? 20 : 42
+                            Layout.rightMargin: root.compactNavigation ? 20 : 42
+                            Layout.bottomMargin: 20
+                            spacing: 12
+
+                            ColumnLayout {
+                                objectName: "homeLayoutGroup_flow-briefing-slot"
+                                visible: root.homeLayoutSlotHasVisibleCards("flow-briefing-slot")
+                                Layout.fillWidth: true
+                                spacing: 4
+                                RootText {
+                                    text: qsTr("今日速览")
+                                    color: root.muted
+                                    font.family: root.sansFamily
+                                    font.pixelSize: 11
+                                    Layout.fillWidth: true
+                                }
+                                Flow {
+                                    id: homeLayoutBriefingCards
+                                    objectName: "homeLayoutCards_flow-briefing-slot"
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: childrenRect.height
+                                    spacing: 8
+                                }
+                            }
+                            ColumnLayout {
+                                objectName: "homeLayoutGroup_flow-review-slot"
+                                visible: root.homeLayoutSlotHasVisibleCards("flow-review-slot")
+                                Layout.fillWidth: true
+                                spacing: 4
+                                RootText {
+                                    text: qsTr("昨日回顾")
+                                    color: root.muted
+                                    font.family: root.sansFamily
+                                    font.pixelSize: 11
+                                    Layout.fillWidth: true
+                                }
+                                Flow {
+                                    id: homeLayoutReviewCards
+                                    objectName: "homeLayoutCards_flow-review-slot"
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: childrenRect.height
+                                    spacing: 8
+                                }
+                            }
+                            ColumnLayout {
+                                objectName: "homeLayoutGroup_flow-work-slot"
+                                visible: root.homeLayoutSlotHasVisibleCards("flow-work-slot")
+                                Layout.fillWidth: true
+                                spacing: 4
+                                RootText {
+                                    text: qsTr("今日工作")
+                                    color: root.muted
+                                    font.family: root.sansFamily
+                                    font.pixelSize: 11
+                                    Layout.fillWidth: true
+                                }
+                                Flow {
+                                    id: homeLayoutWorkCards
+                                    objectName: "homeLayoutCards_flow-work-slot"
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: childrenRect.height
+                                    spacing: 8
                                 }
                             }
                         }
@@ -4593,6 +4757,7 @@ ApplicationWindow {
                                      || root.homeLayoutCardVisible("recent")
 
                             Rectangle {
+                                id: dailyWeeklyCardItem
                                 objectName: "dailyWeeklyCard"
                                 visible: root.homeLayoutCardVisible("weekly")
                                 width: root.compactNavigation ? parent.width : (parent.width - parent.spacing) / 2
@@ -4649,6 +4814,7 @@ ApplicationWindow {
                             }
 
                             Rectangle {
+                                id: dailyRecentCardItem
                                 objectName: "dailyRecentCard"
                                 visible: root.homeLayoutCardVisible("recent")
                                 width: root.compactNavigation ? parent.width : (parent.width - parent.spacing) / 2
@@ -4722,6 +4888,7 @@ ApplicationWindow {
                         }
 
                         ColumnLayout {
+                            id: dailyHabitQuickChecksItem
                             objectName: "dailyHabitQuickChecks"
                             visible: root.homeLayoutCardVisible("habits")
                             Layout.fillWidth: true
@@ -4854,6 +5021,7 @@ ApplicationWindow {
                         }
 
                         ColumnLayout {
+                            id: dailyQuickAddCardItem
                             objectName: "dailyQuickAddCard"
                             visible: root.homeLayoutCardVisible("quick")
                             Layout.fillWidth: true
@@ -4935,6 +5103,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     controller: root.plannerController
+                    webdavController: root.webdavPlannerController
                 }
 
                 ShoppingPage {

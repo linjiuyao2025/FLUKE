@@ -61,6 +61,7 @@ from wanxiang.finance import (
 )
 from wanxiang.fitness import FitnessRepository, FitnessRepositoryError
 from wanxiang.planner import PlannerRepository, PlannerRepositoryError
+from wanxiang.webdav_planner_bridge import WebDavPlannerSyncBridge
 from wanxiang.instance_lock import PlannerDatabaseInstanceLock
 from wanxiang.calendar_subscriptions import (
     CalendarSubscriptionError,
@@ -4220,6 +4221,25 @@ def main() -> int:
         tray_icon = app.style().standardIcon(QStyle.StandardPixmap.SP_ComputerIcon)
     system_notifier = create_qt_system_tray_notifier(icon=tray_icon)
     planner_bridge = PlannerBridge(database_path, migration_bridge.data, system_notifier)
+    webdav_planner_bridge = (
+        WebDavPlannerSyncBridge(
+            database_path,
+            planner_bridge._repository,
+            planner_bridge._calendar_network,
+            engine,
+        )
+        if planner_bridge._repository is not None else None
+    )
+    if webdav_planner_bridge is not None:
+        def update_webdav_planner_repository() -> None:
+            repository = planner_bridge._repository
+            if repository is not None:
+                webdav_planner_bridge.set_repository(repository)
+
+        planner_bridge.stateChanged.connect(update_webdav_planner_repository)
+        planner_bridge.stateChanged.connect(webdav_planner_bridge.observe_local_changes)
+        webdav_planner_bridge.changed.connect(planner_bridge._refresh)
+        app.aboutToQuit.connect(webdav_planner_bridge.close)
     tray_lifecycle = TrayLifecycleController(
         app,
         system_notifier.tray,
@@ -4332,6 +4352,7 @@ def main() -> int:
         "backupController": backup_bridge,
         "fitnessController": fitness_bridge,
         "plannerController": planner_bridge,
+        "webdavPlannerController": webdav_planner_bridge,
         "trayController": tray_lifecycle,
         "shoppingController": shopping_bridge,
         "mediaController": media_bridge,

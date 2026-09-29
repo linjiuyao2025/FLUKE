@@ -12,8 +12,11 @@ Item {
     property alias selectedDateText: dateField.text
 
     property var controller: null
+    property var webdavController: null
     property var uiTheme: null
     readonly property var snapshot: controller ? (controller.state || ({})) : ({})
+    readonly property var webdavState: webdavController ? (webdavController.state || ({})) : ({})
+    readonly property var webdavConflicts: webdavController ? asList(webdavController.conflicts) : []
     readonly property var groups: asList(snapshot.groups)
     readonly property var allTasks: asList(valueOf(snapshot, "allRecords", valueOf(snapshot, "records", [])))
     readonly property var projects: asList(valueOf(snapshot, "projects", []))
@@ -77,6 +80,7 @@ Item {
     property string selectedCalendarSubscriptionName: ""
     property string selectedCalDAVAccountId: ""
     property string selectedCalDAVAccountName: ""
+    property string selectedWebDavClearName: ""
     property string selectedFocusTaskId: ""
     property string selectedFocusTaskTitle: ""
     property int procrastinationTipIndex: 0
@@ -658,6 +662,61 @@ Item {
         caldavAccountUsernameField.text = ""
         caldavAccountPasswordField.text = ""
         caldavAccountsDialog.open()
+    }
+    function openWebDavPlannerSync() {
+        webdavUrlField.text = ""
+        webdavUsernameField.text = ""
+        webdavPasswordField.text = ""
+        webdavPassphraseField.text = ""
+        webdavPlannerDialog.open()
+    }
+    function configureWebDavPlannerSync() {
+        if (!webdavController || !webdavController.configure)
+            return showResult(null, qsTr("WebDAV 日程同步暂不可用。"))
+        var result = webdavController.configure(
+                    webdavUrlField.text.trim(), webdavUsernameField.text,
+                    webdavPasswordField.text, webdavPassphraseField.text)
+        if (!showResult(result, qsTr("同步设置已保存，正在连接 WebDAV。")))
+            return false
+        webdavPasswordField.text = ""
+        webdavPassphraseField.text = ""
+        return true
+    }
+    function syncWebDavPlannerNow() {
+        if (!webdavController || !webdavController.syncNow)
+            return showResult(null, qsTr("WebDAV 日程同步暂不可用。"))
+        return showResult(webdavController.syncNow(), qsTr("已开始同步日程。"))
+    }
+    function requestClearWebDavPlannerAccount() {
+        selectedWebDavClearName = String(valueOf(webdavState, "host", "WebDAV"))
+        webdavClearAccountDialog.open()
+    }
+    function confirmClearWebDavPlannerAccount() {
+        if (!webdavController || !webdavController.clearAccount)
+            return showResult(null, qsTr("WebDAV 日程同步暂不可用。"))
+        var result = webdavController.clearAccount()
+        if (showResult(result, qsTr("本机 WebDAV 登录设置已移除；日程和云端文件均保留。")))
+            webdavClearAccountDialog.close()
+        return result
+    }
+    function resolveWebDavPlannerConflict(conflict, variantIndex, keepBoth) {
+        if (!webdavController || !webdavController.resolveConflict)
+            return showResult(null, qsTr("WebDAV 冲突选择暂不可用。"))
+        var taskId = String(valueOf(conflict, "id", ""))
+        var message = keepBoth
+                ? qsTr("已保存冲突选择和并发副本，准备同步。")
+                : qsTr("已采用所选日程分支，准备同步。")
+        return showResult(webdavController.resolveConflict(taskId, variantIndex, keepBoth), message)
+    }
+    function webDavConflictTitle(conflict) {
+        var variants = asList(valueOf(conflict, "variants", []))
+        for (var i = 0; i < variants.length; ++i) {
+            if (!Boolean(valueOf(variants[i], "deleted", false))) {
+                var record = valueOf(variants[i], "record", ({}))
+                return String(valueOf(valueOf(record, "data", ({})), "title", qsTr("未命名任务")))
+            }
+        }
+        return qsTr("已删除的日程")
     }
     function addCalDAVAccount() {
         if (!controller || !controller.addCalDAVAccount)
@@ -2300,6 +2359,11 @@ Item {
                                     text: qsTr("CalDAV 账户")
                                     onTriggered: page.openCalDAVAccounts()
                                 }
+                                MenuItem {
+                                    objectName: "plannerWebDavPlannerSyncMenuItem"
+                                    text: qsTr("跨设备日程同步")
+                                    onTriggered: page.openWebDavPlannerSync()
+                                }
                             }
                         }
                         UiButton { uiTheme: page.uiTheme; objectName: "plannerCalendarExportButton"; text: qsTr("导出 ICS"); onClicked: page.openCalendarExport() }
@@ -3571,6 +3635,233 @@ Item {
                     objectName: "plannerCalDAVAccountRemoveConfirmButton"
                     text: qsTr("移除账户和同步内容")
                     onClicked: page.confirmRemoveCalDAVAccount()
+                }
+            }
+        }
+    }
+
+    Dialog {
+        id: webdavPlannerDialog
+        objectName: "plannerWebDavSyncDialog"
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(780, page.width - 24)
+        height: Math.min(Math.min(760, page.height - 24), webdavPlannerContent.implicitHeight + 64)
+        title: qsTr("跨设备日程同步")
+        background: Rectangle { color: page.surface; border.color: page.line; radius: 16 }
+        contentItem: ColumnLayout {
+            id: webdavPlannerContent
+            spacing: 10
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("只同步本机计划任务，不包含其他生活记录。请输入 .wxbackup 完整备份地址；程序会在同一目录使用独立的加密日程文件。所有设备使用相同的日程同步密码。")
+                color: page.muted
+                wrapMode: Text.WordWrap
+            }
+            ColumnLayout {
+                Layout.fillWidth: true
+                Label { objectName: "plannerWebDavUrlLabel"; text: qsTr("WebDAV 完整备份文件地址"); color: page.muted }
+                UiTextField {
+                    id: webdavUrlField
+                    objectName: "plannerWebDavUrlInput"
+                    uiTheme: page.uiTheme
+                    Layout.fillWidth: true
+                    Accessible.name: qsTr("WebDAV 完整备份文件地址")
+                    placeholderText: "https://example.com/dav/backup.wxbackup"
+                    maximumLength: 4096
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Label { objectName: "plannerWebDavUsernameLabel"; text: qsTr("WebDAV 用户名"); color: page.muted }
+                    UiTextField {
+                        id: webdavUsernameField
+                        objectName: "plannerWebDavUsernameInput"
+                        uiTheme: page.uiTheme
+                        Layout.fillWidth: true
+                        Accessible.name: qsTr("WebDAV 用户名")
+                        maximumLength: 512
+                    }
+                }
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Label { objectName: "plannerWebDavPasswordLabel"; text: qsTr("WebDAV 密码"); color: page.muted }
+                    UiTextField {
+                        id: webdavPasswordField
+                        objectName: "plannerWebDavPasswordInput"
+                        uiTheme: page.uiTheme
+                        Layout.fillWidth: true
+                        Accessible.name: qsTr("WebDAV 密码")
+                        maximumLength: 1024
+                        echoMode: TextInput.Password
+                    }
+                }
+            }
+            ColumnLayout {
+                Layout.fillWidth: true
+                Label { objectName: "plannerWebDavPassphraseLabel"; text: qsTr("日程同步密码（至少 12 个字符）"); color: page.muted }
+                UiTextField {
+                    id: webdavPassphraseField
+                    objectName: "plannerWebDavPassphraseInput"
+                    uiTheme: page.uiTheme
+                    Layout.fillWidth: true
+                    Accessible.name: qsTr("日程同步密码")
+                    maximumLength: 256
+                    echoMode: TextInput.Password
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+                Label {
+                    objectName: "plannerWebDavSyncStatus"
+                    Layout.fillWidth: true
+                    text: String(page.valueOf(page.webdavState, "message", "尚未设置 WebDAV 日程同步。"))
+                    color: Boolean(page.valueOf(page.webdavState, "error", false)) ? page.red : page.muted
+                    wrapMode: Text.WordWrap
+                }
+                Button {
+                    objectName: "plannerWebDavSyncNowButton"
+                    text: Boolean(page.valueOf(page.webdavState, "busy", false)) ? qsTr("同步中…") : qsTr("立即同步 / 重试")
+                    enabled: Boolean(page.valueOf(page.webdavState, "configured", false))
+                             && !Boolean(page.valueOf(page.webdavState, "busy", false))
+                    onClicked: page.syncWebDavPlannerNow()
+                }
+            }
+            Label {
+                objectName: "plannerWebDavAccountSummary"
+                Layout.fillWidth: true
+                visible: Boolean(page.valueOf(page.webdavState, "configured", false))
+                text: qsTr("目标：%1 / %2 · 最近同步：%3")
+                      .arg(String(page.valueOf(page.webdavState, "host", "")))
+                      .arg(String(page.valueOf(page.webdavState, "fileName", "")))
+                      .arg(String(page.valueOf(page.webdavState, "lastSyncAt", "") || qsTr("尚未成功")))
+                color: page.muted
+                wrapMode: Text.WordWrap
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Button {
+                    objectName: "plannerWebDavConfigureButton"
+                    text: Boolean(page.valueOf(page.webdavState, "configured", false))
+                          ? qsTr("保存新设置并同步") : qsTr("保存设置并同步")
+                    highlighted: true
+                    enabled: webdavUrlField.text.trim().length > 0
+                    onClicked: page.configureWebDavPlannerSync()
+                }
+                Button {
+                    objectName: "plannerWebDavClearButton"
+                    text: qsTr("清除本机账户")
+                    visible: Boolean(page.valueOf(page.webdavState, "configured", false))
+                    onClicked: page.requestClearWebDavPlannerAccount()
+                }
+                Item { Layout.fillWidth: true }
+                Button { text: qsTr("关闭"); onClicked: webdavPlannerDialog.close() }
+            }
+            Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; color: page.line }
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("并发冲突：%1").arg(page.webdavConflicts.length)
+                color: page.ink
+                font.bold: true
+            }
+            ListView {
+                id: webdavConflictList
+                objectName: "plannerWebDavConflictList"
+                Layout.fillWidth: true
+                Layout.preferredHeight: Math.max(76, Math.min(300, contentHeight))
+                clip: true
+                model: page.webdavConflicts
+                boundsBehavior: Flickable.StopAtBounds
+                spacing: 8
+                delegate: Frame {
+                    id: webdavConflictRow
+                    required property var modelData
+                    width: ListView.view.width
+                    padding: 10
+                    background: Rectangle { radius: 10; color: page.surfaceSoft; border.color: page.line }
+                    ColumnLayout {
+                        anchors.fill: parent
+                        Label {
+                            Layout.fillWidth: true
+                            text: qsTr("日程：%1 · %2")
+                                  .arg(page.webDavConflictTitle(webdavConflictRow.modelData))
+                                  .arg(String(page.valueOf(webdavConflictRow.modelData, "id", "")))
+                            color: page.ink
+                            font.bold: true
+                            elide: Text.ElideRight
+                        }
+                        Repeater {
+                            model: page.asList(page.valueOf(webdavConflictRow.modelData, "variants", []))
+                            delegate: Frame {
+                                required property var modelData
+                                required property int index
+                                Layout.fillWidth: true
+                                padding: 8
+                                background: Rectangle { radius: 8; color: page.surface; border.color: page.line }
+                                RowLayout {
+                                    anchors.fill: parent
+                                    Label {
+                                        Layout.fillWidth: true
+                                        text: Boolean(page.valueOf(modelData, "deleted", false))
+                                              ? qsTr("此设备删除了这项日程")
+                                              : String(page.valueOf(page.valueOf(page.valueOf(modelData, "record", ({})), "data", ({})), "title", qsTr("未命名任务")))
+                                        color: page.ink
+                                        wrapMode: Text.WordWrap
+                                    }
+                                    Button {
+                                        objectName: "plannerWebDavResolve_" + String(page.valueOf(webdavConflictRow.modelData, "id", "")) + "_" + index
+                                        text: qsTr("采用此版本")
+                                        onClicked: page.resolveWebDavPlannerConflict(webdavConflictRow.modelData, index, false)
+                                    }
+                                    Button {
+                                        objectName: "plannerWebDavKeepBoth_" + String(page.valueOf(webdavConflictRow.modelData, "id", "")) + "_" + index
+                                        text: qsTr("采用并保留其他分支")
+                                        onClicked: page.resolveWebDavPlannerConflict(webdavConflictRow.modelData, index, true)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Label {
+                visible: page.webdavConflicts.length === 0
+                Layout.fillWidth: true
+                text: qsTr("当前没有待处理的并发冲突。")
+                color: page.muted
+                horizontalAlignment: Text.AlignHCenter
+                padding: 12
+            }
+        }
+    }
+
+    Dialog {
+        id: webdavClearAccountDialog
+        objectName: "plannerWebDavClearAccountDialog"
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(460, page.width - 24)
+        title: qsTr("清除本机 WebDAV 账户")
+        contentItem: ColumnLayout {
+            spacing: 12
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("清除 %1 的本机登录信息会停止后续同步。日程、冲突记录和服务器文件都会保留。继续吗？")
+                      .arg(page.selectedWebDavClearName)
+                color: page.ink
+                wrapMode: Text.WordWrap
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button { text: qsTr("取消"); onClicked: webdavClearAccountDialog.close() }
+                Button {
+                    objectName: "plannerWebDavClearConfirmButton"
+                    text: qsTr("清除本机账户")
+                    onClicked: page.confirmClearWebDavPlannerAccount()
                 }
             }
         }

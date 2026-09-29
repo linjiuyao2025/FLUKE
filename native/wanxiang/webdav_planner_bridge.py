@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtCore import QByteArray, QObject, QTimer, QUrl, Signal
+from PySide6.QtCore import QByteArray, QObject, Property, QTimer, QUrl, Signal, Slot
 from PySide6.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 
 from .database import set_app_setting
@@ -82,6 +82,7 @@ class WebDavPlannerSyncBridge(QObject):
         if self.account and start_automatically:
             QTimer.singleShot(900, self.sync_now)
 
+    @Property("QVariant", notify=changed)
     def state(self) -> dict[str, object]:
         account = self.account or {}
         sync_state = self.repository.webdav_sync_state()
@@ -103,6 +104,7 @@ class WebDavPlannerSyncBridge(QObject):
             "conflictCount": len(conflicts) if isinstance(conflicts, list) else 0,
         }
 
+    @Property("QVariant", notify=changed)
     def conflicts(self) -> list[dict[str, Any]]:
         value = self.repository.webdav_sync_state().get("settings", {}).get(
             "webdavPlannerConflicts", []
@@ -125,12 +127,15 @@ class WebDavPlannerSyncBridge(QObject):
                 self._status = "pending"
                 self._message = "有本机日程变更等待同步。"
                 self._debounce.start(900)
+            self.changed.emit()
             return True
         except (PlannerRepositoryError, OSError, RuntimeError, ValueError) as exc:
             self._status = "error"
             self._message = str(exc) or "本机日程同步标记未能保存。"
+            self.changed.emit()
             return False
 
+    @Slot(str, str, str, str, result="QVariant")
     def configure(
         self, url: str, username: str, password: str, passphrase: str
     ) -> dict[str, object]:
@@ -150,7 +155,7 @@ class WebDavPlannerSyncBridge(QObject):
         self.account = account
         self._status = "syncing"
         self._message = "设置已在本机加密保存，正在读取云端日程。"
-        self._begin_get(0, self._current_secret(), self._revision)
+        self._begin_get(0, None, self._revision)
         self.changed.emit()
         return {"ok": True, "pending": True}
 
@@ -168,6 +173,10 @@ class WebDavPlannerSyncBridge(QObject):
         self.changed.emit()
         return {"ok": True}
 
+    @Slot(result="QVariant")
+    def clearAccount(self) -> dict[str, object]:
+        return self.clear()
+
     def sync_now(self) -> dict[str, object]:
         if not self.account:
             return {"ok": False, "error": "请先设置 WebDAV 日程同步。"}
@@ -177,9 +186,13 @@ class WebDavPlannerSyncBridge(QObject):
         self._retry.stop()
         self._status = "syncing"
         self._message = "正在读取并合并云端日程。"
-        self._begin_get(0, self._current_secret(), self._revision)
+        self._begin_get(0, None, self._revision)
         self.changed.emit()
         return {"ok": True, "pending": True}
+
+    @Slot(result="QVariant")
+    def syncNow(self) -> dict[str, object]:
+        return self.sync_now()
 
     def resolve(self, task_id: str, variant_index: Any, keep_both: bool) -> dict[str, object]:
         state = self.repository.webdav_sync_state()
@@ -197,6 +210,16 @@ class WebDavPlannerSyncBridge(QObject):
         self.changed.emit()
         return {"ok": True}
 
+    @Slot(str, int, bool, result="QVariant")
+    def resolveConflict(self, task_id: str, variant_index: int, keep_both: bool) -> dict[str, object]:
+        return self.resolve(task_id, variant_index, keep_both)
+
+    def set_repository(self, repository: PlannerRepository) -> None:
+        if repository is self.repository:
+            return
+        self.repository = repository
+        self.observe_local_changes()
+
     def _current_secret(self) -> dict[str, str]:
         return reveal_account_secret(
             self.account,
@@ -204,11 +227,12 @@ class WebDavPlannerSyncBridge(QObject):
         )
 
     def _begin_get(
-        self, attempt: int, secret: dict[str, str], starting_revision: int
+        self, attempt: int, secret: dict[str, str] | None, starting_revision: int
     ) -> None:
         if not self.account:
             return
         try:
+            secret = secret or self._current_secret()
             url = planner_snapshot_url(secret["url"])
             self._send({
                 "stage": "get",
@@ -485,3 +509,10 @@ class WebDavPlannerSyncBridge(QObject):
             reply = job.get("reply")
             if isinstance(reply, QNetworkReply):
                 reply.abort()
+
+    @Slot()
+    def close(self) -> None:
+        self._debounce.stop()
+        self._retry.stop()
+        self._sync_again = False
+        self._cancel_active()

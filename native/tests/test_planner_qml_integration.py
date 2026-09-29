@@ -13,6 +13,9 @@ from PySide6.QtCore import (
     QMetaObject,
     QObject,
     QPointF,
+    Property,
+    Signal,
+    Slot,
     Qt,
     QUrl,
     Q_ARG,
@@ -27,6 +30,66 @@ from PySide6.QtGui import QAccessible, QFont, QFontDatabase
 
 from main import PlannerBridge
 from wanxiang.localization import LocalizationBridge, LocalizationRepository
+
+
+class FakeWebDavPlannerController(QObject):
+    changed = Signal()
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._state = {
+            "configured": False, "busy": False, "status": "unconfigured",
+            "message": "尚未设置 WebDAV 日程同步。", "error": False,
+            "host": "", "fileName": "", "lastSyncAt": "",
+        }
+        self._conflicts: list[dict[str, object]] = []
+        self.configured_args: tuple[str, str, str, str] | None = None
+        self.sync_count = 0
+        self.clear_count = 0
+        self.resolutions: list[tuple[str, int, bool]] = []
+
+    @Property("QVariant", notify=changed)
+    def state(self) -> dict[str, object]:
+        return self._state
+
+    @Property("QVariant", notify=changed)
+    def conflicts(self) -> list[dict[str, object]]:
+        return self._conflicts
+
+    @Slot(str, str, str, str, result="QVariant")
+    def configure(self, url: str, username: str, password: str, passphrase: str) -> dict[str, object]:
+        self.configured_args = (url, username, password, passphrase)
+        self._state = {
+            "configured": True, "busy": False, "status": "ok",
+            "message": "合成 WebDAV 已连接。", "error": False,
+            "host": "webdav.example.test", "fileName": "planner.wxbackup",
+            "lastSyncAt": "2026-09-29T12:00:00+08:00",
+        }
+        self.changed.emit()
+        return {"ok": True, "pending": True}
+
+    @Slot(result="QVariant")
+    def syncNow(self) -> dict[str, object]:
+        self.sync_count += 1
+        return {"ok": True, "pending": True}
+
+    @Slot(result="QVariant")
+    def clearAccount(self) -> dict[str, object]:
+        self.clear_count += 1
+        self._state = {**self._state, "configured": False, "status": "unconfigured"}
+        self.changed.emit()
+        return {"ok": True}
+
+    @Slot(str, int, bool, result="QVariant")
+    def resolveConflict(self, task_id: str, index: int, keep_both: bool) -> dict[str, object]:
+        self.resolutions.append((task_id, index, keep_both))
+        self._conflicts = []
+        self.changed.emit()
+        return {"ok": True}
+
+    def set_conflicts(self, conflicts: list[dict[str, object]]) -> None:
+        self._conflicts = conflicts
+        self.changed.emit()
 
 
 class PlannerPageQmlIntegrationTests(unittest.TestCase):
@@ -49,9 +112,11 @@ class PlannerPageQmlIntegrationTests(unittest.TestCase):
         self.addCleanup(self.temp_dir.cleanup)
         self.database_path = Path(self.temp_dir.name) / "synthetic.sqlite3"
         self.planner = PlannerBridge(self.database_path)
+        self.webdav = FakeWebDavPlannerController()
         self.engine = QQmlApplicationEngine()
         self.addCleanup(self._destroy_engine)
         self.engine.rootContext().setContextProperty("plannerController", self.planner)
+        self.engine.rootContext().setContextProperty("webdavPlannerController", self.webdav)
         qml_url = QUrl.fromLocalFile(str(self.qml_directory).replace("\\", "/") + "/")
         wrapper_url = QUrl.fromLocalFile(str(self.qml_directory / "PlannerIntegration.qml"))
         source = (
@@ -64,6 +129,7 @@ class PlannerPageQmlIntegrationTests(unittest.TestCase):
             "    objectName: \"plannerUnderTest\"\n"
             "    anchors.fill: parent\n"
             "    controller: plannerController\n"
+            "    webdavController: webdavPlannerController\n"
             "  }\n"
             "}\n"
         )
@@ -1135,6 +1201,72 @@ class PlannerPageQmlIntegrationTests(unittest.TestCase):
         QTest.qWait(60)
         self.assertLessEqual(float(dialog.property("height")), 596)
         self.assertTrue(add.property("visible"))
+
+    def test_webdav_planner_sync_settings_status_retry_conflicts_and_clear(self) -> None:
+        self._click("plannerCalendarSourcesButton")
+        self._click("plannerWebDavPlannerSyncMenuItem")
+        dialog = self.window.findChild(QObject, "plannerWebDavSyncDialog")
+        self.assertIsNotNone(dialog)
+        self.assertTrue(dialog.property("visible"))
+        self.assertIsNotNone(self._visual_item("plannerWebDavSyncStatus"))
+        self.assertFalse(self._visual_item("plannerWebDavSyncNowButton").property("enabled"))
+
+        fields = {
+            "plannerWebDavUrlInput": "http://127.0.0.1:9000/synthetic.wxbackup",
+            "plannerWebDavUsernameInput": "synthetic-user",
+            "plannerWebDavPasswordInput": "synthetic-password",
+            "plannerWebDavPassphraseInput": "synthetic sync passphrase",
+        }
+        for name, value in fields.items():
+            self.window.findChild(QObject, name).setProperty("text", value)
+        self.assertTrue(self._visual_item("plannerWebDavConfigureButton").property("enabled"))
+        self._click("plannerWebDavConfigureButton")
+        self.assertEqual(
+            self.webdav.configured_args,
+            tuple(fields[name] for name in (
+                "plannerWebDavUrlInput", "plannerWebDavUsernameInput",
+                "plannerWebDavPasswordInput", "plannerWebDavPassphraseInput",
+            )),
+        )
+        self.assertEqual(self.window.findChild(QObject, "plannerWebDavPasswordInput").property("text"), "")
+        self.assertEqual(self.window.findChild(QObject, "plannerWebDavPassphraseInput").property("text"), "")
+        status = self._visual_item("plannerWebDavSyncStatus")
+        self.assertIn("合成 WebDAV 已连接", status.property("text"))
+        self.assertTrue(self._visual_item("plannerWebDavSyncNowButton").property("enabled"))
+        self.assertTrue(self._visual_item("plannerWebDavAccountSummary").property("visible"))
+
+        self._click("plannerWebDavSyncNowButton")
+        self.assertEqual(self.webdav.sync_count, 1)
+        conflict = {
+            "id": "synthetic-task-a",
+            "variants": [
+                {"deleted": False, "record": {"data": {"title": "本机合成分支"}}},
+                {"deleted": False, "record": {"data": {"title": "远端合成分支"}}},
+            ],
+        }
+        self.webdav.set_conflicts([conflict])
+        QTest.qWait(60)
+        local_choice = self._visual_item("plannerWebDavResolve_synthetic-task-a_0")
+        keep_both = self._visual_item("plannerWebDavKeepBoth_synthetic-task-a_1")
+        self.assertIsNotNone(local_choice)
+        self.assertIsNotNone(keep_both)
+        self._click("plannerWebDavResolve_synthetic-task-a_0")
+        self.assertEqual(self.webdav.resolutions[-1], ("synthetic-task-a", 0, False))
+
+        self.webdav.set_conflicts([{**conflict, "id": "synthetic-task-b"}])
+        QTest.qWait(60)
+        self.assertIsNotNone(self._visual_item("plannerWebDavResolve_synthetic-task-b_0"))
+        self._click("plannerWebDavKeepBoth_synthetic-task-b_1")
+        self.assertEqual(self.webdav.resolutions[-1], ("synthetic-task-b", 1, True))
+
+        self.assertTrue(self._visual_item("plannerWebDavClearButton").property("visible"))
+        self._click("plannerWebDavClearButton")
+        clear_dialog = self.window.findChild(QObject, "plannerWebDavClearAccountDialog")
+        self.assertIsNotNone(clear_dialog)
+        self.assertTrue(clear_dialog.property("visible"))
+        self._click("plannerWebDavClearConfirmButton")
+        self.assertEqual(self.webdav.clear_count, 1)
+        self.assertFalse(clear_dialog.property("visible"))
 
     def test_caldav_account_manager_opens_with_private_login_form(self) -> None:
         self._click("plannerCalendarSourcesButton")

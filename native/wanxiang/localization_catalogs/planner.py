@@ -241,6 +241,47 @@ ENGLISH_CATALOG: dict[str, str] = {
     "账号（公开日历可留空）": "Username (leave blank for public calendars)",
     "密码或应用专用密码": "Password or app password",
     "保存并检测": "Save and check",
+    "跨设备日程同步": "Cross-device planner sync",
+    "只同步本机计划任务，不包含其他生活记录。请输入 .wxbackup 完整备份地址；程序会在同一目录使用独立的加密日程文件。所有设备使用相同的日程同步密码。": (
+        "Syncs planner tasks only, not other life records. Enter the full .wxbackup URL; "
+        "the app stores a separate encrypted planner file in the same folder. Use the same "
+        "planner sync passphrase on every device."
+    ),
+    "WebDAV 完整备份文件地址": "Full WebDAV backup file URL",
+    "WebDAV 用户名": "WebDAV username",
+    "WebDAV 密码": "WebDAV password",
+    "日程同步密码": "Planner sync passphrase",
+    "日程同步密码（至少 12 个字符）": "Planner sync passphrase (at least 12 characters)",
+    "尚未设置 WebDAV 日程同步。": "WebDAV planner sync is not configured.",
+    "WebDAV 日程同步暂不可用。": "WebDAV planner sync is unavailable right now.",
+    "同步设置已保存，正在连接 WebDAV。": "Sync settings saved; connecting to WebDAV.",
+    "已开始同步日程。": "Planner sync started.",
+    "本机 WebDAV 登录设置已移除；日程和云端文件均保留。": (
+        "The local WebDAV login was removed. Planner data and the remote file were kept."
+    ),
+    "WebDAV 冲突选择暂不可用。": "WebDAV conflict selection is unavailable right now.",
+    "已保存冲突选择和并发副本，准备同步。": "Conflict choice and both task copies saved; sync is next.",
+    "已采用所选日程分支，准备同步。": "Selected planner branch saved; sync is next.",
+    "已删除的日程": "Deleted planner task",
+    "未命名任务": "Untitled task",
+    "立即同步 / 重试": "Sync now / Retry",
+    "同步中…": "Syncing…",
+    "目标：%1 / %2 · 最近同步：%3": "Target: %1 / %2 · Last sync: %3",
+    "尚未成功": "Not yet successful",
+    "保存新设置并同步": "Save new settings and sync",
+    "保存设置并同步": "Save settings and sync",
+    "清除本机账户": "Clear local account",
+    "并发冲突：%1": "Concurrent conflicts: %1",
+    "日程：%1 · %2": "Task: %1 · %2",
+    "此设备删除了这项日程": "This device deleted this task",
+    "采用此版本": "Use this version",
+    "采用并保留其他分支": "Use this and keep the other branch",
+    "当前没有待处理的并发冲突。": "There are no unresolved concurrent conflicts.",
+    "清除本机 WebDAV 账户": "Clear local WebDAV account",
+    "清除 %1 的本机登录信息会停止后续同步。日程、冲突记录和服务器文件都会保留。继续吗？": (
+        "Clearing the local login for %1 stops future syncs. Planner tasks, conflict records, "
+        "and the server file will be kept. Continue?"
+    ),
     "重新检测": "Check again",
     "正在检查…": "Checking…",
     "尚未成功检查": "Not checked successfully yet",
