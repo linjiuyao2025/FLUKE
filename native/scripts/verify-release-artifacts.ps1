@@ -23,6 +23,10 @@ if (Test-Path -LiteralPath $sidecarPath -PathType Leaf) {
     if ($sidecar -notmatch "^([A-Fa-f0-9]{64})(?:\s+\*?.+)?$") {
         throw "Setup SHA-256 sidecar has an invalid format: $sidecarPath"
     }
+    $sidecarName = [regex]::Match($sidecar, "^[A-Fa-f0-9]{64}(?:\s+\*?(.+))?$").Groups[1].Value.Trim()
+    if ($sidecarName -and $sidecarName -cne (Split-Path -Leaf $setupPath)) {
+        throw "Setup SHA-256 sidecar names '$sidecarName', expected '$(Split-Path -Leaf $setupPath)'."
+    }
     if ($Matches[1] -ine $setupHash) {
         throw "Setup SHA-256 sidecar does not match the installer: $sidecarPath"
     }

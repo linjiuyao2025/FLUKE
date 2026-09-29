@@ -87,10 +87,24 @@ cli_a = Analysis(
     optimize=0,
 )
 
+launcher_a = Analysis(
+    [str(project_root / "launcher.py")],
+    pathex=[str(project_root)],
+    binaries=[],
+    datas=[],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=["PySide6", "pytest", "unittest"],
+    noarchive=False,
+    optimize=0,
+)
+
 # The Codex runtime may expose Poppler's ICU DLLs on PATH. They are not
 # compatible with the ICU API imported by the QtCore wheel and would shadow
 # the host ICU that the PySide6 wheel successfully uses at runtime.
-for analysis in (a, cli_a):
+for analysis in (a, cli_a, launcher_a):
     analysis.binaries[:] = [
         item
         for item in analysis.binaries
@@ -124,10 +138,11 @@ def is_qml_build_artifact(item):
     )
 
 
-for analysis in (a, cli_a):
+for analysis in (a, cli_a, launcher_a):
     analysis.datas[:] = [item for item in analysis.datas if not is_qml_build_artifact(item)]
 
 pyz = PYZ(a.pure, cli_a.pure)
+launcher_pyz = PYZ(launcher_a.pure)
 exe = EXE(
     pyz,
     a.scripts,
@@ -162,9 +177,29 @@ cli_exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
+launcher_exe = EXE(
+    launcher_pyz,
+    launcher_a.scripts,
+    launcher_a.binaries,
+    launcher_a.datas,
+    [],
+    exclude_binaries=False,
+    name="FLUKE-launcher",
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+)
 app = COLLECT(
     exe,
     cli_exe,
+    launcher_exe,
     a.binaries,
     a.datas,
     cli_a.binaries,

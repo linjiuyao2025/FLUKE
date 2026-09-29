@@ -905,9 +905,14 @@ def preview_import(
         raise RuntimeError(current.get("error") or "无法安全读取当前迁移快照。")
     has_active = bool(current.get("hasData"))
     current_raw = current.get("raw_values", {})
+    comparison_keys = (
+        tuple(dict.fromkeys((*current_raw, *package.raw_values)))
+        if has_active
+        else tuple(package.raw_values)
+    )
     key_changes: list[dict[str, str]] = []
     change_counts = {name: 0 for name in ("added", "removed", "changed", "unchanged", "empty")}
-    for key in package.raw_values:
+    for key in comparison_keys:
         previous = current_raw.get(key)
         incoming = package.raw_values.get(key)
         if not has_active:

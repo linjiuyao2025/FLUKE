@@ -10,6 +10,7 @@ import os
 import sqlite3
 import sys
 from pathlib import Path
+import traceback
 from typing import Callable
 from urllib.parse import urlsplit, urlunsplit
 
@@ -107,6 +108,7 @@ from wanxiang.brand import BrandBridge, BrandRepository, BrandRepositoryError
 from wanxiang.localization import LocalizationBridge, LocalizationRepository
 from wanxiang.converter import ConverterBridge
 from wanxiang.converter_engines import ConverterEngineUpdateBridge
+from wanxiang.app_updates import AppUpdateBridge
 from wanxiang.spreadsheet_export import SpreadsheetExportError, export_xlsx
 from wanxiang.issue_tools import (
     IssueToolError,
@@ -4235,6 +4237,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="可选 SQLite 路径；用于开发时隔离数据，不指定时使用本机默认目录。",
     )
+    parser.add_argument(
+        "--health-check",
+        action="store_true",
+        help="启动完整 Qt Quick 界面并立即退出；供 side-by-side launcher 验证新版本。",
+    )
     return parser.parse_known_args()[0]
 
 
@@ -4284,7 +4291,30 @@ def main() -> int:
     app.setFont(QFont(font_families[0] if font_families else "Noto Sans SC", 10))
 
     engine = QQmlApplicationEngine()
-    initialize_database(database_path)
+    app_update_bridge = AppUpdateBridge(local_app_data / "FLUKE" / "Updates")
+    engine.rootContext().setContextProperty("flukeAppUpdateController", app_update_bridge)
+    try:
+        initialize_database(database_path)
+    except (OSError, sqlite3.Error, RuntimeError) as exc:
+        message = (
+            "无法读取本机数据库，FLUKE 没有覆盖原文件。\n\n"
+            f"路径：{database_path}\n\n{exc}"
+        )
+        if args.health_check:
+            health_root = local_app_data / "FLUKE" / "HealthChecks"
+            health_root.mkdir(parents=True, exist_ok=True)
+            (health_root / "last-health-check-error.txt").write_text(
+                message + "\n", encoding="utf-8"
+            )
+            try:
+                if sys.stderr is not None:
+                    sys.stderr.write(message + "\n")
+                    sys.stderr.flush()
+            except (OSError, ValueError):
+                pass
+        else:
+            QMessageBox.critical(None, "无法打开本机数据", message)
+        return 1
     localization_bridge = LocalizationBridge(
         LocalizationRepository(database_path), engine, app
     )
@@ -4463,8 +4493,11 @@ def main() -> int:
     tray_lifecycle.set_window(window)
     refresh_daily_activity()
     window.resize(width, height)
-    window.show()
-    QTimer.singleShot(0, weather_bridge.querySavedCity)
+    if args.health_check:
+        QTimer.singleShot(0, app.quit)
+    else:
+        window.show()
+        QTimer.singleShot(0, weather_bridge.querySavedCity)
 
     if args.capture is not None:
         output_path = args.capture.resolve()
@@ -4498,6 +4531,7 @@ def main() -> int:
 
     backup_bridge.restoreRequested.connect(app.quit)
     migration_bridge.restartRequested.connect(app.quit)
+    app_update_bridge.restartRequested.connect(app.quit)
     result = app.exec()
     # QML bindings can still reference the context objects until the engine
     # destroys its root objects. Destroy the engine while the Python bridge
@@ -4524,4 +4558,18 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except Exception:
+        if "--health-check" in sys.argv:
+            health_root = Path(
+                os.environ.get("LOCALAPPDATA", str(Path.home() / "AppData" / "Local"))
+            ) / "FLUKE" / "HealthChecks"
+            try:
+                health_root.mkdir(parents=True, exist_ok=True)
+                (health_root / "last-unhandled-exception.txt").write_text(
+                    traceback.format_exc(), encoding="utf-8"
+                )
+            except OSError:
+                pass
+        raise

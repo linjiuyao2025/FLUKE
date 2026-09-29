@@ -70,4 +70,26 @@ ENGLISH_CATALOG: dict[str, str] = {
     "细分选题必须是文本。": "Specific topics must be text.",
     "自定义来源必须是文本。": "Custom sources must be text.",
     "预设媒体必须是字符串数组。": "Preset sources must be a list of strings.",
+    # FLUKE application updates are shown in the preferences dialog.
+    "FLUKE 应用更新": "FLUKE app updates",
+    "当前版本：%1。检查 GitHub Releases 中 v0.1.2 及以上的 Windows 安装包。": (
+        "Current version: %1. Check GitHub Releases for Windows installers v0.1.2 and later."
+    ),
+    "可用版本：%1 · %2": "Available version: %1 · %2",
+    "正在检查…": "Checking…",
+    "检查应用更新": "Check for app updates",
+    "正在下载…": "Downloading…",
+    "下载并校验": "Download and verify",
+    "打开安装包位置": "Open installer folder",
+    "安全安装并重启": "Install safely and restart",
+    "取消下载": "Cancel download",
+    "正在安装…": "Installing…",
+    "新版会安装到独立版本目录；启动健康检查成功后才切换，失败时自动保留旧版并可回退。": (
+        "The new version is installed in a separate version directory; it switches only after a "
+        "successful startup health check, and failures keep the old version available for rollback."
+    ),
+    "当前安装不是可回滚的 side-by-side 布局，只能下载并校验官方安装包；自动安装已关闭。": (
+        "This installation is not a rollback-safe side-by-side layout; only download and verification "
+        "are available, and automatic installation is disabled."
+    ),
 }

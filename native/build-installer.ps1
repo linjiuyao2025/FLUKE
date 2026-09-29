@@ -59,6 +59,20 @@ try {
         throw "PyInstaller failed with exit code $LASTEXITCODE."
     }
 
+    # The stable root launcher is copied outside the versioned payload. Build
+    # it as a self-contained onefile executable so it does not depend on the
+    # version directory's _internal runtime files.
+    $launcherOutput = Join-Path $nativeRoot "dist\FLUKE"
+    $launcherBuild = Join-Path $nativeRoot "build\launcher-onefile"
+    $launcherSpec = Join-Path $launcherBuild "spec"
+    New-Item -ItemType Directory -Force -Path $launcherBuild, $launcherSpec | Out-Null
+    & $python -m PyInstaller --clean --noconfirm --onefile --name "FLUKE-launcher" `
+        --distpath $launcherOutput --workpath $launcherBuild --specpath $launcherSpec `
+        (Join-Path $nativeRoot "launcher.py")
+    if ($LASTEXITCODE -ne 0) {
+        throw "PyInstaller launcher build failed with exit code $LASTEXITCODE."
+    }
+
     $internalOutput = Join-Path $nativeRoot "dist\FLUKE\_internal"
     if (-not (Test-Path -LiteralPath $internalOutput -PathType Container)) {
         throw "PyInstaller completed without producing dist\FLUKE\_internal."
@@ -116,6 +130,11 @@ try {
     $appExecutable = Join-Path $nativeRoot "dist\FLUKE\FLUKE.exe"
     if (-not (Test-Path -LiteralPath $appExecutable)) {
         throw "PyInstaller completed without producing dist\FLUKE\FLUKE.exe."
+    }
+
+    $launcherExecutable = Join-Path $nativeRoot "dist\FLUKE\FLUKE-launcher.exe"
+    if (-not (Test-Path -LiteralPath $launcherExecutable -PathType Leaf)) {
+        throw "PyInstaller completed without producing dist\FLUKE\FLUKE-launcher.exe."
     }
 
     $converterExecutable = Join-Path $nativeRoot "dist\FLUKE\FLUKE-convert.exe"

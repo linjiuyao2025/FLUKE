@@ -270,6 +270,33 @@ class MigrationPackageTests(unittest.TestCase):
                 )
                 self.assertEqual(counts, {legacy.checksum: 9, current.checksum: 10})
 
+    def test_preview_reports_schema_v2_key_removal_when_returning_to_schema_v1(self) -> None:
+        current = validate_package(synthetic_payload())
+        legacy_payload = synthetic_payload()
+        legacy_payload["schemaVersion"] = 1
+        legacy_payload["keys"].pop("wanxiang-planner-sync-device-v1")
+        legacy_payload["checksum"] = calculate_checksum(
+            legacy_payload["keys"], schema_version=1
+        )
+        legacy = validate_package(legacy_payload)
+
+        with tempfile.TemporaryDirectory() as directory:
+            database_path = Path(directory) / "ten-to-nine.sqlite3"
+            import_package(current, database_path)
+
+            preview = preview_import(legacy, database_path)
+
+            self.assertEqual(preview["status"], "new_snapshot")
+            self.assertEqual(preview["keyChangeCounts"]["removed"], 1)
+            self.assertEqual(
+                [
+                    item
+                    for item in preview["keyChanges"]
+                    if item["key"] == "wanxiang-planner-sync-device-v1"
+                ],
+                [{"key": "wanxiang-planner-sync-device-v1", "change": "removed"}],
+            )
+
     def test_invalid_content_is_rejected_before_database_creation(self) -> None:
         payload = synthetic_payload()
         payload["keys"]["richangji-state-v1"] = _raw({"records": "wrong"})

@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtWebEngine
 import "UiPageUtils.js" as UiPageUtils
 
 Item {
@@ -28,6 +29,7 @@ Item {
     property int focusElapsedSecondsSnapshot: 0
     property int focusRemainingSecondsSnapshot: 1500
     property bool spotifyUrlDirty: false
+    property string spotifyPlayerLoadState: "idle"
     property string notice: ""
     property bool noticeIsError: false
     property int selectedQuestionIndex: -1
@@ -87,7 +89,10 @@ Item {
         { value: "countdown", label: qsTr("自定义倒计时") }
     ]
     readonly property string todayDateKey: String(valueOf(todayWork, "date", localDateKey()))
-    readonly property bool canOpenSpotify: isSpotifyUrl(String(valueOf(persistedState, "spotifyUrl", "")))
+    readonly property string spotifyEmbedAddress: spotifyEmbedUrl(String(valueOf(persistedState, "spotifyUrl", "")))
+    readonly property bool canOpenSpotify: spotifyEmbedAddress.length > 0
+
+    onSpotifyEmbedAddressChanged: setSpotifyPlayerLoadState(canOpenSpotify ? "loading" : "idle")
 
     function valueOf(object, key, fallback) {
         return UiPageUtils.valueOf(object, key, fallback)
@@ -158,8 +163,19 @@ Item {
         return date ? String(date) : qsTr("日期未记录")
     }
 
+    function spotifyEmbedUrl(value) {
+        var match = /^https:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?(track|album|playlist|episode|show)\/([A-Za-z0-9]{10,40})\/?(?:[?#].*)?$/i.exec(String(value || "").trim())
+        return match
+                ? "https://open.spotify.com/embed/" + match[1].toLowerCase() + "/" + match[2] + "?utm_source=generator"
+                : ""
+    }
+
     function isSpotifyUrl(value) {
-        return /^https:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?(?:track|album|playlist|episode|show)\/[A-Za-z0-9]{10,40}\/?(?:[?#].*)?$/i.test(value)
+        return spotifyEmbedUrl(value).length > 0
+    }
+
+    function setSpotifyPlayerLoadState(state) {
+        spotifyPlayerLoadState = canOpenSpotify ? String(state) : "idle"
     }
 
     function openSpotifyLink() {
@@ -1485,7 +1501,7 @@ Item {
                                     Item { Layout.fillWidth: true }
                                     Text {
                                         objectName: "dailySpotifyDecisionStatus"
-                                        text: qsTr("Spotify 外部播放")
+                                        text: qsTr("Spotify 官方播放器")
                                         color: page.success
                                         font.family: page.fontFamily
                                         font.pixelSize: 12
@@ -1503,7 +1519,7 @@ Item {
                                 }
                                 Text {
                                     Layout.fillWidth: true
-                                    text: qsTr("链接保存在本机。应用不嵌入网页播放器；点击外部打开后由系统默认浏览器或 Spotify 应用接手播放。")
+                                    text: qsTr("链接保存在本机；播放器载入 Spotify 官方页面。登录状态、内容地区和网络连接可能影响播放。")
                                     color: page.ink
                                     font.family: page.fontFamily
                                     font.pixelSize: 12
@@ -1542,6 +1558,62 @@ Item {
                                         onClicked: page.saveSpotifyDraft(true)
                                     }
                                     Item { Layout.fillWidth: true }
+                                }
+                                Loader {
+                                    objectName: "dailySpotifyPlayerLoader"
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: active ? 152 : 0
+                                    Layout.minimumHeight: active ? 152 : 0
+                                    active: page.canOpenSpotify
+                                    visible: active
+                                    sourceComponent: Component {
+                                        WebEngineView {
+                                            objectName: "dailySpotifyWebEngineView"
+                                            anchors.fill: parent
+                                            url: page.spotifyEmbedAddress
+                                            backgroundColor: "white"
+                                            settings.playbackRequiresUserGesture: true
+                                            settings.javascriptCanOpenWindows: false
+                                            settings.pluginsEnabled: false
+
+                                            onNavigationRequested: function(request) {
+                                                var host = String(request.url.host).toLowerCase()
+                                                if (request.url.scheme === "https" &&
+                                                        (host === "open.spotify.com" || host === "accounts.spotify.com"))
+                                                    request.accept()
+                                                else
+                                                    request.reject()
+                                            }
+
+                                            onLoadingChanged: function(loadInfo) {
+                                                if (loadInfo.status === WebEngineView.LoadStartedStatus)
+                                                    page.setSpotifyPlayerLoadState("loading")
+                                                else if (loadInfo.status === WebEngineView.LoadSucceededStatus)
+                                                    page.setSpotifyPlayerLoadState("loaded")
+                                                else if (loadInfo.status === WebEngineView.LoadFailedStatus ||
+                                                        loadInfo.status === WebEngineView.LoadStoppedStatus)
+                                                    page.setSpotifyPlayerLoadState("failed")
+                                            }
+                                        }
+                                    }
+                                }
+                                Text {
+                                    objectName: "dailySpotifyLoadStatus"
+                                    Layout.fillWidth: true
+                                    visible: page.canOpenSpotify
+                                    text: page.spotifyPlayerLoadState === "loading"
+                                          ? qsTr("Spotify 播放器载入中…")
+                                          : page.spotifyPlayerLoadState === "loaded"
+                                            ? qsTr("Spotify 播放器页面已载入；实际播放仍受登录状态、地区和网络影响。")
+                                            : page.spotifyPlayerLoadState === "failed"
+                                              ? qsTr("Spotify 播放器载入失败或网络不可用。可点击“在 Spotify 打开”继续。")
+                                              : ""
+                                    color: page.spotifyPlayerLoadState === "failed" ? page.danger
+                                           : page.spotifyPlayerLoadState === "loaded" ? page.success
+                                           : page.muted
+                                    font.family: page.fontFamily
+                                    font.pixelSize: 12
+                                    wrapMode: Text.WordWrap
                                 }
                             }
                         }

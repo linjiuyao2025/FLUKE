@@ -8,7 +8,7 @@
 - Electron v1.0.3 标签源码可核对九个 localStorage 键，对应 schema 1。仓库当前 main 的迁移格式在这九个键上增加设备同步标识，形成 schema 2 十键；权威清单为 native/wanxiang/migration.py:13-30，当前 main 导出列表和读取位置为 life-workspace.html:2976-3003。
 - 当前 main 的导出器读取 localStorage 原始字符串或 null，不改动旧值，并将包元信息的 sourceVersion 标为 unknown。v1.0.3 标签、实际日常使用的安装包/profile 与当前 main 源码之间的对应关系仍待核。
 - Native 的迁移模型先将每个键的原始值写入 SQLite legacy_storage.raw_value；可解析 JSON 同时保存在 json_documents.document_json。records、habits、media_items 等是供本机模块查询的投影，不替代原始快照。
-- 下表的 SQLite “目标”表示源码可追索到的设计/消费位置。最新本机候选包已通过 Native 校验器并与当前默认 SQLite 只读对照为同一快照；候选包记录的来源版本是 1.0.2，尚不能证明与旧版 v1.0.3 当前数据同步。不得把源码映射或快照相等误作 v1.0.3 运行验收。
+- 下表的 SQLite “目标”表示源码可追索到的设计/消费位置。本轮在本机 Downloads 目录发现一份可被 Native 校验器读取的迁移文件：schema 1、sourceVersion=1.0.2、九键；其来源与旧版 v1.0.3 实际 profile 未建立对应关系。只读预览将它与当前活动 Native schema 2 快照判为 `new_snapshot`，存在键/实体差异；本轮未执行导入。不得把文件存在、源码映射或预览结果误作 v1.0.3 运行验收。
 - 导出器只覆盖本地 localStorage 快照。它不能证明云端 SmartPage 表、WebDAV 服务器快照、远程日历订阅或任何服务端账号记录已导入。即使本地对象里有远程 ID、同步队列或缓存，也只能说明本地保存过这些字段。
 
 ## 十个 localStorage 键逐项映射
@@ -43,7 +43,22 @@
 | 事务、重复导入和回滚 | native/wanxiang/database.py:991-1096 | BEGIN IMMEDIATE 包围批次、原文、文档和实体投影写入；可按来源身份+checksum 识别重复批次，异常时回滚 | 源码/合成测试设计不等于真实数据实测成功 |
 | 迁移包数量摘要 | native/wanxiang/migration.py:192-213 | 预览统计 keys_total/keys_present、记录/习惯/媒体、settings 顶层字段、草稿项、日历来源、布局顺序/槽位/隐藏项、样例清理/稍后读/设备 ID 标记，以及新闻刊期/文章/问题/主题/剪报数量；不输出这些字段的个人内容 | settings 只统计顶层字段数，复杂嵌套设置仍由每键原文差异和 SHA-256 核对；摘要数量不是用户数据完成迁移的证明 |
 
-本轮已在本机只读解析候选包并对照活动 SQLite；不把原文、具体个人字段或完整校验和写入仓库。只读预览证明现存 Native 数据库与最新合法候选一致；候选来源版本为 1.0.2。本轮在标准 Windows 卸载登记位置找到两个 v1.0.3 条目，均指向 Electron QA 安装目录；没有据此锁定日常使用的稳定安装目录及其 profile，也不能排除未登记的便携副本，因此“与当前旧版实际使用 profile 同步”仍为待验证。v0.1.1 发布候选源码/QML 合成回归为 624 项通过、1 项跳过，不替代旧版运行或正式安装版的逐功能验收。
+本轮已在本机只读解析候选包并对照活动 SQLite；不把原文、具体个人字段或完整校验和写入仓库。预览结果为 `new_snapshot`，且发现 schema 1 与当前活动 schema 2 的键/实体差异；没有执行 `--apply`，旧版数据库和 Native 活动快照保持不变。候选来源版本为 1.0.2，但没有据此锁定日常使用的旧版稳定安装目录及其 profile，因此“与当前旧版实际使用 profile 同步”仍为待验证。v0.1.1 发布候选源码/QML 合成回归为 624 项通过、1 项跳过，不替代旧版运行或正式安装版的逐功能验收。
+
+## Stage 2 合成证据（2026-09-29）
+
+命令：`native\\.venv\\Scripts\\python.exe -m unittest tests.test_migration tests.test_snapshot_migration tests.test_migration_qml_integration tests.test_migration_qml_confirmation -v`。结果：**33 项通过，0 项失败，0 项跳过**；Qt 运行输出中的字体目录提示和 `QQuickStyle` 提示不改变该专测的最终 `OK`，但也不构成安装版视觉验收。
+
+| 场景 | 结果 | 证据性质 |
+|---|---|---|
+| 十个 schema 2 键、九个 schema 1 键、数量摘要、原始值与 JSON 副本 | 通过 | 合成数据 |
+| 缺键、内容损坏、校验和不匹配 | 通过 | 合成数据；校验失败发生在建库/写入前 |
+| 预览、确认导入、重复导入识别、取消导入 | 通过 | 合成数据 + QML 集成 |
+| 新快照差异、schema 1→2 和 schema 2→1 键差异 | 通过 | 合成数据；旧版回退预览会明确显示第十键移除 |
+| 中途写入失败、事务回滚、旧批次和业务 overlay 不变 | 通过 | 合成 SQLite 触发器/隔离数据库 |
+| 旧数据库复制升级、原文件保持不变 | 通过 | 合成旧 schema SQLite |
+
+以上结果只证明迁移流程的结构和失败安全性；不证明发现的 Downloads 文件就是当前旧版真实 profile，也不证明真实个人数据已导入。任何真实包仍需在隔离副本中先预览、保存 checksum/摘要证据，再由用户确认后应用。
 
 ## 本地与云端数据的明确分界
 

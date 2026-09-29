@@ -462,6 +462,15 @@ _CORE_ENGLISH_CATALOG: dict[str, str] = {
     "新闻刊期 %1 · 问题簿 %2 · 关注主题 %3 · 剪报 %4": (
         "News issues %1 · question log %2 · followed topics %3 · clippings %4"
     ),
+    "新闻刊期 %1 · 新闻文章 %2 · 问题簿 %3 · 关注主题 %4 · 剪报 %5": (
+        "News issues %1 · %2 articles · question log %3 · followed topics %4 · clippings %5"
+    ),
+    "设置字段 %1 · 日历来源 %2 · 草稿项 %3 · 首页布局顺序/槽位/隐藏 %4/%5/%6": (
+        "Setting fields %1 · calendar sources %2 · draft items %3 · home layout order/slots/hidden %4/%5/%6"
+    ),
+    "样例清理 %1 · 稍后读开关 %2 · 日程同步标识 %3": (
+        "Sample cleanup %1 · saved knowledge %2 · planner sync ID %3"
+    ),
     "检测到同一旧版来源的新快照。确认后保留历史快照和本机模块修改，并切换当前数据。": (
         "A new snapshot from the same legacy source was found. Confirming preserves snapshot history and local module changes, then makes this snapshot current."
     ),

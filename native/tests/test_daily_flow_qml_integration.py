@@ -9,7 +9,7 @@ import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PySide6.QtCore import Q_ARG, QMetaObject, QObject, Qt, QUrl, Slot
+from PySide6.QtCore import Q_ARG, QMetaObject, QObject, Q_RETURN_ARG, Qt, QUrl, Slot
 from PySide6.QtGui import QAccessible, QDesktopServices
 from PySide6.QtQuick import QQuickItem
 from PySide6.QtTest import QTest
@@ -326,6 +326,24 @@ class DailyFlowQmlIntegrationTests(unittest.TestCase):
                 capture.urls.clear()
 
             spotify_url = "https://open.spotify.com/playlist/0123456789?si=synthetic"
+            for source_url, embed_url in (
+                ("https://open.spotify.com/track/0123456789", "https://open.spotify.com/embed/track/0123456789?utm_source=generator"),
+                ("https://open.spotify.com/album/0123456789", "https://open.spotify.com/embed/album/0123456789?utm_source=generator"),
+                ("https://open.spotify.com/playlist/0123456789?si=synthetic", "https://open.spotify.com/embed/playlist/0123456789?utm_source=generator"),
+                ("https://open.spotify.com/episode/0123456789", "https://open.spotify.com/embed/episode/0123456789?utm_source=generator"),
+                ("https://open.spotify.com/show/0123456789", "https://open.spotify.com/embed/show/0123456789?utm_source=generator"),
+                ("https://open.spotify.com/intl-en/playlist/0123456789", "https://open.spotify.com/embed/playlist/0123456789?utm_source=generator"),
+            ):
+                self.assertEqual(
+                    QMetaObject.invokeMethod(
+                        self.page,
+                        "spotifyEmbedUrl",
+                        Qt.ConnectionType.DirectConnection,
+                        Q_RETURN_ARG("QVariant"),
+                        Q_ARG("QVariant", source_url),
+                    ),
+                    embed_url,
+                )
             spotify_input = self.window.findChild(QObject, "dailySpotifyUrlInput")
             self.assertIsNotNone(spotify_input)
             spotify_remove = self.window.findChild(QObject, "dailySpotifyRemoveButton")
@@ -335,6 +353,31 @@ class DailyFlowQmlIntegrationTests(unittest.TestCase):
             self._click("dailySpotifySaveButton")
             self.assertEqual(self.daily.state["spotifyUrl"], spotify_url)
             self.assertTrue(bool(spotify_remove.property("enabled")))
+            spotify_loader = self.window.findChild(QObject, "dailySpotifyPlayerLoader")
+            self.assertIsNotNone(spotify_loader)
+            self.assertTrue(bool(spotify_loader.property("active")))
+            spotify_player = self.window.findChild(QObject, "dailySpotifyWebEngineView")
+            self.assertIsNotNone(spotify_player)
+            self.assertEqual(
+                spotify_player.property("url").toString(),
+                "https://open.spotify.com/embed/playlist/0123456789?utm_source=generator",
+            )
+            spotify_load_status = self.window.findChild(QObject, "dailySpotifyLoadStatus")
+            self.assertIsNotNone(spotify_load_status)
+            for state, expected_text in (
+                ("loading", "Spotify 播放器载入中…"),
+                ("loaded", "Spotify 播放器页面已载入；实际播放仍受登录状态、地区和网络影响。"),
+                ("failed", "Spotify 播放器载入失败或网络不可用。可点击“在 Spotify 打开”继续。"),
+            ):
+                self.assertTrue(
+                    QMetaObject.invokeMethod(
+                        self.page,
+                        "setSpotifyPlayerLoadState",
+                        Qt.ConnectionType.DirectConnection,
+                        Q_ARG("QVariant", state),
+                    )
+                )
+                self.assertEqual(spotify_load_status.property("text"), expected_text)
 
             spotify_open = self.window.findChild(QObject, "dailySpotifyOpenButton")
             self.assertIsNotNone(spotify_open)

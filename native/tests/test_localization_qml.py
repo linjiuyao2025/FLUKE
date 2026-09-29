@@ -9,7 +9,16 @@ import sqlite3
 import tempfile
 import unittest
 
-from PySide6.QtCore import QCoreApplication, QEvent, QMetaObject, QObject, Qt, QUrl
+from PySide6.QtCore import (
+    QCoreApplication,
+    QEvent,
+    QMetaObject,
+    QObject,
+    Property,
+    Qt,
+    QUrl,
+    Signal,
+)
 from PySide6.QtQuickControls2 import QQuickStyle
 from PySide6.QtQml import QQmlApplicationEngine, QQmlComponent
 from PySide6.QtQuick import QQuickItem
@@ -91,6 +100,18 @@ class LocalizationTests(unittest.TestCase):
             "Storage keys %1/%2 · %3 records · %4 habits · %5 books & media",
         )
         self.assertEqual(
+            translator.translate("Main", "新闻刊期 %1 · 新闻文章 %2 · 问题簿 %3 · 关注主题 %4 · 剪报 %5"),
+            "News issues %1 · %2 articles · question log %3 · followed topics %4 · clippings %5",
+        )
+        self.assertEqual(
+            translator.translate("Main", "设置字段 %1 · 日历来源 %2 · 草稿项 %3 · 首页布局顺序/槽位/隐藏 %4/%5/%6"),
+            "Setting fields %1 · calendar sources %2 · draft items %3 · home layout order/slots/hidden %4/%5/%6",
+        )
+        self.assertEqual(
+            translator.translate("Main", "样例清理 %1 · 稍后读开关 %2 · 日程同步标识 %3"),
+            "Sample cleanup %1 · saved knowledge %2 · planner sync ID %3",
+        )
+        self.assertEqual(
             translator.translate("Main", "将清空全部本机数据"),
             "将清空全部本机数据",
             "unreviewed text stays in the original language",
@@ -129,6 +150,141 @@ class LocalizationTests(unittest.TestCase):
             translator.translate("ShoppingPage", "待买物品", "shopping item fallback"),
             "Shopping item",
         )
+
+    def test_preferences_app_update_section_localizes_live_qml(self) -> None:
+        class UpdateProbe(QObject):
+            stateChanged = Signal()
+
+            def __init__(self) -> None:
+                super().__init__()
+                self._state = {
+                    "currentVersion": "0.1.2",
+                    "availableVersion": "0.1.2",
+                    "releaseTag": "native-v0.1.2-preview.1",
+                    "updateAvailable": True,
+                    "verifiedInstallerPath": "",
+                    "busy": False,
+                    "progress": 0,
+                    "statusMessage": "等待检查",
+                    "automaticInstallAvailable": False,
+                    "cancellable": False,
+                }
+
+            @Property("QVariant", notify=stateChanged)
+            def state(self) -> dict[str, object]:
+                return self._state
+
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            database = temporary / "preferences-locale.sqlite3"
+            qml_directory = Path(__file__).resolve().parents[1] / "qml"
+            import_url = QUrl.fromLocalFile(str(qml_directory) + os.sep).toString()
+            qml_path = temporary / "PreferencesLocaleProbe.qml"
+            qml_path.write_text(
+                "import QtQuick\n"
+                "import QtQuick.Controls\n"
+                f'import "{import_url}" as Native\n'
+                "ApplicationWindow {\n"
+                "  visible: true; width: 900; height: 900\n"
+                "  Native.PreferencesDialog {\n"
+                '    objectName: "preferencesDialogUnderTest"\n'
+                "    appUpdateController: updateProbe\n"
+                "    initialState: ({ topics: [], preferences: { subtopics: \"\", sources: \"\", "
+                "presetSources: [] } })\n"
+                "  }\n"
+                "}\n",
+                encoding="utf-8",
+            )
+
+            engine = QQmlApplicationEngine()
+            localization = LocalizationBridge(
+                LocalizationRepository(database), engine, self.app
+            )
+            update_probe = UpdateProbe()
+            engine.rootContext().setContextProperty("updateProbe", update_probe)
+            try:
+                engine.load(QUrl.fromLocalFile(str(qml_path)))
+                self.assertTrue(engine.rootObjects(), "PreferencesDialog failed to load")
+                window = engine.rootObjects()[0]
+                window.show()
+                dialog = window.findChild(QObject, "preferencesDialogUnderTest")
+                self.assertIsNotNone(dialog)
+                assert dialog is not None
+                dialog.open()
+                QTest.qWait(80)
+
+                def text_control(expected: str) -> QObject:
+                    match = next(
+                        (
+                            item
+                            for item in window.findChildren(QObject)
+                            if item.property("text") == expected
+                        ),
+                        None,
+                    )
+                    self.assertIsNotNone(match, f"missing QML text: {expected}")
+                    assert match is not None
+                    return match
+
+                self.assertTrue(localization.setLanguage("en_US")["ok"])
+                QTest.qWait(40)
+                version_text = (
+                    "Current version: 0.1.2. Check GitHub Releases for Windows installers "
+                    "v0.1.2 and later."
+                )
+                available_text = "Available version: 0.1.2 · native-v0.1.2-preview.1"
+                update_notice = (
+                    "This installation is not a rollback-safe side-by-side layout; only download "
+                    "and verification are available, and automatic installation is disabled."
+                )
+                for expected in (
+                    "FLUKE app updates",
+                    version_text,
+                    available_text,
+                    update_notice,
+                ):
+                    with self.subTest(text=expected):
+                        self.assertEqual(text_control(expected).property("text"), expected)
+
+                for object_name, expected in (
+                    ("appUpdateCheckButton", "Check for app updates"),
+                    ("appUpdateDownloadButton", "Download and verify"),
+                    ("appUpdateInstallButton", "Install safely and restart"),
+                    ("appUpdateCancelButton", "Cancel download"),
+                ):
+                    with self.subTest(button=object_name):
+                        self.assertEqual(
+                            window.findChild(QObject, object_name).property("text"), expected
+                        )
+
+                update_probe._state["busy"] = True
+                update_probe.stateChanged.emit()
+                QTest.qWait(40)
+                self.assertEqual(
+                    window.findChild(QObject, "appUpdateCheckButton").property("text"),
+                    "Checking…",
+                )
+                self.assertEqual(
+                    window.findChild(QObject, "appUpdateDownloadButton").property("text"),
+                    "Downloading…",
+                )
+
+                update_probe._state.update(
+                    busy=False, verifiedInstallerPath="C:/FLUKE-0.1.2-Setup.exe"
+                )
+                update_probe.stateChanged.emit()
+                QTest.qWait(40)
+                self.assertEqual(
+                    window.findChild(QObject, "appUpdateOpenFolderButton").property("text"),
+                    "Open installer folder",
+                )
+            finally:
+                localization.close()
+                for root_object in engine.rootObjects():
+                    root_object.close()
+                engine.deleteLater()
+                QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+                self.app.processEvents()
 
     def test_daily_flow_localizes_fixed_hints_and_preserves_user_values(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -219,12 +375,34 @@ class LocalizationTests(unittest.TestCase):
                 question = control("dailyQuestionInput")
                 focus_name = control("dailyFocusTaskInput")
                 spotify = control("dailySpotifyUrlInput")
+                spotify_status = control("dailySpotifyDecisionStatus")
                 focus_candidate = control("dailyFocusCandidateSelector")
                 question_card_text = control("dailyQuestionText_0")
                 reset_button = control("dailyFocusResetButton")
                 add_question_button = control("dailyQuestionAddButton")
                 status = control("dailyMailIntegrationStatus")
                 notice = control("dailyFlowNoticeText")
+                spotify_decision_note = next(
+                    (
+                        item
+                        for item in window.findChildren(QObject)
+                        if item.property("text") == daily.state["spotifyDecisionNote"]
+                    ),
+                    None,
+                )
+                self.assertIsNotNone(spotify_decision_note)
+                spotify_player_hint_source = (
+                    "链接保存在本机；播放器载入 Spotify 官方页面。登录状态、内容地区和网络连接可能影响播放。"
+                )
+                spotify_player_hint = next(
+                    (
+                        item
+                        for item in window.findChildren(QObject)
+                        if item.property("text") == spotify_player_hint_source
+                    ),
+                    None,
+                )
+                self.assertIsNotNone(spotify_player_hint)
 
                 self.assertEqual(follow_up.property("text"), "工作")
                 self.assertEqual(focus_name.property("text"), "工作")
@@ -252,6 +430,15 @@ class LocalizationTests(unittest.TestCase):
                 self.assertEqual(
                     spotify.property("placeholderText"),
                     "Spotify track, album, playlist, or podcast link",
+                )
+                self.assertEqual(spotify_status.property("text"), "Official Spotify player")
+                self.assertEqual(
+                    spotify_decision_note.property("text"),
+                    "The current Native implementation keeps valid Spotify links and loads Spotify's official embedded player on the focus page. Sign-in status, regional availability, and network access can affect playback.",
+                )
+                self.assertEqual(
+                    spotify_player_hint.property("text"),
+                    "The link is saved on this device. The focus page loads Spotify's official player. Sign-in status, regional availability, and network access can affect playback.",
                 )
                 self.assertEqual(reset_button.property("text"), "Reset")
                 self.assertEqual(

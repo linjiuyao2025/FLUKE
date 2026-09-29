@@ -14,6 +14,9 @@ windows-platform.pdf
 # Local QA installers, synthetic profiles, logs, and screenshots are not source.
 qa-release/
 qa-sandbox/
+qa-artifacts/
+qa-stage6-health/
+qa-stage6-install/
 *.egg-info/
 *.sqlite
 *.sqlite3

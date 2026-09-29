@@ -21,6 +21,9 @@ from typing import Any, Callable
 from urllib.parse import urlsplit
 from uuid import uuid4
 
+from PySide6.QtGui import QGuiApplication
+from PySide6.QtWebEngineQuick import QtWebEngineQuick
+
 from .database import load_imported_data
 from .json_utils import copy_json
 from .migration import MigrationPackage
@@ -30,9 +33,15 @@ LEGACY_STATE_KEY = "richangji-state-v1"
 LEGACY_QUESTIONS_KEY = "wanxiang-issue-questions-v1"
 SPOTIFY_MIGRATION_DECISION = "external_link"
 SPOTIFY_DECISION_NOTE = (
-    "新版保留有效 Spotify 链接，并交由系统默认浏览器或 Spotify 应用打开。"
-    "桌面核心不嵌入网页播放器；Windows 外部打开行为仍待实际验证。"
+    "新版保留有效 Spotify 链接，并在专注页载入 Spotify 官方嵌入播放器。"
+    "登录状态、内容地区和网络可能影响播放。"
 )
+
+# Qt Quick WebEngine must initialize its shared OpenGL context before the app
+# creates QGuiApplication; main.py imports this module before doing so.
+if QGuiApplication.instance() is None:
+    QtWebEngineQuick.initialize()
+
 _TABLE = "daily_flow_state"
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _FOCUS_MODES = {"pomodoro", "flowtime", "countdown"}

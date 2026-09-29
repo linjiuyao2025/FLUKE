@@ -12,7 +12,7 @@ FLUKE 是本机优先的 Windows 生活工作台。本仓库正在把桌面核�
 
 ## 当前版本状态
 
-GitHub `main` 现包含 FLUKE Native 迁移源码。当前 Latest 是 [FLUKE Native v0.1.1 迁移预览](https://github.com/linjiuyao2025/FLUKE/releases/tag/native-v0.1.1-preview.1)，提供新版 Windows 安装包、FLUKE 品牌安装向导画面及 FFmpeg、Tesseract、Calibre 引擎更新包。应用会把旧版内置默认名称迁移为 FLUKE，同时保留用户明确保存的自定义名称和导入原文。Native 正逐阶段对照旧版验收，**整体迁移尚未完成，Native 还不是完整的旧版替代品**。历史 [Electron v1.0.3](https://github.com/linjiuyao2025/FLUKE/releases/tag/v1.0.3) 和 Native v0.1.0 仍保留，可作回退版本。Native 使用独立的安装标识和数据目录，不会覆盖旧版安装或数据；在迁移验收完成前，请保留旧版及备份。Native 暂无整应用自动更新器；获取新版本需从发布页手动下载。
+GitHub `main` 现包含 FLUKE Native 迁移源码。当前 Latest 是 [FLUKE Native v0.1.2 迁移预览](https://github.com/linjiuyao2025/FLUKE/releases/tag/native-v0.1.2-preview.1)，提供新的 FLUKE 安装向导、side-by-side 版本目录和根目录 launcher。Native v0.1.2 的更新器会检查官方 Release、下载并校验 SHA-256 sidecar；只有安装在 `D:\FLUKE-Native` 的 side-by-side 布局中才显示自动安装，先做隔离临时 SQLite 健康检查，失败时保留旧版本并支持回退。旧版 v0.1.1 的 `D:\FLUKE` 安装仍只允许手动下载/安装，不会被新方案覆盖。Native 正逐阶段对照旧版验收，**整体迁移尚未完成，Native 还不是完整的旧版替代品**。历史 [Electron v1.0.3](https://github.com/linjiuyao2025/FLUKE/releases/tag/v1.0.3) 和 Native v0.1.0 仍保留，可作回退版本；在迁移验收完成前，请保留旧版及备份。
 
 当前迁移状态和验证边界见 [FLUKE Native 说明](native/README.md)。真实个人数据、迁移包、SQLite 数据库、凭据和本机测试产物不属于公开仓库。
 

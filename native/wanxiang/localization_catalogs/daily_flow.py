@@ -58,8 +58,11 @@ ENGLISH_CATALOG: dict[str, str] = {
     "本轮专注已锁定当前任务；暂停后可以切换任务。": (
         "This focus session is locked to the current task. Pause it to switch tasks."
     ),
-    "Spotify 外部播放": "Spotify playback",
-    "链接保存在本机。应用不嵌入网页播放器；点击外部打开后由系统默认浏览器或 Spotify 应用接手播放。": "The link is saved on this device. The app does not embed a web player; playback opens in your default browser or Spotify app.",
+    "Spotify 官方播放器": "Official Spotify player",
+    "链接保存在本机；播放器载入 Spotify 官方页面。登录状态、内容地区和网络连接可能影响播放。": "The link is saved on this device. The focus page loads Spotify's official player. Sign-in status, regional availability, and network access can affect playback.",
+    "Spotify 播放器载入中…": "Loading Spotify player…",
+    "Spotify 播放器页面已载入；实际播放仍受登录状态、地区和网络影响。": "Spotify's player page loaded. Playback can still depend on sign-in, regional availability, and network access.",
+    "Spotify 播放器载入失败或网络不可用。可点击“在 Spotify 打开”继续。": "Spotify's player page failed to load or the network is unavailable. Click “Open in Spotify” to continue.",
     "Spotify 单曲、专辑、播放列表或播客链接": "Spotify track, album, playlist, or podcast link",
     "在 Spotify 打开 ↗": "Open in Spotify ↗",
     "保存链接": "Save link",
@@ -148,5 +151,5 @@ ENGLISH_CATALOG: dict[str, str] = {
     "日程数据暂时无法载入。": "Planner data could not be loaded right now.",
     "日程操作没有保存，请检查后重试。": "The planner change was not saved. Check the data and try again.",
     "当前计时的检查点时间无效。": "The current timer checkpoint is invalid.",
-    "新版保留有效 Spotify 链接，并交由系统默认浏览器或 Spotify 应用打开。桌面核心不嵌入网页播放器；Windows 外部打开行为仍待实际验证。": "The new version keeps valid Spotify links and opens them in the default browser or Spotify app. The desktop app does not embed a web player; external opening on Windows still needs verification.",
+    "新版保留有效 Spotify 链接，并在专注页载入 Spotify 官方嵌入播放器。登录状态、内容地区和网络可能影响播放。": "The current Native implementation keeps valid Spotify links and loads Spotify's official embedded player on the focus page. Sign-in status, regional availability, and network access can affect playback.",
 }

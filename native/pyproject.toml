@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fluke-native"
-version = "0.1.1"
+version = "0.1.2"
 description = "FLUKE：PySide6 本机桌面工作台与数据迁移工具"
 requires-python = ">=3.10"
 dependencies = [

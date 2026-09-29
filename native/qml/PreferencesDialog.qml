@@ -14,6 +14,10 @@ Dialog {
         topics: [],
         preferences: { subtopics: "", sources: "", presetSources: [] }
     })
+    property var appUpdateController: typeof flukeAppUpdateController === "undefined"
+                                     ? null : flukeAppUpdateController
+    readonly property var appUpdateState: appUpdateController
+                                          ? appUpdateController.state : ({})
     signal saveRequested(var state)
 
     // These defaults mirror TOPIC_OPTIONS and PRESET_SOURCES in
@@ -546,6 +550,107 @@ Dialog {
                 font.pixelSize: 12
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
+            }
+
+            ColumnLayout {
+                objectName: "appUpdateSection"
+                visible: Boolean(dialog.appUpdateController)
+                Layout.fillWidth: true
+                spacing: 7
+
+                Text {
+                    text: qsTr("FLUKE 应用更新")
+                    color: dialog.ink
+                    font.family: dialog.fontFamily
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+                Text {
+                    Layout.fillWidth: true
+                         text: qsTr("当前版本：%1。检查 GitHub Releases 中 v0.1.2 及以上的 Windows 安装包。")
+                          .arg(String(dialog.appUpdateState.currentVersion || ""))
+                    color: dialog.muted
+                    font.family: dialog.fontFamily
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
+                }
+                Text {
+                    Layout.fillWidth: true
+                    visible: Boolean(dialog.appUpdateState.updateAvailable)
+                    text: qsTr("可用版本：%1 · %2").arg(String(dialog.appUpdateState.availableVersion || ""))
+                         .arg(String(dialog.appUpdateState.releaseTag || ""))
+                    color: dialog.accent
+                    font.family: dialog.fontFamily
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Button {
+                        objectName: "appUpdateCheckButton"
+                        text: Boolean(dialog.appUpdateState.busy) ? qsTr("正在检查…") : qsTr("检查应用更新")
+                        enabled: Boolean(dialog.appUpdateController) && !Boolean(dialog.appUpdateState.busy)
+                        onClicked: dialog.appUpdateController.checkForUpdates()
+                    }
+                    Button {
+                        objectName: "appUpdateDownloadButton"
+                        text: Boolean(dialog.appUpdateState.busy) ? qsTr("正在下载…") : qsTr("下载并校验")
+                        visible: Boolean(dialog.appUpdateState.updateAvailable)
+                                 && !Boolean(dialog.appUpdateState.verifiedInstallerPath)
+                        enabled: visible && !Boolean(dialog.appUpdateState.busy)
+                        onClicked: dialog.appUpdateController.downloadAndVerify()
+                    }
+                    Button {
+                        objectName: "appUpdateOpenFolderButton"
+                        text: qsTr("打开安装包位置")
+                        visible: Boolean(dialog.appUpdateState.verifiedInstallerPath)
+                        enabled: !Boolean(dialog.appUpdateState.busy)
+                        onClicked: dialog.appUpdateController.openVerifiedDownloadFolder()
+                    }
+                    Button {
+                        objectName: "appUpdateInstallButton"
+                        text: Boolean(dialog.appUpdateState.busy) ? qsTr("正在安装…") : qsTr("安全安装并重启")
+                        visible: Boolean(dialog.appUpdateState.verifiedInstallerPath)
+                                 && Boolean(dialog.appUpdateState.automaticInstallAvailable)
+                        enabled: visible && !Boolean(dialog.appUpdateState.busy)
+                        onClicked: dialog.appUpdateController.installVerifiedUpdate()
+                    }
+                    Button {
+                        objectName: "appUpdateCancelButton"
+                        text: qsTr("取消下载")
+                        visible: Boolean(dialog.appUpdateState.cancellable)
+                        enabled: visible
+                        onClicked: dialog.appUpdateController.cancelCurrentOperation()
+                    }
+                    Item { Layout.fillWidth: true }
+                }
+                ProgressBar {
+                    objectName: "appUpdateProgress"
+                    Layout.fillWidth: true
+                    visible: Boolean(dialog.appUpdateState.busy)
+                    from: 0
+                    to: 100
+                    value: Number(dialog.appUpdateState.progress || 0)
+                }
+                Text {
+                    objectName: "appUpdateStatus"
+                    Layout.fillWidth: true
+                    text: String(dialog.appUpdateState.statusMessage || "")
+                    color: dialog.ink
+                    font.family: dialog.fontFamily
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
+                }
+                Text {
+                    Layout.fillWidth: true
+                     text: Boolean(dialog.appUpdateState.automaticInstallAvailable)
+                           ? qsTr("新版会安装到独立版本目录；启动健康检查成功后才切换，失败时自动保留旧版并可回退。")
+                           : qsTr("当前安装不是可回滚的 side-by-side 布局，只能下载并校验官方安装包；自动安装已关闭。")
+                    color: dialog.muted
+                    font.family: dialog.fontFamily
+                    font.pixelSize: 11
+                    wrapMode: Text.WordWrap
+                }
             }
         }
     }
