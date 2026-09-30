@@ -29,6 +29,7 @@
 - 另从官方 `native-v0.1.1-preview.1` Release 下载并隔离安装真实 flat 旧版包：`915,158,072` bytes，SHA-256 为 `f4096c0385e37b4dc01f5f79fbb6fa60aa508696508d7f369ec2d298e5645b1d`；旧版真实可执行文件与 preview.3 新版 hash 不同。旧版普通启动保持运行 10 秒并生成 `integrity_check=ok` 的独立 SQLite；preview.3 新版健康检查两轮均退出码 `0`。这仍是短时 QA 观察，不是阶段 7 长期真实数据验收。
 - 真实 flat `0.1.1` 普通启动与真实 preview.3 `0.1.2` 健康检查也曾同时运行 10 秒：旧版保持存活、新版退出码 `0`，两份独立 SQLite 均为 `ok`；旧版随后只在 QA 目录内被终止。
 - 为闭合 QA AppId 边界，又用已核验的真实 v0.1.1 payload 重打包了独立 `FLUKE-Desktop-Stage7-Real-Old-QA` AppId；该 QA 安装与 preview.3 新版并行运行 10 秒，旧版保持存活、新版退出码 `0`，两份独立 SQLite 均为 `ok`。该重打包只属于本地 QA，不是公开发布资产。
+- 隔离长期观察进一步运行 20 轮、每轮 10 秒的真实旧版/preview.3 并行 QA：20/20 旧版保持运行至观察点，20/20 新版健康检查退出码为 `0`，40 份独立 SQLite 完整性均为 `ok`。记录位于本机 `qa-artifacts/stage7-long-qa-observation/observation.jsonl`，未上传 GitHub；这仍不替代真实个人数据和正式用户长期观察。
 
 ## 阶段边界
 
